@@ -47,11 +47,24 @@ fn CheckUIColor =
 	CurUIColor
 )
 
+
 fn getIconFromBitmap iconFileName =
 (
-	theFileName = LPM_iconPath + iconFileName +".bmp"
+	--checks if last three chars of file is "Off" and changes file directory based on that
+	stringLength = iconFileName.count
+	startIndex = stringLength - 3 + 1
+	lastThree = substring iconFileName startIndex 3
+
+	if lastThree == "Off" then (
+		theFileName = LPM_offColorPath + iconFileName +".bmp"
+	) else (
+		theFileName = LPM_iconPath + iconFileName +".bmp"
+	)
+
+	--theFileName = LPM_iconPath + iconFileName +".bmp"
 	img = dotNetClass "System.Drawing.Image" --create an image
 	ilTv.images.add (img.fromFile theFileName) --add to the list
+
 )
 
 fn dotNetColor clr =
@@ -142,6 +155,8 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	fn initTreeView tv=
 	(
+		print("initializing tv")
+		--print(LPM_offColorPath)
 		-- In the tv init function
 		tmpcol = ((colorMan.getColor #timeSliderBg)*255) as color
 		dnc_textBoxOutputPath.BackColor = dotNetColor tmpcol
@@ -151,7 +166,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		tv.AllowDrop = true -- allow DragandDrop for the Treeview
 
 		getIconFromBitmap "Root"
-		getIconFromBitmap "Pass"
+		getIconFromBitmap "beautyPass"
 		getIconFromBitmap "objectSet"
 		getIconFromBitmap "lightSet"
 		getIconFromBitmap "Layers"
@@ -161,7 +176,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		getIconFromBitmap "Render"
 		getIconFromBitmap "Enviroment"
 		getIconFromBitmap "Common"
-		getIconFromBitmap "Disabled"
+		getIconFromBitmap "beautyPassOff"
 		getIconFromBitmap "objectSetOn"
 		getIconFromBitmap "objectSetOff"
 		getIconFromBitmap "lightSetOn"
@@ -228,6 +243,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		getIconFromBitmap "renderImageOff" 					--Dabelow vrayRebderElements
 
 		tv.imageList = ilTv
+
 	)
 
 	fn deleteSelectedPass tv =
@@ -2461,6 +2477,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 		lpm_fun.preFileOpenCallback_Add()
 		
+		print("initTreeView called")
 		initTreeView tv
 		fillInTreeView tv
 

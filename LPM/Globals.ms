@@ -33,6 +33,8 @@ global LPM_BackColor
 global LPM_FontColor
 global LPM_ContinueLoad
 
+global LPM_offColorPath = LPM_Dir + "icons/grays/"
+
 global LPM_IdiotChecksEnabled 				-- Dabelow	
 global LPM_VersionNumber 					-- Dabelow	
 global LPM_SMTDSettings 					-- Dabelow
