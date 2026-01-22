@@ -1481,6 +1481,7 @@ rcMenu rc_MainMenu
 	(
 		menuItem	renderDialog			"File Output"
 		menuItem	deadlineSettingsDialog	"Deadline Settings"
+		menuItem	uiDialog				"UI Dialog"
 	)
 
 	subMenu "Utilities"
@@ -1529,6 +1530,7 @@ rcMenu rc_MainMenu
 	on helpMenuNew 					picked do( shellLaunch "https://makevisual.com/brain/mediawiki/index.php?title=Using_LPM_for_rendering_in_3dsMax" "" )
 	on renderDialog 				picked do( filein (LPM_Dir + "RenderRO.ms"))
 	on deadlineSettingsDialog 		picked do( filein (LPM_Dir + "deadlineRO.ms"))
+	on uiDialog                     picked do( filein (LPM_Dir + "uiRO.ms"))
 )
 
 -------------------------------------------------------------------------------------------------------   RootMenu   -------------------------------------------------------------------------------------------------------
