@@ -53,15 +53,15 @@ function cameraOverscan_Override_PreRender =
 
     -- TODO:?
     -- Store the original resoultion
-    LPM_OperatorData.cameraOverscan.resXOriginal = renderHeight
-    LPM_OperatorData.cameraOverscan.resYOriginal = renderWidth
+    LPM_OperatorData.cameraOverscan.resXOriginal = renderWidth
+    LPM_OperatorData.cameraOverscan.resYOriginal = renderHeight
     print "---original res----"
     print renderHeight
     print renderWidth
 
     -- Set the desired resolution
-    renderHeight = LPM_OperatorData.cameraOverscan.resXOverride
-    renderWidth  = LPM_OperatorData.cameraOverscan.resYOverride
+    renderWidth  = LPM_OperatorData.cameraOverscan.resXOverride
+    renderHeight = LPM_OperatorData.cameraOverscan.resYOverride
     print "---overscan res----"
     print renderHeight
     print renderWidth
@@ -81,8 +81,8 @@ function cameraOverscan_Override_PostRender =
 
     -- TODO:
     -- reset resolution
-    renderHeight = LPM_OperatorData.cameraOverscan.resXOriginal
-    renderWidth  = LPM_OperatorData.cameraOverscan.resYOriginal
+    renderWidth  = LPM_OperatorData.cameraOverscan.resXOriginal
+    renderHeight = LPM_OperatorData.cameraOverscan.resYOriginal
 )
 
 function curPrerenderAction =

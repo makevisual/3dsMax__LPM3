@@ -7,9 +7,9 @@ Struct LPM_FunctionsDeadlineStr
 		result = undefined
 
 		-- Attempt to retrieve the environment variable for the deadline repository
-		try( result = (dotNetClass "System.Environment").GetEnvironmentVariable "DEADLINE_REPOSITORY_PATH" )catch()
+		try( result = (dotNetClass "System.Environment").GetEnvironmentVariable "DEADLINE_CUSTOM_PATH" )catch()
 		-- If it is undefined, return a message.
-		if result == undefined then ( result = "DEADLINE_REPOSITORY_PATH Environment Variable not set" )
+		if result == undefined then ( result = "DEADLINE_CUSTOM_PATH Environment Variable not set" )
 
 		return result
 	),

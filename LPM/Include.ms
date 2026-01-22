@@ -28,7 +28,9 @@ then (
 	LPM_Root.renderType = 3 												-- Force to shots
 
 	-- TODO: Consider moving these to CA.ms on rootCA
-	setUserProp LPM_Root "DeadlineRepository" @"N:\DeadlineRepository10"    -- Set your deadline Repository
+	deadlineRepo = LPM_FunDeadline.deadline_GetRepoPath()
+	if (deadlineRepo != undefined) and (deadlineRepo != "DEADLINE_CUSTOM_PATH Environment Variable not set") then
+		setUserProp LPM_Root "DeadlineRepository" deadlineRepo
 	setUserProp LPM_Root "LPM_VersionNumber" LPM_VersionNumber    			-- Set your LPM Version Number
 
 )else()
