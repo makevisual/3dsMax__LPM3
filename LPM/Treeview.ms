@@ -123,6 +123,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	-- This is the rename filed
 	dotNetControl editBox "TextBox"  pos:[0,70] height:20 width:120
+	local editBoxCancel = false
 
 	fn FreezeWindow =
 	(
@@ -1169,6 +1170,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	(
 		if(rNode==undefined) then
 			return false
+		editBoxCancel = false
 		tv.enabled = false
 		editBox.pos = [tv.pos.x+rNode.bounds.x,tv.pos.y+rNode.bounds.y]
 		if rNode.tag.value.type == "pass" then
@@ -1182,6 +1184,50 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 		editBox.visible = true
 		editBox.focus()
+	)
+
+	fn commitEditBox=
+	(
+		if(rNode==undefined) then
+		(
+			hideEditBox()
+			return false
+		)
+
+		theNode=rNode
+		type = theNode.tag.value.type
+		word=editBox.text
+		if(type=="shot" or type=="pass") then word=LPM_Fun.removeBadChars word
+
+		theNode.text = word
+		case type of
+		(
+			"wildcard": (	theNode.Parent.tag.value.wildCard[theNode.tag.value.index]=word)
+			"shot":
+			(
+				pos=findstring word "[["
+				if(pos!=undefined) then
+					theNode.tag.value.name="LPM_"+(substring word 1 pos)
+				else
+					theNode.tag.value.name="LPM_"+word
+				theNode.text=LPM_Fun.getShotName theNode.tag.value
+			)
+			"pass":
+			(
+				theNode.tag.value.name="LPM_"+word
+				theNode.text = LPM_Fun.generatePassName theNode.tag.value
+			)
+			default:	(try(theNode.tag.value.name="LPM_"+word)catch())
+
+		)
+		hideEditBox()
+		LPM_treeview_rollout.updateTV()
+	)
+
+	fn cancelEditBox=
+	(
+		editBoxCancel = true
+		hideEditBox()
 	)
 
 	-- TODO: Finish Fixing this 
@@ -1412,7 +1458,8 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on editBox lostFocus e do
 	(
-		hideEditBox()
+		if editBox.visible and (not editBoxCancel) then
+			commitEditBox()
 	)
 
 	on editBox MouseWheel e do
@@ -1423,42 +1470,24 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	(
 		case e.keycode.tostring() of
 		(
+			"Return": ()
+			"Escape": ()
+		)
+	)
+
+	on editBox keyDown e do
+	(
+		case e.keycode.tostring() of
+		(
 			"Return":
 			(
-				theNode=rNode
-				type = theNode.tag.value.type
-				word=editBox.text
-				if(type=="shot" or type=="pass") then word=LPM_Fun.removeBadChars word
-
-				theNode.text = word
-				case type of
-				(
-					"wildcard": (	theNode.Parent.tag.value.wildCard[theNode.tag.value.index]=word)
-					"shot":
-					(
-						pos=findstring word "[["
-						if(pos!=undefined) then
-							theNode.tag.value.name="LPM_"+(substring word 1 pos)
-						else
-							theNode.tag.value.name="LPM_"+word
-						theNode.text=LPM_Fun.getShotName theNode.tag.value
-					)
-					"pass":
-					(
-						theNode.tag.value.name="LPM_"+word
-						theNode.text = LPM_Fun.generatePassName theNode.tag.value
-					)
-					default:	(try(theNode.tag.value.name="LPM_"+word)catch())
-
-				)
-				hideEditBox()
-
-				LPM_treeview_rollout.updateTV()
+				commitEditBox()
+				e.handled = true
 			)
 			"Escape":
 			(
-				hideEditBox()
-
+				cancelEditBox()
+				e.handled = true
 			)
 		)
 	)

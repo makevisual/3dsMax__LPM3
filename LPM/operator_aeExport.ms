@@ -12,10 +12,24 @@ struct cameraOverscan_RestoreDataStr
     null                 = undefined
  )
 
+fn getExportCamera =
+(
+    local curCam = undefined
+    if isValidNode LPM_Root.renderCamera then
+        curCam = LPM_Root.renderCamera
+    if curCam == undefined then
+    (
+        messagebox "No render camera set for export."
+        return undefined
+    )
+    return curCam
+)
+
 function cameraOverscan_Override_PreRender =
 (
     -- Fetch the global variable and assign the current state to it
-    curCam = selection[1] -- TODO get the real correct camera 
+    curCam = getExportCamera()
+    if curCam == undefined then return false
     newCam = copy curCam
     newCam.name = ( curCam.name + "_temp-overscan" )
 
@@ -24,7 +38,7 @@ function cameraOverscan_Override_PreRender =
     curFov = LPM_OperatorData.cameraOverscan.fovOverride
 
     -- Wire the FOV 
-    case curClass of
+    case ( classof curCam ) of
     (
         Freecamera:
             (
@@ -39,7 +53,7 @@ function cameraOverscan_Override_PreRender =
         Physical:
             (
             print "PHYS"
-            paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )0
+            paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
             )
     )
     

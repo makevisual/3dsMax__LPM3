@@ -53,15 +53,15 @@ function renderImage_Override_PreRender =
 
     -- TODO:?
     -- Store the original resoultion
-    LPM_OperatorData.renderImage.resXOriginal = renderHeight
-    LPM_OperatorData.renderImage.resYOriginal = renderWidth
+    LPM_OperatorData.renderImage.resXOriginal = renderWidth
+    LPM_OperatorData.renderImage.resYOriginal = renderHeight
     print "---original res----"
     print renderHeight
     print renderWidth
 
     -- Set the desired resolution
-    renderHeight = LPM_OperatorData.renderImage.resXOverride
-    renderWidth  = LPM_OperatorData.renderImage.resYOverride
+    renderWidth  = LPM_OperatorData.renderImage.resXOverride
+    renderHeight = LPM_OperatorData.renderImage.resYOverride
     print "---overscan res----"
     print renderHeight
     print renderWidth
@@ -81,8 +81,8 @@ function renderImage_Override_PostRender =
 
     -- TODO:
     -- reset resolution
-    renderHeight = LPM_OperatorData.renderImage.resXOriginal
-    renderWidth  = LPM_OperatorData.renderImage.resYOriginal
+    renderWidth  = LPM_OperatorData.renderImage.resXOriginal
+    renderHeight = LPM_OperatorData.renderImage.resYOriginal
 )
 
 function curPrerenderAction =
