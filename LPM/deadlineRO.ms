@@ -15,8 +15,8 @@ rollout LPM_RenderRo "Deadline Settings Dialog" width:400 height:150
 	-- Gets a manual path, if one has not been set, returns the LPM Root dir
 	fn getDeadlineManualPath = 
 	(
-		if LPM_Root.deadlinePathManual != undefined
-		then (return LPM_Root.deadlinePathManual)
+		if LPM_Root.deadlinePath != undefined
+		then (return LPM_Root.deadlinePath)
 		else (return LPM_Root.rootDir)	
 	)
 
@@ -78,8 +78,8 @@ rollout LPM_RenderRo "Deadline Settings Dialog" width:400 height:150
 		thePath=getSavePath caption:"Pick Deadline repository" initialDir:LPM_Root.rootDir
 		if(thePath!=undefined) then
 		(
-			LPM_Root.deadlinePathManual=thePath+"\\"
-			return LPM_Root.deadlinePathManual
+			LPM_Root.deadlinePath=thePath+"\\"
+			return LPM_Root.deadlinePath
 		)
 		return LPM_Root.rootDir
 	)
@@ -91,7 +91,7 @@ rollout LPM_RenderRo "Deadline Settings Dialog" width:400 height:150
 	on chk_manual changed state 	do ( toggleCheckboxes "manual" )
 
 	-- Opens the manual directory
-	on btn_directoryOpen pressed 	do ( shellLaunch LPM_Root.deadlinePathManual "" )
+	on btn_directoryOpen pressed 	do ( shellLaunch LPM_Root.deadlinePath "" )
 
 	-- Prompts user to pick the manual directory, and updates the UI
 	on btn_directoryPick pressed do
