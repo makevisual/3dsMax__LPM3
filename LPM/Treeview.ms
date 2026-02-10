@@ -108,6 +108,8 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local lastMouseDown = timeStamp()
 	local preventExpand = false
 	local TmpSelNode = undefined
+	local tvEditControl = undefined
+	local tvEditKeyDownHandler = undefined
 
 	struct leafType (type, leaf, index, active)
 
@@ -1641,6 +1643,33 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 		theNode=tv.selectedNode
 
+		if(theNode != undefined and theNode.isEditing) then
+		(
+			case e.keycode.tostring() of
+			(
+				"Return":
+				(
+					try(theNode.endEdit false)catch()
+					return true
+				)
+				"Enter":
+				(
+					try(theNode.endEdit false)catch()
+					return true
+				)
+				"F2":
+				(
+					try(theNode.endEdit false)catch()
+					return true
+				)
+				"Escape":
+				(
+					try(theNode.endEdit true)catch()
+					return true
+				)
+			)
+		)
+
 		TheNodeType = undefined
 		try(TheNodeType = LPM_activeElement.tag.value.type)catch()
 
@@ -2637,6 +2666,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on LPM_treeview_rollout close do
 	(
+		detachTreeViewEditKeyHandler()
 		lpm_fun.preFileOpenCallback_Remove()
 
 		if(colorBackup!=undefined) then
