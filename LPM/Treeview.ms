@@ -103,8 +103,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local LPM_doubleClick=false
 	local DragNode, DropNode
 	local m=dotNetClass "System.Windows.Forms.DragDropEffects" -- Drag and drop effects
-	local sTime=timeStamp()
-	local oldHitNode=undefined
 	local lastMouseDown = timeStamp()
 	local preventExpand = false
 	local TmpSelNode = undefined
@@ -1186,6 +1184,27 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		true
 	)
 
+	fn isRenameEditing iNode=
+	(
+		if(iNode==undefined) then return false
+		local editing = false
+		try(editing = iNode.isEditing)catch(editing = false)
+		editing
+	)
+
+	fn endRenameEdit iNode cancelEdit:false =
+	(
+		if(iNode==undefined) then return false
+		if(not isRenameEditing iNode) then return false
+
+		try
+		(
+			iNode.endEdit cancelEdit
+			true
+		)
+		catch(false)
+	)
+
 	fn trimWhitespace theString =
 	(
 		if(theString==undefined) then return ""
@@ -1560,11 +1579,52 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			)
 			"F2":
 			(
-				if(theNode != undefined) then renameNode (tv.selectedNode)
+				if(theNode != undefined) then
+				(
+					if(isRenameEditing theNode) then
+					(
+						endRenameEdit theNode cancelEdit:false
+					)
+					else
+					(
+						renameNode theNode
+					)
+				)
 			)
 			"Return":
 			(
-				if(theNode != undefined) then renameNode (tv.selectedNode)
+				if(theNode != undefined) then
+				(
+					if(isRenameEditing theNode) then
+					(
+						endRenameEdit theNode cancelEdit:false
+					)
+					else
+					(
+						renameNode theNode
+					)
+				)
+			)
+			"Enter":
+			(
+				if(theNode != undefined) then
+				(
+					if(isRenameEditing theNode) then
+					(
+						endRenameEdit theNode cancelEdit:false
+					)
+					else
+					(
+						renameNode theNode
+					)
+				)
+			)
+			"Escape":
+			(
+				if(theNode != undefined) then
+				(
+					endRenameEdit theNode cancelEdit:true
+				)
 			)
 			"F5":
 			(
@@ -1821,9 +1881,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv MouseUp arg do
 	(
-		nTime=timestamp()
-		delta=nTime - sTime
-		sTime=0 --Assume its an invalid click, if its valid we will the timestamp later
 		local button = arg.button.ToString()
 
 		hitNode = tv.GetNodeAt arg.location
@@ -1847,17 +1904,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			if(button=="Left" or button=="Middle") then
 			(
 				local level = hitNode.level
-				if(arg.x>(38+level*20) and (button=="Left") and (preventExpand==false)) then
-				(
-					sTime=nTime
-					if (delta > 600) and (delta < 1100) and (oldHitNode==hitNode)  then
-					(
-						print "Rename Double Click"
-						print ("hitNode - " + ( hitNode as string ) )
-						renameNode hitNode
-					)
-				)
-
 				if((15+level*20) < (arg.x)) and ((arg.x) < (37+level*20)) then
 
 				case hitNode.tag.value.type of
@@ -2243,7 +2289,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		else if (button=="Right")  then
 			popUpMenu rc_RootMenu
 
-		oldHitNode = hitNode
 	)
 
 	on tv NodeMouseDoubleClick arg do
