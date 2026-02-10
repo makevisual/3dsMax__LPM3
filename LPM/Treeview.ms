@@ -1205,6 +1205,57 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		catch(false)
 	)
 
+	fn getRenameEditor =
+	(
+		local editor = undefined
+		try
+		(
+			if(tv.controls.count > 0) then editor = tv.controls.item[0]
+		)
+		catch()
+		editor
+	)
+
+	fn onRenameEditorKeyDown sender e =
+	(
+		local keyName = e.keycode.tostring()
+		local theNode = tv.selectedNode
+		if(theNode == undefined or not isRenameEditing theNode) then return false
+
+		case keyName of
+		(
+			"F2":
+			(
+				endRenameEdit theNode cancelEdit:false
+				try(e.handled = true)catch()
+				try(e.suppressKeyPress = true)catch()
+				true
+			)
+			"Return":
+			(
+				endRenameEdit theNode cancelEdit:false
+				try(e.handled = true)catch()
+				try(e.suppressKeyPress = true)catch()
+				true
+			)
+			"Enter":
+			(
+				endRenameEdit theNode cancelEdit:false
+				try(e.handled = true)catch()
+				try(e.suppressKeyPress = true)catch()
+				true
+			)
+			"Escape":
+			(
+				endRenameEdit theNode cancelEdit:true
+				try(e.handled = true)catch()
+				try(e.suppressKeyPress = true)catch()
+				true
+			)
+			default:false
+		)
+	)
+
 	fn trimWhitespace theString =
 	(
 		if(theString==undefined) then return ""
@@ -1527,10 +1578,28 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			try(nodeType = arg.node.tag.value.type)catch()
 			if(nodeType!="shot" and nodeType!="pass") then arg.cancelEdit = true
 		)
+
+		try
+		(
+			editor = getRenameEditor()
+			if(editor != undefined) then
+			(
+				try(dotnet.removeEventHandler editor "KeyDown" onRenameEditorKeyDown)catch()
+				dotnet.addEventHandler editor "KeyDown" onRenameEditorKeyDown
+			)
+		)
+		catch()
 	)
 
 	on tv afterLabelEdit arg do
 	(
+		try
+		(
+			editor = getRenameEditor()
+			if(editor != undefined) then try(dotnet.removeEventHandler editor "KeyDown" onRenameEditorKeyDown)catch()
+		)
+		catch()
+
 		if(arg.node == undefined) then return false
 
 		if(arg.label == undefined) then
@@ -1550,7 +1619,45 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv keyDown e do
 	(
-		if (keyboard.controlpressed)and ((e.keycode.tostring())=="Z") then
+		local keyName = e.keycode.tostring()
+		local theNode = tv.selectedNode
+
+		if(theNode != undefined and isRenameEditing theNode) then
+		(
+			case keyName of
+			(
+				"F2":
+				(
+					endRenameEdit theNode cancelEdit:false
+					try(e.handled = true)catch()
+					try(e.suppressKeyPress = true)catch()
+					return true
+				)
+				"Return":
+				(
+					endRenameEdit theNode cancelEdit:false
+					try(e.handled = true)catch()
+					try(e.suppressKeyPress = true)catch()
+					return true
+				)
+				"Enter":
+				(
+					endRenameEdit theNode cancelEdit:false
+					try(e.handled = true)catch()
+					try(e.suppressKeyPress = true)catch()
+					return true
+				)
+				"Escape":
+				(
+					endRenameEdit theNode cancelEdit:true
+					try(e.handled = true)catch()
+					try(e.suppressKeyPress = true)catch()
+					return true
+				)
+			)
+		)
+
+		if (keyboard.controlpressed)and (keyName=="Z") then
 		(
 			max undo
 			LPM_treeview_rollout.updateTV()
@@ -1579,52 +1686,15 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			)
 			"F2":
 			(
-				if(theNode != undefined) then
-				(
-					if(isRenameEditing theNode) then
-					(
-						endRenameEdit theNode cancelEdit:false
-					)
-					else
-					(
-						renameNode theNode
-					)
-				)
+				if(theNode != undefined and not isRenameEditing theNode) then renameNode theNode
 			)
 			"Return":
 			(
-				if(theNode != undefined) then
-				(
-					if(isRenameEditing theNode) then
-					(
-						endRenameEdit theNode cancelEdit:false
-					)
-					else
-					(
-						renameNode theNode
-					)
-				)
+				if(theNode != undefined and not isRenameEditing theNode) then renameNode theNode
 			)
 			"Enter":
 			(
-				if(theNode != undefined) then
-				(
-					if(isRenameEditing theNode) then
-					(
-						endRenameEdit theNode cancelEdit:false
-					)
-					else
-					(
-						renameNode theNode
-					)
-				)
-			)
-			"Escape":
-			(
-				if(theNode != undefined) then
-				(
-					endRenameEdit theNode cancelEdit:true
-				)
+				if(theNode != undefined and not isRenameEditing theNode) then renameNode theNode
 			)
 			"F5":
 			(
