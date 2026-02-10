@@ -108,6 +108,8 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local lastMouseDown = timeStamp()
 	local preventExpand = false
 	local TmpSelNode = undefined
+	local tvEditControl = undefined
+	local tvEditKeyDownHandler = undefined
 
 	struct leafType (type, leaf, index, active)
 
@@ -1171,6 +1173,74 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	)
 
 
+	fn getTreeViewEditControl =
+	(
+		local editHandle = 0
+		try(editHandle = windows.sendMessage tv.handle 0x110F 0 0)catch(editHandle = 0)
+		if(editHandle == 0) then return undefined
+
+		local controlClass = dotNetClass "System.Windows.Forms.Control"
+		try(controlClass.fromHandle (dotNetObject "System.IntPtr" editHandle))catch(undefined)
+	)
+
+	fn detachTreeViewEditKeyHandler =
+	(
+		if(tvEditControl != undefined and tvEditKeyDownHandler != undefined) then
+		(
+			try(dotNet.removeEventHandler tvEditControl "KeyDown" tvEditKeyDownHandler)catch()
+		)
+		tvEditControl = undefined
+		tvEditKeyDownHandler = undefined
+	)
+
+	fn handleTreeViewEditKeyDown sender e =
+	(
+		local theNode = tv.selectedNode
+		if(theNode == undefined or not theNode.isEditing) then return false
+
+		case e.keyCode.toString() of
+		(
+			"Return":
+			(
+				try(theNode.endEdit false)catch()
+				try(e.suppressKeyPress = true)catch()
+				try(e.handled = true)catch()
+			)
+			"Enter":
+			(
+				try(theNode.endEdit false)catch()
+				try(e.suppressKeyPress = true)catch()
+				try(e.handled = true)catch()
+			)
+			"F2":
+			(
+				try(theNode.endEdit false)catch()
+				try(e.suppressKeyPress = true)catch()
+				try(e.handled = true)catch()
+			)
+			"Escape":
+			(
+				try(theNode.endEdit true)catch()
+				try(e.suppressKeyPress = true)catch()
+				try(e.handled = true)catch()
+			)
+		)
+		true
+	)
+
+	fn attachTreeViewEditKeyHandler =
+	(
+		detachTreeViewEditKeyHandler()
+		local ctrl = getTreeViewEditControl()
+		if(ctrl == undefined) then return false
+
+		tvEditControl = ctrl
+		tvEditKeyDownHandler = handleTreeViewEditKeyDown
+		try(dotNet.addEventHandler tvEditControl "KeyDown" tvEditKeyDownHandler)catch()
+		true
+	)
+
+
 	-- TODO: Finish Fixing this 
 	fn renameNode iNode=
 	(
@@ -1498,6 +1568,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv beforeLabelEdit arg do
 	(
+		detachTreeViewEditKeyHandler()
 		if(arg.node == undefined) then
 		(
 			arg.cancelEdit = true
@@ -1506,12 +1577,22 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		(
 			nodeType = undefined
 			try(nodeType = arg.node.tag.value.type)catch()
-			if(nodeType!="shot" and nodeType!="pass") then arg.cancelEdit = true
+			if(nodeType!="shot" and nodeType!="pass") then
+			(
+				arg.cancelEdit = true
+			)
+			else
+			(
+				-- BeginEdit creates the in-place textbox asynchronously; defer one tick then attach.
+				try((dotNetClass "System.Windows.Forms.Application").DoEvents())catch()
+				attachTreeViewEditKeyHandler()
+			)
 		)
 	)
 
 	on tv afterLabelEdit arg do
 	(
+		detachTreeViewEditKeyHandler()
 		if(arg.node == undefined) then return false
 
 		if(arg.label == undefined) then
@@ -1534,6 +1615,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		case e.keycode.tostring() of
 		(
 			"Return": (e.isInputKey = true)
+			"Enter": (e.isInputKey = true)
 			"Escape": (e.isInputKey = true)
 			"F2": (e.isInputKey = true)
 		)
@@ -1543,13 +1625,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv keyDown e do
 	(
-		if (keyboard.controlpressed)and ((e.keycode.tostring())=="Z") then
+		theNode = tv.selectedNode
+
+		if((theNode == undefined or (not theNode.isEditing)) and (keyboard.controlpressed)and ((e.keycode.tostring())=="Z")) then
 		(
 			max undo
 			LPM_treeview_rollout.updateTV()
 		)
-
-		theNode = tv.selectedNode
 		if(theNode != undefined) then
 		(
 			if(theNode.isEditing) then
@@ -1557,6 +1639,16 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 				case e.keycode.tostring() of
 				(
 					"Return":
+					(
+						try(theNode.endEdit false)catch()
+						try(e.suppressKeyPress = true)catch()
+					)
+					"Enter":
+					(
+						try(theNode.endEdit false)catch()
+						try(e.suppressKeyPress = true)catch()
+					)
+					"F2":
 					(
 						try(theNode.endEdit false)catch()
 						try(e.suppressKeyPress = true)catch()
@@ -1578,6 +1670,11 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 						try(e.suppressKeyPress = true)catch()
 					)
 					"Return":
+					(
+						renameNode theNode
+						try(e.suppressKeyPress = true)catch()
+					)
+					"Enter":
 					(
 						renameNode theNode
 						try(e.suppressKeyPress = true)catch()
@@ -2590,6 +2687,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on LPM_treeview_rollout close do
 	(
+		detachTreeViewEditKeyHandler()
 		lpm_fun.preFileOpenCallback_Remove()
 
 		if(colorBackup!=undefined) then
