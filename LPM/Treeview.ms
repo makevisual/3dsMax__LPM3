@@ -1208,30 +1208,36 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 		fn renameDialogOkPressed sender args =
 		(
-			form.DialogResult = dialogResultClass.OK
-			form.Close()
+			local dlg = sender.FindForm()
+			local dr = dotNetClass "System.Windows.Forms.DialogResult"
+			dlg.DialogResult = dr.OK
+			dlg.Close()
 		)
 		fn renameDialogCancelPressed sender args =
 		(
-			form.DialogResult = dialogResultClass.Cancel
-			form.Close()
+			local dlg = sender.FindForm()
+			local dr = dotNetClass "System.Windows.Forms.DialogResult"
+			dlg.DialogResult = dr.Cancel
+			dlg.Close()
 		)
 		fn renameDialogTextKeyDown sender args =
 		(
+			local dlg = sender.FindForm()
+			local dr = dotNetClass "System.Windows.Forms.DialogResult"
 			local keyName = args.KeyCode.ToString()
 			case keyName of
 			(
 				"F2":
 				(
 					args.SuppressKeyPress = true
-					form.DialogResult = dialogResultClass.OK
-					form.Close()
+					dlg.DialogResult = dr.OK
+					dlg.Close()
 				)
 				"Escape":
 				(
 					args.SuppressKeyPress = true
-					form.DialogResult = dialogResultClass.Cancel
-					form.Close()
+					dlg.DialogResult = dr.Cancel
+					dlg.Close()
 				)
 			)
 		)
