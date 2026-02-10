@@ -1529,12 +1529,61 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 
 
+	on tv previewKeyDown e do
+	(
+		case e.keycode.tostring() of
+		(
+			"Return": (e.isInputKey = true)
+			"Escape": (e.isInputKey = true)
+			"F2": (e.isInputKey = true)
+		)
+	)
+
+
+
 	on tv keyDown e do
 	(
 		if (keyboard.controlpressed)and ((e.keycode.tostring())=="Z") then
 		(
 			max undo
 			LPM_treeview_rollout.updateTV()
+		)
+
+		theNode = tv.selectedNode
+		if(theNode != undefined) then
+		(
+			if(theNode.isEditing) then
+			(
+				case e.keycode.tostring() of
+				(
+					"Return":
+					(
+						try(theNode.endEdit false)catch()
+						try(e.suppressKeyPress = true)catch()
+					)
+					"Escape":
+					(
+						try(theNode.endEdit true)catch()
+						try(e.suppressKeyPress = true)catch()
+					)
+				)
+			)
+			else
+			(
+				case e.keycode.tostring() of
+				(
+					"F2":
+					(
+						renameNode theNode
+						try(e.suppressKeyPress = true)catch()
+					)
+					"Return":
+					(
+						renameNode theNode
+						try(e.suppressKeyPress = true)catch()
+					)
+				)
+			)
 		)
 	)
 
@@ -1557,14 +1606,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			"NumPad2":
 			(
 				if keyboard.altPressed == true then( LPM_treeview_rollout.offsetSelectedShot LPM_treeview_rollout.tv #decrement )
-			)
-			"F2":
-			(
-				if(theNode != undefined) then renameNode (tv.selectedNode)
-			)
-			"Return":
-			(
-				if(theNode != undefined) then renameNode (tv.selectedNode)
 			)
 			"F5":
 			(
