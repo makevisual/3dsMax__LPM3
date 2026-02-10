@@ -161,7 +161,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		dnc_textBoxOutputPath.ReadOnly = true
 		tv.BackColor = LPM_BackColor
 		tv.AllowDrop = true -- allow DragandDrop for the Treeview
-		tv.LabelEdit = true
+		tv.LabelEdit = false
 
 		getIconFromBitmap "Root"
 		getIconFromBitmap "beautyPass"
@@ -1171,6 +1171,88 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	)
 
 
+
+	fn showRenameDialog defaultName =
+	(
+		local form = dotNetObject "System.Windows.Forms.Form"
+		local tb = dotNetObject "System.Windows.Forms.TextBox"
+		local okBtn = dotNetObject "System.Windows.Forms.Button"
+		local cancelBtn = dotNetObject "System.Windows.Forms.Button"
+		local dialogResultClass = dotNetClass "System.Windows.Forms.DialogResult"
+
+		form.Text = "Rename"
+		form.FormBorderStyle = (dotNetClass "System.Windows.Forms.FormBorderStyle").FixedDialog
+		form.StartPosition = (dotNetClass "System.Windows.Forms.FormStartPosition").CenterParent
+		form.MinimizeBox = false
+		form.MaximizeBox = false
+		form.ShowInTaskbar = false
+		form.KeyPreview = true
+		form.ClientSize = dotNetObject "System.Drawing.Size" 300 74
+
+		tb.Location = dotNetObject "System.Drawing.Point" 10 10
+		tb.Size = dotNetObject "System.Drawing.Size" 280 20
+		tb.Text = defaultName
+
+		okBtn.Text = "OK"
+		okBtn.Location = dotNetObject "System.Drawing.Point" 134 40
+		okBtn.Size = dotNetObject "System.Drawing.Size" 75 23
+
+		cancelBtn.Text = "Cancel"
+		cancelBtn.Location = dotNetObject "System.Drawing.Point" 215 40
+		cancelBtn.Size = dotNetObject "System.Drawing.Size" 75 23
+
+		form.AcceptButton = okBtn
+		form.CancelButton = cancelBtn
+
+		fn renameDialogOkPressed sender args =
+		(
+			form.DialogResult = dialogResultClass.OK
+			form.Close()
+		)
+		fn renameDialogCancelPressed sender args =
+		(
+			form.DialogResult = dialogResultClass.Cancel
+			form.Close()
+		)
+		fn renameDialogTextKeyDown sender args =
+		(
+			local keyName = args.KeyCode.ToString()
+			case keyName of
+			(
+				"F2":
+				(
+					args.SuppressKeyPress = true
+					form.DialogResult = dialogResultClass.OK
+					form.Close()
+				)
+				"Escape":
+				(
+					args.SuppressKeyPress = true
+					form.DialogResult = dialogResultClass.Cancel
+					form.Close()
+				)
+			)
+		)
+
+		dotNet.addEventHandler okBtn "Click" renameDialogOkPressed
+		dotNet.addEventHandler cancelBtn "Click" renameDialogCancelPressed
+		dotNet.addEventHandler tb "KeyDown" renameDialogTextKeyDown
+
+		form.Controls.Add tb
+		form.Controls.Add okBtn
+		form.Controls.Add cancelBtn
+
+		form.ActiveControl = tb
+		tb.SelectAll()
+
+		local result = form.ShowDialog()
+		local outName = undefined
+		if(result == dialogResultClass.OK) then outName = tb.Text
+		try(form.Dispose())catch()
+		outName
+	)
+
+
 	-- TODO: Finish Fixing this 
 	fn renameNode iNode=
 	(
@@ -1181,9 +1263,11 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		nodeType = iNode.tag.value.type
 		if(nodeType!="shot" and nodeType!="pass") then return false
 
-		tv.focus()
-		iNode.beginEdit()
-		true
+		local defaultName = LPM_Fun.getName iNode.tag.value.name
+		local inputName = showRenameDialog defaultName
+		if(inputName == undefined) then return false
+
+		commitNodeRename iNode inputName
 	)
 
 	fn trimWhitespace theString =
@@ -1498,34 +1582,10 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv beforeLabelEdit arg do
 	(
-		if(arg.node == undefined) then
-		(
-			arg.cancelEdit = true
-		)
-		else
-		(
-			nodeType = undefined
-			try(nodeType = arg.node.tag.value.type)catch()
-			if(nodeType!="shot" and nodeType!="pass") then arg.cancelEdit = true
-		)
+		arg.cancelEdit = true
 	)
 
-	on tv afterLabelEdit arg do
-	(
-		if(arg.node == undefined) then return false
-
-		if(arg.label == undefined) then
-		(
-			arg.cancelEdit = true
-			return false
-		)
-
-		if(not commitNodeRename arg.node arg.label) then
-		(
-			arg.cancelEdit = true
-			try(arg.node.beginEdit())catch()
-		)
-	)
+	on tv afterLabelEdit arg do()
 
 
 
@@ -1534,6 +1594,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		case e.keycode.tostring() of
 		(
 			"Return": (e.isInputKey = true)
+			"Enter": (e.isInputKey = true)
 			"Escape": (e.isInputKey = true)
 			"F2": (e.isInputKey = true)
 		)
@@ -1543,45 +1604,31 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv keyDown e do
 	(
-		if (keyboard.controlpressed)and ((e.keycode.tostring())=="Z") then
+		theNode = tv.selectedNode
+
+		if((theNode == undefined or (not theNode.isEditing)) and (keyboard.controlpressed)and ((e.keycode.tostring())=="Z")) then
 		(
 			max undo
 			LPM_treeview_rollout.updateTV()
 		)
-
-		theNode = tv.selectedNode
 		if(theNode != undefined) then
 		(
-			if(theNode.isEditing) then
+			case e.keycode.tostring() of
 			(
-				case e.keycode.tostring() of
+				"F2":
 				(
-					"Return":
-					(
-						try(theNode.endEdit false)catch()
-						try(e.suppressKeyPress = true)catch()
-					)
-					"Escape":
-					(
-						try(theNode.endEdit true)catch()
-						try(e.suppressKeyPress = true)catch()
-					)
+					renameNode theNode
+					try(e.suppressKeyPress = true)catch()
 				)
-			)
-			else
-			(
-				case e.keycode.tostring() of
+				"Return":
 				(
-					"F2":
-					(
-						renameNode theNode
-						try(e.suppressKeyPress = true)catch()
-					)
-					"Return":
-					(
-						renameNode theNode
-						try(e.suppressKeyPress = true)catch()
-					)
+					renameNode theNode
+					try(e.suppressKeyPress = true)catch()
+				)
+				"Enter":
+				(
+					renameNode theNode
+					try(e.suppressKeyPress = true)catch()
 				)
 			)
 		)
