@@ -1218,34 +1218,27 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	fn onRenameEditorKeyDown sender e =
 	(
-		local keyName = e.keycode.tostring()
+		local keyCode = e.keycode as integer
 		local theNode = tv.selectedNode
 		if(theNode == undefined or not isRenameEditing theNode) then return false
 
-		case keyName of
+		case keyCode of
 		(
-			"F2":
+			113:  -- F2
 			(
 				endRenameEdit theNode cancelEdit:false
 				try(e.handled = true)catch()
 				try(e.suppressKeyPress = true)catch()
 				true
 			)
-			"Return":
+			13:   -- Enter/Return
 			(
 				endRenameEdit theNode cancelEdit:false
 				try(e.handled = true)catch()
 				try(e.suppressKeyPress = true)catch()
 				true
 			)
-			"Enter":
-			(
-				endRenameEdit theNode cancelEdit:false
-				try(e.handled = true)catch()
-				try(e.suppressKeyPress = true)catch()
-				true
-			)
-			"Escape":
+			27:   -- Escape
 			(
 				endRenameEdit theNode cancelEdit:true
 				try(e.handled = true)catch()
@@ -1619,35 +1612,28 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv keyDown e do
 	(
-		local keyName = e.keycode.tostring()
+		local keyCode = e.keycode as integer
 		local theNode = tv.selectedNode
 
 		if(theNode != undefined and isRenameEditing theNode) then
 		(
-			case keyName of
+			case keyCode of
 			(
-				"F2":
+				113:  -- F2
 				(
 					endRenameEdit theNode cancelEdit:false
 					try(e.handled = true)catch()
 					try(e.suppressKeyPress = true)catch()
 					return true
 				)
-				"Return":
+				13:   -- Enter/Return
 				(
 					endRenameEdit theNode cancelEdit:false
 					try(e.handled = true)catch()
 					try(e.suppressKeyPress = true)catch()
 					return true
 				)
-				"Enter":
-				(
-					endRenameEdit theNode cancelEdit:false
-					try(e.handled = true)catch()
-					try(e.suppressKeyPress = true)catch()
-					return true
-				)
-				"Escape":
+				27:   -- Escape
 				(
 					endRenameEdit theNode cancelEdit:true
 					try(e.handled = true)catch()
@@ -1657,7 +1643,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			)
 		)
 
-		if (keyboard.controlpressed)and (keyName=="Z") then
+		if (keyboard.controlpressed)and (keyCode==90) then  -- Z key
 		(
 			max undo
 			LPM_treeview_rollout.updateTV()
@@ -1669,39 +1655,36 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		-- For printing the keycodes out
 		-- print (e.keycode.tostring())
 
+		local keyCode = e.keycode as integer
 		theNode=tv.selectedNode
 
 		TheNodeType = undefined
 		try(TheNodeType = LPM_activeElement.tag.value.type)catch()
 
-		case e.keycode.tostring() of
+		case keyCode of
 		(
-			"NumPad8":
+			104:  -- NumPad8
 			(
 				if keyboard.altPressed == true then( LPM_treeview_rollout.offsetSelectedShot LPM_treeview_rollout.tv #increment )
 			)
-			"NumPad2":
+			98:   -- NumPad2
 			(
 				if keyboard.altPressed == true then( LPM_treeview_rollout.offsetSelectedShot LPM_treeview_rollout.tv #decrement )
 			)
-			"F2":
+			113:  -- F2
 			(
 				if(theNode != undefined and not isRenameEditing theNode) then renameNode theNode
 			)
-			"Return":
+			13:   -- Enter/Return
 			(
 				if(theNode != undefined and not isRenameEditing theNode) then renameNode theNode
 			)
-			"Enter":
-			(
-				if(theNode != undefined and not isRenameEditing theNode) then renameNode theNode
-			)
-			"F5":
+			116:  -- F5
 			(
 				LPM_ProSequencerUpdate()
 				LPM_treeview_rollout.updateTV()
 			)
-			"Delete":
+			46:   -- Delete
 			(
 				undo "LPM delete" on
 				(
