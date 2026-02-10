@@ -1534,6 +1534,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		case e.keycode.tostring() of
 		(
 			"Return": (e.isInputKey = true)
+			"Enter": (e.isInputKey = true)
 			"Escape": (e.isInputKey = true)
 			"F2": (e.isInputKey = true)
 		)
@@ -1561,6 +1562,16 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 						try(theNode.endEdit false)catch()
 						try(e.suppressKeyPress = true)catch()
 					)
+					"Enter":
+					(
+						try(theNode.endEdit false)catch()
+						try(e.suppressKeyPress = true)catch()
+					)
+					"F2":
+					(
+						try(theNode.endEdit false)catch()
+						try(e.suppressKeyPress = true)catch()
+					)
 					"Escape":
 					(
 						try(theNode.endEdit true)catch()
@@ -1582,6 +1593,11 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 						renameNode theNode
 						try(e.suppressKeyPress = true)catch()
 					)
+					"Enter":
+					(
+						renameNode theNode
+						try(e.suppressKeyPress = true)catch()
+					)
 				)
 			)
 		)
@@ -1593,6 +1609,33 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		-- print (e.keycode.tostring())
 
 		theNode=tv.selectedNode
+
+		if(theNode != undefined and theNode.isEditing) then
+		(
+			case e.keycode.tostring() of
+			(
+				"Return":
+				(
+					try(theNode.endEdit false)catch()
+					return true
+				)
+				"Enter":
+				(
+					try(theNode.endEdit false)catch()
+					return true
+				)
+				"F2":
+				(
+					try(theNode.endEdit false)catch()
+					return true
+				)
+				"Escape":
+				(
+					try(theNode.endEdit true)catch()
+					return true
+				)
+			)
+		)
 
 		TheNodeType = undefined
 		try(TheNodeType = LPM_activeElement.tag.value.type)catch()
