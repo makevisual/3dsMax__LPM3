@@ -103,8 +103,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local LPM_doubleClick=false
 	local DragNode, DropNode
 	local m=dotNetClass "System.Windows.Forms.DragDropEffects" -- Drag and drop effects
-	local sTime=timeStamp()
-	local oldHitNode=undefined
 	local lastMouseDown = timeStamp()
 	local preventExpand = false
 	local TmpSelNode = undefined
@@ -1186,6 +1184,78 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		true
 	)
 
+	fn isRenameEditing iNode=
+	(
+		if(iNode==undefined) then return false
+		local editing = false
+		try(editing = iNode.isEditing)catch(editing = false)
+		editing
+	)
+
+	fn endRenameEdit iNode cancelEdit:false =
+	(
+		if(iNode==undefined) then return false
+		if(not isRenameEditing iNode) then return false
+
+		try
+		(
+			iNode.endEdit cancelEdit
+			true
+		)
+		catch(false)
+	)
+
+	fn getRenameEditor =
+	(
+		local editor = undefined
+		try
+		(
+			if(tv.controls.count > 0) then editor = tv.controls.item[0]
+		)
+		catch()
+		editor
+	)
+
+	fn onRenameEditorKeyDown sender e =
+	(
+		local keyName = e.keycode.tostring()
+		local theNode = tv.selectedNode
+		if(theNode == undefined or not isRenameEditing theNode) then return false
+
+		case keyName of
+		(
+			"F2":
+			(
+				endRenameEdit theNode cancelEdit:false
+				try(e.handled = true)catch()
+				try(e.suppressKeyPress = true)catch()
+				true
+			)
+			"Return":
+			(
+				endRenameEdit theNode cancelEdit:false
+				try(e.handled = true)catch()
+				try(e.suppressKeyPress = true)catch()
+				true
+			)
+			"Enter":
+			(
+				endRenameEdit theNode cancelEdit:false
+				try(e.handled = true)catch()
+				try(e.suppressKeyPress = true)catch()
+				true
+			)
+			"Escape":
+			(
+				endRenameEdit theNode cancelEdit:true
+				try(e.handled = true)catch()
+				try(e.suppressKeyPress = true)catch()
+				true
+			)
+			default:false
+		)
+	)
+
 	fn trimWhitespace theString =
 	(
 		if(theString==undefined) then return ""
@@ -1508,10 +1578,28 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			try(nodeType = arg.node.tag.value.type)catch()
 			if(nodeType!="shot" and nodeType!="pass") then arg.cancelEdit = true
 		)
+
+		try
+		(
+			editor = getRenameEditor()
+			if(editor != undefined) then
+			(
+				try(dotnet.removeEventHandler editor "KeyDown" onRenameEditorKeyDown)catch()
+				dotnet.addEventHandler editor "KeyDown" onRenameEditorKeyDown
+			)
+		)
+		catch()
 	)
 
 	on tv afterLabelEdit arg do
 	(
+		try
+		(
+			editor = getRenameEditor()
+			if(editor != undefined) then try(dotnet.removeEventHandler editor "KeyDown" onRenameEditorKeyDown)catch()
+		)
+		catch()
+
 		if(arg.node == undefined) then return false
 
 		if(arg.label == undefined) then
@@ -1531,7 +1619,45 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv keyDown e do
 	(
-		if (keyboard.controlpressed)and ((e.keycode.tostring())=="Z") then
+		local keyName = e.keycode.tostring()
+		local theNode = tv.selectedNode
+
+		if(theNode != undefined and isRenameEditing theNode) then
+		(
+			case keyName of
+			(
+				"F2":
+				(
+					endRenameEdit theNode cancelEdit:false
+					try(e.handled = true)catch()
+					try(e.suppressKeyPress = true)catch()
+					return true
+				)
+				"Return":
+				(
+					endRenameEdit theNode cancelEdit:false
+					try(e.handled = true)catch()
+					try(e.suppressKeyPress = true)catch()
+					return true
+				)
+				"Enter":
+				(
+					endRenameEdit theNode cancelEdit:false
+					try(e.handled = true)catch()
+					try(e.suppressKeyPress = true)catch()
+					return true
+				)
+				"Escape":
+				(
+					endRenameEdit theNode cancelEdit:true
+					try(e.handled = true)catch()
+					try(e.suppressKeyPress = true)catch()
+					return true
+				)
+			)
+		)
+
+		if (keyboard.controlpressed)and (keyName=="Z") then
 		(
 			max undo
 			LPM_treeview_rollout.updateTV()
@@ -1560,11 +1686,15 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			)
 			"F2":
 			(
-				if(theNode != undefined) then renameNode (tv.selectedNode)
+				if(theNode != undefined and not isRenameEditing theNode) then renameNode theNode
 			)
 			"Return":
 			(
-				if(theNode != undefined) then renameNode (tv.selectedNode)
+				if(theNode != undefined and not isRenameEditing theNode) then renameNode theNode
+			)
+			"Enter":
+			(
+				if(theNode != undefined and not isRenameEditing theNode) then renameNode theNode
 			)
 			"F5":
 			(
@@ -1821,9 +1951,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv MouseUp arg do
 	(
-		nTime=timestamp()
-		delta=nTime - sTime
-		sTime=0 --Assume its an invalid click, if its valid we will the timestamp later
 		local button = arg.button.ToString()
 
 		hitNode = tv.GetNodeAt arg.location
@@ -1847,17 +1974,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			if(button=="Left" or button=="Middle") then
 			(
 				local level = hitNode.level
-				if(arg.x>(38+level*20) and (button=="Left") and (preventExpand==false)) then
-				(
-					sTime=nTime
-					if (delta > 600) and (delta < 1100) and (oldHitNode==hitNode)  then
-					(
-						print "Rename Double Click"
-						print ("hitNode - " + ( hitNode as string ) )
-						renameNode hitNode
-					)
-				)
-
 				if((15+level*20) < (arg.x)) and ((arg.x) < (37+level*20)) then
 
 				case hitNode.tag.value.type of
@@ -2243,7 +2359,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		else if (button=="Right")  then
 			popUpMenu rc_RootMenu
 
-		oldHitNode = hitNode
 	)
 
 	on tv NodeMouseDoubleClick arg do
