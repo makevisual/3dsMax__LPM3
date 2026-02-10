@@ -101,7 +101,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local prevSelection
 	local stopper
 	local LPM_doubleClick=false
-	local rNode=undefined
 	local DragNode, DropNode
 	local m=dotNetClass "System.Windows.Forms.DragDropEffects" -- Drag and drop effects
 	local sTime=timeStamp()
@@ -134,8 +133,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	dropDownList    	ddl_selectProcessor 	"" 			pos:[40,200] items:processorList width:200
 		button 			btn_execute 			" Execute " pos:[40,200] width:120
 
-	-- This is the rename filed
-	dotNetControl editBox "TextBox"  pos:[0,70] height:20 width:120
 
 	fn FreezeWindow =
 	(
@@ -164,6 +161,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		dnc_textBoxOutputPath.ReadOnly = true
 		tv.BackColor = LPM_BackColor
 		tv.AllowDrop = true -- allow DragandDrop for the Treeview
+		tv.LabelEdit = true
 
 		getIconFromBitmap "Root"
 		getIconFromBitmap "beautyPass"
@@ -1172,39 +1170,113 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		createDialog matPicker pos:(LPM_Fun.getRoPos matPicker.width)
 	)
 
-	fn hideEditBox=
-	(
-		editBox.visible = false
-		tv.enabled = true
-		tv.refresh()
-		tv.focus()
-	)
-
-	-- TODO: Finish Fixing this 
-	fn showEditBox=
-	(
-		if(rNode==undefined) then
-			return false
-		tv.enabled = false
-		editBox.pos = [tv.pos.x+rNode.bounds.x,tv.pos.y+rNode.bounds.y]
-		if rNode.tag.value.type == "pass" then
-		(
-			editBox.text = LPM_Fun.getName rNode.tag.value.name
-		)
-		else
-		(
-			editBox.text = rNode.text
-		)
-
-		editBox.visible = true
-		editBox.focus()
-	)
 
 	-- TODO: Finish Fixing this 
 	fn renameNode iNode=
 	(
-		rNode=iNode
-		showEditBox()
+		if(iNode==undefined) then return false
+		if(iNode.tag==undefined) then return false
+		if(iNode.tag.value==undefined) then return false
+
+		nodeType = iNode.tag.value.type
+		if(nodeType!="shot" and nodeType!="pass") then return false
+
+		tv.focus()
+		iNode.beginEdit()
+		true
+	)
+
+	fn trimWhitespace theString =
+	(
+		if(theString==undefined) then return ""
+		local trimChars = " \t\r\n"
+		local left = 1
+		local right = theString.count
+
+		while(left <= right and (findstring trimChars theString[left]) != undefined) do left += 1
+		while(right >= left and (findstring trimChars theString[right]) != undefined) do right -= 1
+
+		if(left > right) then
+			""
+		else
+			substring theString left (right-left+1)
+	)
+
+	fn hasDuplicateSiblingName theNode candidateName =
+	(
+		if(theNode==undefined or theNode.parent==undefined) then return false
+
+		for i = 0 to (theNode.parent.nodes.count - 1) do
+		(
+			siblingNode = theNode.parent.nodes.item[i]
+			if(siblingNode != theNode) and (siblingNode.tag != undefined) and (siblingNode.tag.value != undefined) and (siblingNode.tag.value.type == theNode.tag.value.type) then
+			(
+				siblingName = ""
+				case siblingNode.tag.value.type of
+				(
+					"shot": (siblingName = LPM_Fun.getName siblingNode.tag.value.name)
+					"pass": (siblingName = LPM_Fun.getName siblingNode.tag.value.name)
+					default: (siblingName = siblingNode.text)
+				)
+
+				if (toLower siblingName) == (toLower candidateName) then return true
+			)
+		)
+
+		false
+	)
+
+	fn commitNodeRename theNode inputName =
+	(
+		if(theNode==undefined) then return false
+		if(theNode.tag==undefined or theNode.tag.value==undefined) then return false
+
+		local type = theNode.tag.value.type
+		if(type!="shot" and type!="pass") then return false
+
+		local word = trimWhitespace inputName
+		word = LPM_Fun.removeBadChars word
+
+		if(word == "") then
+		(
+			messagebox "Name cannot be empty."
+			return false
+		)
+
+		if(type=="shot") then
+		(
+			local pos = findstring word "[["
+			if(pos!=undefined) then word = trimWhitespace (substring word 1 (pos-1))
+		)
+
+		if(word == "") then
+		(
+			messagebox "Name cannot be empty."
+			return false
+		)
+
+		if(hasDuplicateSiblingName theNode word) then
+		(
+			messagebox ("Duplicate " + type + " names are not allowed.")
+			return false
+		)
+
+		case type of
+		(
+			"shot":
+			(
+				theNode.tag.value.name = "LPM_" + word
+				theNode.text = LPM_Fun.getShotName theNode.tag.value
+			)
+			"pass":
+			(
+				theNode.tag.value.name = "LPM_" + word
+				theNode.text = LPM_Fun.generatePassName theNode.tag.value
+			)
+		)
+
+		LPM_treeview_rollout.updateTV()
+		true
 	)
 
 	fn hideBySet theSet=
@@ -1424,60 +1496,38 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv textChanged arg do()
 
-
-
-	on editBox lostFocus e do
+	on tv beforeLabelEdit arg do
 	(
-		hideEditBox()
-	)
-
-	on editBox MouseWheel e do
-	(
-		hideEditBox()
-	)
-	on editBox keyUp e do
-	(
-		case e.keycode.tostring() of
+		if(arg.node == undefined) then
 		(
-			"Return":
-			(
-				theNode=rNode
-				type = theNode.tag.value.type
-				word=editBox.text
-				if(type=="shot" or type=="pass") then word=LPM_Fun.removeBadChars word
-
-				theNode.text = word
-				case type of
-				(
-					"wildcard": (	theNode.Parent.tag.value.wildCard[theNode.tag.value.index]=word)
-					"shot":
-					(
-						pos=findstring word "[["
-						if(pos!=undefined) then
-							theNode.tag.value.name="LPM_"+(substring word 1 pos)
-						else
-							theNode.tag.value.name="LPM_"+word
-						theNode.text=LPM_Fun.getShotName theNode.tag.value
-					)
-					"pass":
-					(
-						theNode.tag.value.name="LPM_"+word
-						theNode.text = LPM_Fun.generatePassName theNode.tag.value
-					)
-					default:	(try(theNode.tag.value.name="LPM_"+word)catch())
-
-				)
-				hideEditBox()
-
-				LPM_treeview_rollout.updateTV()
-			)
-			"Escape":
-			(
-				hideEditBox()
-
-			)
+			arg.cancelEdit = true
+		)
+		else
+		(
+			nodeType = undefined
+			try(nodeType = arg.node.tag.value.type)catch()
+			if(nodeType!="shot" and nodeType!="pass") then arg.cancelEdit = true
 		)
 	)
+
+	on tv afterLabelEdit arg do
+	(
+		if(arg.node == undefined) then return false
+
+		if(arg.label == undefined) then
+		(
+			arg.cancelEdit = true
+			return false
+		)
+
+		if(not commitNodeRename arg.node arg.label) then
+		(
+			arg.cancelEdit = true
+			try(arg.node.beginEdit())catch()
+		)
+	)
+
+
 
 	on tv keyDown e do
 	(
@@ -1510,11 +1560,11 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			)
 			"F2":
 			(
-				if theNode.level >0 then renameNode (tv.selectedNode)
+				if(theNode != undefined) then renameNode (tv.selectedNode)
 			)
 			"Return":
 			(
-				if theNode.level >0 then renameNode (tv.selectedNode)
+				if(theNode != undefined) then renameNode (tv.selectedNode)
 			)
 			"F5":
 			(
@@ -2448,8 +2498,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 --		lpm_fun.preFileOpenCallback_Add()
 --		lpm_fun.vrayDR_restartSlaves_check() -- dabelow
 --
---		editBox.visible = false
---		editBox.borderStyle = (dotNetClass "BorderStyle").FixedSingle
 --
 --		proMode=LPM_ReadLicense()
 --
@@ -2472,8 +2520,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		print(LPM_Root.rootDir)
 		dnc_textBoxOutputPath.text = LPM_Root.rootDir
 
-		editBox.visible = false
-		editBox.borderStyle = (dotNetClass "BorderStyle").FixedSingle
 
 		lpm_fun.preFileOpenCallback_Add()
 		
