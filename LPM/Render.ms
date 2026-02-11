@@ -540,18 +540,51 @@ struct LPM_RenderAPI
 				-- backup lightset properties
 				lightBackup=for it in objects where ((superclassof it)==light) collect
 				(
-					propNames = getPropNames it
-					propDict = Dictionary #name
-					propDict[#object] = it
+					tmp=#(it)
 
-					for i=1 to propNames.count do (
-						propName = propNames[i]
-						propDict[propName] = getProperty it propName
+					-- Need to populate this array out with information to have properties for the correct indecies
+					for i=2 to 22 do(tmp[i] = undefined)
+
+					-- Default paramaters
+					tmp[2]=it.on
+--					tmp[5]=it.baseObject.castShadows
+--					tmp[14]=it.baseObject.affectDiffuse
+--					tmp[15]=it.baseObject.affectSpecular
+					tmp[20]=it.isHidden
+					tmp[21]=it.enabled
+					
+					-- Attempt to modify lights based on engine
+					if ( classof(it) == VRayLight ) then
+					(
+						tmp[3]=it.baseObject.multiplier
+						tmp[6]=it.baseObject.affect_diffuse  		
+						tmp[7]=it.baseObject.affect_specular 		
+						tmp[8]=it.baseObject.affect_reflections  	
+						tmp[9]=it.baseObject.texmap  				
+						tmp[18]=it.baseObject.texmap_on 			
+						tmp[13]=it.baseObject.castShadows 			
+						tmp[19]=it.baseObject.color_mode
+						tmp[22]=it.baseObject.invisible						
+					)
+					-- TODO: soring and restoring vray sun lights is causing errors, disabling override for them for now
+					-- VraySun objects do not have all the same properties as a standard vray light
+					if ( classof(it) == VRaySun ) then
+					(
+						-- print("Storing Vray Sun")
+						-- tmp[6]=it.baseObject.affect_diffuse  		
+						-- tmp[7]=it.baseObject.affect_specular 		
+						-- tmp[19]=it.baseObject.color_mode
+						-- tmp[22]=it.baseObject.invisible		
+					)
+					if (classof(it) != VRayLight) and (classof(it) != VRaySun) then
+					(
+						try( tmp[4]=it.color 						)catch(print" problem storting light ")
+						try( tmp[16]=it.baseObject.projectorMap 	)catch(print" problem storting light ")
+						try( tmp[17]=it.baseObject.projector 		)catch(print" problem storting light ")
 					)
 
-					propDict
+					tmp
 				)
-
 
 				if(thePass.hideMode>1) then
 				(
@@ -1093,20 +1126,43 @@ struct LPM_RenderAPI
 				--restore light sets
 				for it in lightBackup do
 				(
-					theNode=it[#object]
-					format "Node: %\n" theNode
-					propNames = getPropNames theNode
-					for i=1 to propNames.count do (
-						propName = propNames[i]
-						try (
-							setProperty theNode propName it[propName]
-						) catch (
-							print(getCurrentException())
+					theNode=it[1]
+					theNode.on=it[2]
+					theNode.isHidden = it[20]
+					theNode.enabled = it[21]
+					-- theNode.baseObject.castShadows=it[5]
 
-						)
-						format "Property: %, Value: %\n" propName (getProperty theNode propName)
+					-- Attempt to modify lights based on engine
+					if ( classof(theNode) == VRayLight ) then
+					(
+						theNode.baseObject.multiplier=it[3]
+						theNode.baseObject.affect_diffuse=it[6]
+						theNode.baseObject.affect_specular=it[7]
+						theNode.baseObject.affect_reflections=it[8]
+						theNode.baseObject.texmap=it[9]
+						theNode.baseObject.texmap_on=it[18]
+						theNode.baseObject.invisible=it[22]
 					)
-
+					
+					-- Added handling for vray sun nodes
+					-- TODO: soring and restoring vray sun lights is causing errors, disabling override for them for now
+					else if ( classof(theNode) == VRaySun ) then
+					(
+						-- print("Restoring Vray Sun")
+						-- it.baseObject.affect_diffuse  			= tmp[6]
+						-- it.baseObject.affect_specular 			= tmp[7]
+						-- it.baseObject.color_mode 				= tmp[19]
+						-- it.baseObject.invisible		 			= tmp[22]
+					)
+					if (classof(it) != VRayLight) and (classof(it) != VRaySun) then
+					(
+						try( theNode.color=it[4]    					)catch()--print" problem restorting light ")
+						try( theNode.baseObject.projectorMap=it[16]    	)catch()--print" problem restorting light ")
+						try( theNode.baseObject.projector=it[17]    	)catch()--print" problem restorting light ")
+						try( theNode.baseObject.affectDiffuse=it[14]   	)catch()--print" problem restorting light ")
+						try( theNode.baseObject.affectSpecular=it[15]   )catch()--print" problem restorting light ")
+					)
+					-- Default paramaters
 				)
 
 				--Generic Nodes

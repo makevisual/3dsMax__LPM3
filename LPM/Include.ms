@@ -9,7 +9,7 @@ filein (LPM_Dir+"versionCheck.ms")  		-- Added by Aaron Dabelow
 -- If user confirms old scene load, continue to run the program.
 if LPM_ContinueLoad
 then (
-	
+
 	filein (LPM_Dir+"include.mcr")
 	filein (LPM_Dir+"CA.ms")
 	filein (LPM_Dir+"output_paths.ms") 		-- Added by Aaron Dabelow
@@ -30,5 +30,5 @@ then (
 	-- TODO: Consider moving these to CA.ms on rootCA
 	setUserProp LPM_Root "DeadlineRepository" @"N:\DeadlineRepository10"    -- Set your deadline Repository
 	setUserProp LPM_Root "LPM_VersionNumber" LPM_VersionNumber    			-- Set your LPM Version Number
-
-)else()
+)
+else()
