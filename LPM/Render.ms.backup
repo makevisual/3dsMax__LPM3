@@ -1138,13 +1138,21 @@ struct LPM_RenderAPI
 					
 					-- Added handling for vray sun nodes
 					-- TODO: soring and restoring vray sun lights is causing errors, disabling override for them for now
+					else if ( classof(theNode) == VRaySun ) then
+					(
+						-- print("Restoring Vray Sun")
+						-- it.baseObject.affect_diffuse  			= tmp[6]
+						-- it.baseObject.affect_specular 			= tmp[7]
+						-- it.baseObject.color_mode 				= tmp[19]
+						-- it.baseObject.invisible		 			= tmp[22]
+					)
 					if (classof(it) != VRayLight) and (classof(it) != VRaySun) then
 					(
-						try( theNode.color=it[4]    					)catch()
-						try( theNode.baseObject.projectorMap=it[16]    	)catch()
-						try( theNode.baseObject.projector=it[17]    	)catch()
-						try( theNode.baseObject.affectDiffuse=it[14]   	)catch()
-						try( theNode.baseObject.affectSpecular=it[15]   )catch()
+						try( theNode.color=it[4]    					)catch()--print" problem restorting light ")
+						try( theNode.baseObject.projectorMap=it[16]    	)catch()--print" problem restorting light ")
+						try( theNode.baseObject.projector=it[17]    	)catch()--print" problem restorting light ")
+						try( theNode.baseObject.affectDiffuse=it[14]   	)catch()--print" problem restorting light ")
+						try( theNode.baseObject.affectSpecular=it[15]   )catch()--print" problem restorting light ")
 					)
 					-- Default paramaters
 				)

@@ -92,25 +92,21 @@ function localRenderAction =
     -- Invoke the proper render based on shot settings
     if cp._rendTimeType == 1 then
     (
-        -- print("Single")
         render fromframe:currentTime toframe:currentTime outputfile:setting_outputfile vfb:setting_frameBuffer camera:setting_camera
     )
 
     if cp._rendTimeType == 2 then
     (
-        -- print("Active Timeline")
         render fromframe:animationRange.start toframe:animationRange.end outputfile:setting_outputfile vfb:setting_frameBuffer camera:setting_camera
     )
-    
+
     if cp._rendTimeType == 3 then
     (
-        -- print("Range")
         render fromframe:( cp._rendStart) toframe:( cp._rendEnd ) outputfile:setting_outputfile vfb:setting_frameBuffer camera:setting_camera
     )
-    
+
     if cp._rendTimeType == 4 then
     (
-        -- print("Frame List")
 
         frames = #()
         parts = filterString cp._rendPickupFrames "," -- split on commas

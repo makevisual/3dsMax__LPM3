@@ -136,9 +136,6 @@ function preRenderAction_ProductionGlobals =
         append SMTDSettings.LimitGroupsToUse "v-ray 7"                                  -- adds "v-ray 7" to the list of limits
         SMTDSettings.LimitGroupsToUse = (makeUniqueArray SMTDSettings.LimitGroupsToUse) -- Removes any duplicates from the list
     )else()
-
-    -- print("SHOW Vray7_RestoreData")
-    -- show(Vray7_RestoreData)
 )
 
 ---- Postrender Globals
@@ -216,13 +213,6 @@ function preRenderAction_RenderElements =
     -- Put the collected element definitions in the restore data object for later
     Vray7_RestoreData.renderElements_active = existingElements
 
-    -- Inspector
-    if False then 
-    (
-        print("Stored Element Values:")
-        for element in Vray7_RestoreData.renderElements_active do ( if element.enabled == true  then print("     Enabled - " + (element.name as string) ) )    
-        for element in Vray7_RestoreData.renderElements_active do ( if element.enabled == false then print("     Disabled - " + (element.name as string) ) )    
-    )
 )
 
 ---- Postrender Render Elements
@@ -335,25 +325,21 @@ function localRenderAction =
 
     if cp._rendTimeType == 1 then
     (
-        -- print("Single")
         render fromframe:currentTime toframe:currentTime
     )
-    
+
     if cp._rendTimeType == 2 then
     (
-        -- print("Active Timeline")
         render fromframe:animationRange.start toframe:animationRange.end
     )
-    
+
     if cp._rendTimeType == 3 then
     (
-        -- print("Range")
         render fromframe:( cp._rendStart) toframe:( cp._rendEnd )
     )
-    
+
     if cp._rendTimeType == 4 then
     (
-        print("Frame List")
 
         frames = #()
         parts = filterString cp._rendPickupFrames "," -- split on commas
@@ -376,11 +362,6 @@ function localRenderAction =
         -- Render each of the frames from the built list
         for frame in frames do ( render fromframe:(frame) toframe:(frame) )
     )
-
-    -- print(cp._rendTimeType)
-    -- print(cp._rendStart)
-    -- print(cp._rendEnd)
-    -- print(cp._rendPickupFrames)
 )
 
 ---------- API HOOKS ---------- 

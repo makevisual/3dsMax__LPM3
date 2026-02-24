@@ -24,7 +24,6 @@ rollout LPM_RenderRo "Deadline Settings Dialog" width:400 height:150
 	fn getDeadlineAutomaticPath =
 	(
 		return LPM_FunDeadline.deadline_GetRepoPath()
---		return (dotNetClass "System.Environment").GetEnvironmentVariable "DEADLINE_CUSTOM_PATH"
 	)
 
 	-- Set all UI and Data properties if the automatic repository is chosen
@@ -42,8 +41,6 @@ rollout LPM_RenderRo "Deadline Settings Dialog" width:400 height:150
 		btn_directoryPick.enabled			= false
 		btn_directoryOpen.enabled			= false
 		rtb_automaticDir.text 				= LPM_Root.deadlinePath
-
-		print(LPM_Root.deadlinePath)
 	)
 
 	-- Set all UI and Data properties if the manual repository is chosen
@@ -61,8 +58,6 @@ rollout LPM_RenderRo "Deadline Settings Dialog" width:400 height:150
 		btn_directoryPick.enabled			= true
 		btn_directoryOpen.enabled			= true
 		rtb_manualDir.text 					= LPM_Root.deadlinePath
-
-		print(LPM_Root.deadlinePath)
 	)
 
 	-- Treat the checkboxes like radio buttons
