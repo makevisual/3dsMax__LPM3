@@ -179,6 +179,12 @@ function sortByElementName arg_1 arg_2 =
 
 function makeRenderElements =
 (
+	if not LPM_VRayInstalled then
+	(
+		print "LPM makeRenderElements: V-Ray not installed -- skipping render element creation."
+		return undefined
+	)
+
 	re = maxOps.GetCurRenderElementMgr()  					-- Get the render element manager
 	existingElements = #()
 

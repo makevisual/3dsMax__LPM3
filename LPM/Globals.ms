@@ -41,4 +41,7 @@ global LPM_RenderDispatchThePass 			-- Dabelow Render Dispatch ( future renderer
 global LPM_RenderDispatchTheShot 			-- Dabelow Render Dispatch ( future renderer compatable )
 global LPM_RenderDispatchAction 			-- Dabelow Render Dispatch ( future renderer compatable )
 global LPM_RenderDispatchRestoreData 		-- Dabelow Render Dispatch ( future renderer compatable )
-global LPM_OperatorData 					-- Dabelow 
+global LPM_OperatorData 					-- Dabelow
+
+global LPM_VRayInstalled 					-- Dabelow: true if VRay plugin is present on this machine
+global LPM_VRayActive    					-- Dabelow: true if VRay is the currently active renderer

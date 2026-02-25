@@ -252,63 +252,45 @@ struct LPM_RenderAPI
 				)
 				catch()
 
-				try
+				-- VRay-specific light properties -- only attempted when VRay is installed.
+				-- Previously these were individual try/catch blocks that silently swallowed
+				-- failures on non-VRay systems. Now gated by an explicit global check.
+				if LPM_VRayInstalled then
 				(
 					case lightSetArray[i].pAffectDiffuse of
 					(
 						2:(it.baseObject.affect_diffuse = true)
 						3:(it.baseObject.affect_diffuse = false)
 					)
-				)
-				catch()
 
-				try
-				(
 					case lightSetArray[i].pAffectSpecular of
 					(
-						2:(it.baseObject.affect_specualr = true)
-						3:(it.baseObject.affect_specualr = false)
+						2:(it.baseObject.affect_specular = true)
+						3:(it.baseObject.affect_specular = false)
 					)
-				)
-				catch()
 
-				try
-				(
 					case lightSetArray[i].pAffectReflections of
 					(
 						2:(it.baseObject.affect_reflections = true)
 						3:(it.baseObject.affect_reflections = false)
 					)
-				)
-				catch()
 
-				try
-				(
 					case lightSetArray[i].pUseTexture of
 					(
 						2:(it.baseObject.texmap_on = true)
 						3:(it.baseObject.texmap_on = false)
 					)
-				)
-				catch()
 
-
-				-- TODO: This is where the V-Ray Light is being modified, needs to be restored
-				try
-				(
+					-- TODO: This is where the V-Ray Light is being modified, needs to be restored
 					case lightSetArray[i].pVrayInvisible of
 					(
 						2:(it.baseObject.invisible = true)
 						3:(it.baseObject.invisible = false)
 					)
-				)
-				catch()
 
-				try
-				(
-					if lightSetArray[i].pTextureEnable then(it.baseObject.texmap=lightSetArray[i].pTexture)
+					if lightSetArray[i].pTextureEnable then
+						it.baseObject.texmap = lightSetArray[i].pTexture
 				)
-				catch()
 
 
 				---------    default part
@@ -554,7 +536,7 @@ struct LPM_RenderAPI
 					tmp[21]=it.enabled
 					
 					-- Attempt to modify lights based on engine
-					if ( classof(it) == VRayLight ) then
+					if LPM_VRayInstalled and ( classof(it) == VRayLight ) then
 					(
 						tmp[3]=it.baseObject.multiplier
 						tmp[6]=it.baseObject.affect_diffuse  		
@@ -568,7 +550,7 @@ struct LPM_RenderAPI
 					)
 					-- TODO: soring and restoring vray sun lights is causing errors, disabling override for them for now
 					-- VraySun objects do not have all the same properties as a standard vray light
-					if (classof(it) != VRayLight) and (classof(it) != VRaySun) then
+					if (not LPM_VRayInstalled) or ((classof(it) != VRayLight) and (classof(it) != VRaySun)) then
 					(
 						try( tmp[4]=it.color 						)catch(print" problem storting light ")
 						try( tmp[16]=it.baseObject.projectorMap 	)catch(print" problem storting light ")
@@ -637,7 +619,7 @@ struct LPM_RenderAPI
 						setProp it #primaryVisibility objSetArray[i].intP[4]
 
 						-- Special handling around vrayGausians
-						if classof it == VRayGaussiansGeom then(
+						if LPM_VRayInstalled and classof it == VRayGaussiansGeom then(
 							
 							if objSetArray[i].intP[4] == 1 then()
 							if objSetArray[i].intP[4] == 2 then(it.affect_camera = on )
@@ -1090,7 +1072,7 @@ struct LPM_RenderAPI
 					theNode.primaryVisibility=it[5]
 
 					-- Special handling around vrayGausians
-					if ( classof theNode ) == VRayGaussiansGeom then(
+					if LPM_VRayInstalled and ( classof theNode ) == VRayGaussiansGeom then(
 						if theNode.primaryVisibility == true then(theNode.affect_camera = on )
 						if theNode.primaryVisibility == false then(theNode.affect_camera = off )
 					)
@@ -1125,7 +1107,7 @@ struct LPM_RenderAPI
 					-- theNode.baseObject.castShadows=it[5]
 
 					-- Attempt to modify lights based on engine
-					if ( classof(theNode) == VRayLight ) then
+					if LPM_VRayInstalled and ( classof(theNode) == VRayLight ) then
 					(
 						theNode.baseObject.multiplier=it[3]
 						theNode.baseObject.affect_diffuse=it[6]
@@ -1138,7 +1120,7 @@ struct LPM_RenderAPI
 					
 					-- Added handling for vray sun nodes
 					-- TODO: soring and restoring vray sun lights is causing errors, disabling override for them for now
-					if (classof(it) != VRayLight) and (classof(it) != VRaySun) then
+					if (not LPM_VRayInstalled) or ((classof(it) != VRayLight) and (classof(it) != VRaySun)) then
 					(
 						try( theNode.color=it[4]    					)catch()
 						try( theNode.baseObject.projectorMap=it[16]    	)catch()

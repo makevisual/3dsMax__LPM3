@@ -3,6 +3,7 @@
 global LPM_Dir = trimright (getThisScriptFilename()) "Include.ms"
 
 filein (LPM_Dir+"Globals.ms")
+filein (LPM_Dir+"VRayCheck.ms") 			-- Added by Aaron Dabelow
 filein (LPM_Dir+"VersionNumber.ms") 		-- Added by Aaron Dabelow
 filein (LPM_Dir+"versionCheck.ms")  		-- Added by Aaron Dabelow
 
