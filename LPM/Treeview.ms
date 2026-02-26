@@ -96,6 +96,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local lastMouseDown = timeStamp()
 	local preventExpand = false
 	local TmpSelNode = undefined
+	local editJustCompleted = false
 
 	struct leafType (type, leaf, index, active)
 
@@ -1132,7 +1133,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		tv.focus()
 	)
 
-	-- TODO: Finish Fixing this 
 	fn showEditBox=
 	(
 		if(rNode==undefined) then
@@ -1152,7 +1152,40 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		editBox.focus()
 	)
 
-	-- TODO: Finish Fixing this 
+	fn commitEditBox=
+	(
+		if rNode == undefined then return false
+
+		theNode = rNode
+		type = theNode.tag.value.type
+		word = editBox.text
+		if(type=="shot" or type=="pass") then word=LPM_Fun.removeBadChars word
+
+		theNode.text = word
+		case type of
+		(
+			"wildcard": (	theNode.Parent.tag.value.wildCard[theNode.tag.value.index]=word)
+			"shot":
+			(
+				pos=findstring word "[["
+				if(pos!=undefined) then
+					theNode.tag.value.name="LPM_"+(substring word 1 pos)
+				else
+					theNode.tag.value.name="LPM_"+word
+				theNode.text=LPM_Fun.getShotName theNode.tag.value
+			)
+			"pass":
+			(
+				theNode.tag.value.name="LPM_"+word
+				theNode.text = LPM_Fun.generatePassName theNode.tag.value
+			)
+			default:	(try(theNode.tag.value.name="LPM_"+word)catch())
+		)
+		editJustCompleted = true
+		hideEditBox()
+		LPM_treeview_rollout.updateTV()
+	)
+
 	fn renameNode iNode=
 	(
 		rNode=iNode
@@ -1378,53 +1411,31 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on editBox lostFocus e do
 	(
-		hideEditBox()
+		if editBox.visible then hideEditBox()
 	)
 
 	on editBox MouseWheel e do
 	(
 		hideEditBox()
 	)
-	on editBox keyUp e do
+	on editBox keyDown e do
 	(
 		case e.keycode.tostring() of
 		(
 			"Return":
 			(
-				theNode=rNode
-				type = theNode.tag.value.type
-				word=editBox.text
-				if(type=="shot" or type=="pass") then word=LPM_Fun.removeBadChars word
-
-				theNode.text = word
-				case type of
-				(
-					"wildcard": (	theNode.Parent.tag.value.wildCard[theNode.tag.value.index]=word)
-					"shot":
-					(
-						pos=findstring word "[["
-						if(pos!=undefined) then
-							theNode.tag.value.name="LPM_"+(substring word 1 pos)
-						else
-							theNode.tag.value.name="LPM_"+word
-						theNode.text=LPM_Fun.getShotName theNode.tag.value
-					)
-					"pass":
-					(
-						theNode.tag.value.name="LPM_"+word
-						theNode.text = LPM_Fun.generatePassName theNode.tag.value
-					)
-					default:	(try(theNode.tag.value.name="LPM_"+word)catch())
-
-				)
-				hideEditBox()
-
-				LPM_treeview_rollout.updateTV()
+				e.SuppressKeyPress = true
+				commitEditBox()
+			)
+			"F2":
+			(
+				e.SuppressKeyPress = true
+				commitEditBox()
 			)
 			"Escape":
 			(
+				e.SuppressKeyPress = true
 				hideEditBox()
-
 			)
 		)
 	)
@@ -1457,11 +1468,15 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			)
 			"F2":
 			(
-				if theNode.level >0 then renameNode (tv.selectedNode)
+				if editJustCompleted then
+					editJustCompleted = false
+				else if theNode.level >0 then renameNode (tv.selectedNode)
 			)
 			"Return":
 			(
-				if theNode.level >0 then renameNode (tv.selectedNode)
+				if editJustCompleted then
+					editJustCompleted = false
+				else if theNode.level >0 then renameNode (tv.selectedNode)
 			)
 			"F5":
 			(
@@ -2390,6 +2405,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 		editBox.visible = false
 		editBox.borderStyle = (dotNetClass "BorderStyle").FixedSingle
+		editBox.AcceptsReturn = true
 
 		lpm_fun.preFileOpenCallback_Add()
 		
