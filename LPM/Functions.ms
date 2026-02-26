@@ -57,15 +57,11 @@ fn cleanSet theSet=
 -- TODO! -- This is that noisy section
 fn firstChildByType theParent type=
 (
-	-- print( theParent.children )
-
 	-- GPT suggested this
     if theParent == undefined do return undefined
 
 	for kids in theParent.children where kids.type==type do
 	(
---		print(kids.type)
---		print(kids.name)
 		return kids
 	)
 
@@ -140,8 +136,6 @@ fn setIcon theNode=
 			"cameraOverscan":LPM_Fun.setImageIndex theNode theNode.tag.value.active 52 53  		-- Dabelow cameraOverscan
 			"nukeExport":LPM_Fun.setImageIndex theNode theNode.tag.value.active 54 55  			-- Dabelow nukeExport
 			"aeExport":LPM_Fun.setImageIndex theNode theNode.tag.value.active 56 57  			-- Dabelow aeExport
-			"vray6RenderElements":LPM_Fun.setImageIndex theNode theNode.tag.value.active 58 59 	-- Dabelow vray6
-			"vray6":LPM_Fun.setImageIndex theNode theNode.tag.value.active 60 61 				-- Dabelow vray6
 			"vrayRenderElements":LPM_Fun.setImageIndex theNode theNode.tag.value.active 62 63 	-- Dabelow vrayRenderElements 
 			"renderImage":LPM_Fun.setImageIndex theNode theNode.tag.value.active 64 65 			-- Dabelow renderImage 
 		)
@@ -184,12 +178,8 @@ fn passByNode theNode =
 			"script":theNode.parent.tag.value
 			"ModifierOver":theNode.parent.tag.value
 			"Deadline":theNode.parent.tag.value 				-- Dabelow
-			"vray6":theNode.parent.tag.value 					-- Dabelow vray6
-			"vray6RenderElements":theNode.parent.tag.value 		-- Dabelow vray6
 			"renderImage":theNode.parent.tag.value 				-- Dabelow renderImage
 			"cameraOverscan":theNode.parent.tag.value 			-- Dabelow cameraOverscan
-			"cameraOverscan":theNode.parent.tag.value 			-- Dabelow cameraOverscan
-			"renderImage":theNode.parent.tag.value 				-- Dabelow renderImage
 			"nukeExport":theNode.parent.tag.value 				-- Dabelow nukeExport
 			"aeExport":theNode.parent.tag.value 				-- Dabelow aeExport
 			default:undefined
@@ -505,12 +495,9 @@ fn createNode pName type=
 		"empty":custAttributes.add theNode LPM_emptyCA
 		"ModifierOver":custAttributes.add theNode ModifierOverCA
 		"Deadline":custAttributes.add theNode deadlinePropsCA 							-- Dabelow
-		"vray6":custAttributes.add theNode vray6PropsCA 								-- Dabelow vray6
-		"vray6RenderElements":custAttributes.add theNode vray6RenderElementsPropsCA 	-- Dabelow vray6
 		"vrayRenderElements":custAttributes.add theNode vrayRenderElementsPropsCA 		-- Dabelow vrayrenderelements
 		"renderImage":custAttributes.add theNode renderImagePropsCA 					-- Dabelow renderImage
 		"cameraOverscan":custAttributes.add theNode cameraOverscanPropsCA 				-- Dabelow cameraOverscan
-		"renderImage":custAttributes.add theNode renderImagePropsCA 					-- Dabelow renderImage
 		"nukeExport":custAttributes.add theNode nukeExportPropsCA 						-- Dabelow nukeExport
 		"aeExport":custAttributes.add theNode aeExportPropsCA 							-- Dabelow aeExport
 	)
@@ -666,6 +653,15 @@ fn createCommonProps theName=
 
 fn loadVraySettings cp isPreviewMode=
 (
+	-- Guard: do nothing if VRay is not installed. Without this, all the property
+	-- assignments below would silently fail on any renderer that doesn't expose
+	-- VRay properties, making the vrayProps operator a no-op with no feedback.
+	if not LPM_VRayInstalled then
+	(
+		print "LPM loadVraySettings: V-Ray not installed -- skipping vray settings."
+		return false
+	)
+
 	r = renderers.current
 
 	if (isPreviewMode and cp.qualityType == 2) or (not isPreviewMode and cp.qualityType == 3) then
@@ -773,30 +769,6 @@ fn createDeadlineProps theName=
 	cp
 ),
 
--- vray6RenderElements
--- dabelow vray6
-fn loadVray6RenderElementsSettings cp isPreviewMode=
-(
-	if isPreviewMode then ( return false )
-
-	LPM_SMTDSettings.active 	 		= cp.active
-	LPM_SMTDSettings.elementOverride 	= cp.elementOverride
-	LPM_SMTDSettings.activeElement 		= cp.activeElement
-),
-
--- createVray6RenderElementsProps
--- Dabelow vray6
-fn createVray6RenderElementsProps theName=
-(
-	cp=LPM_Fun.createNode theName "vray6RenderElements"
-
-	cp.active = true
-	cp.elementOverride = true
-	cp.activeElement = #()
-
-	cp
-),
-
 -- renderImage
 fn loadRenderImageSettings cp isPreviewMode=
 (
@@ -840,55 +812,6 @@ fn createVrayRenderElementsProps theName=
 
 	cp
 ),
-
--- vray6 Override
--- Dabelow vray6
-fn createVray6Props theName=
-(
-	cp=LPM_Fun.createNode theName "vray6"
-
-	cp.qualityType = 1
-
-	cp.global_switches_check = false
-		cp.displacement = true
-		cp.reflrefr = true
-
-	cp.anti_aliasing_check = false
-		cp.AAmin = 1
-		cp.AAmax = 4
-
-	cp.GI_illum_check = false
-		cp.giOn = false
-
-	cp.GI_check = false
-		cp.giSkylightOn = false
-		cp.giSkylightMap = undefined
-		cp.giSkylightCol = (color 205 230 255)
-		cp.giSkylightMult = 1
-		cp.giSkylightMapCheck = true
-
-		cp.giRefOn = false
-		cp.giRefMult = 1
-		cp.giRefMap = undefined
-		cp.giRefCol = (color 0 0 0)
-		cp.giRefMapCheck = true
-
-	cp.moblur_check = false
-		cp.moblurOn = false
-		cp.moblurSubdivs = 6
-
-	cp.prog_check = false
-		cp.progMaxSubdiv = 100
-		cp.progTime = 1
-
-	cp.dmc_check = false
-		cp.dmcThresh = .01
-		cp.dmcMult = 1
-
-	cp.initialized=true
-	cp
-),
-
 
 fn createVrayProps theName=
 (
@@ -1378,17 +1301,9 @@ fn generateDeadlineName cp=
 	theName
 ),
 
--- Dabelow vray6
-fn generateVray6RenderElementsName cp=
-(
-	theName = ( "VRay6 Render Elements Override" )
-	theName
-),
-
 -- Dabelow vrayRenderElements
 fn generateVrayRenderElementsName cp=
 (
-	--theName = ( cp.type + " Override" )
 	theName = ( "VRay Render Elements Override" )
 	theName
 ),
@@ -1396,24 +1311,13 @@ fn generateVrayRenderElementsName cp=
 -- Dabelow renderImage
 fn generateRenderImageName cp=
 (
-	print("===== FN generateRenderImageName =====")
-	--theName = ( cp.type + " Override" )
 	theName = ( "Render Image" )
-	theName
-),
-
--- Dabelow vray6
-fn generateVray6PropName cp=
-(
-	theName = ""
-	theName += "Vray6 Override "
 	theName
 ),
 
 -- Dabelow cameraOverscan
 fn generateCameraOverscanName cp=
 (
-	--theName = ( cp.type + " Override" )
 	theName = ( "Camera Overscan Override" )
 
 	-- returning before fully calculating the name, because it was not working for some reason TODO:
@@ -1432,7 +1336,6 @@ fn generateCameraOverscanName cp=
 -- Dabelow nukeExport
 fn generateRenderImageName cp=
 (
-	--theName = ( cp.type + " Override" )
 	theName = ( "Render Image" )
 
 	return theName
@@ -1441,7 +1344,6 @@ fn generateRenderImageName cp=
 -- Dabelow nukeExport
 fn generateNukeExportName cp=
 (
-	--theName = ( cp.type + " Override" )
 	theName = ( "Nuke Export" )
 
 	return theName
@@ -1450,7 +1352,6 @@ fn generateNukeExportName cp=
 -- Dabelow aeExport
 fn generateAeExportName cp=
 (
-	--theName = ( cp.type + " Override" )
 	theName = ( "After Effects Export" )
 
 	return theName

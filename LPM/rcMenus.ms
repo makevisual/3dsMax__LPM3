@@ -2172,29 +2172,7 @@ rcMenu rc_PassMenu
 
 	)
 
-	-- Dabelow vray6
-	on vray6RenderElementsPropsAdd picked do
-	(
-		thePassNode=LPM_treeview_rollout.tv.selectedNode
-		thePass=thePassNode.tag.value
-		theSet=LPM_Fun.createVray6RenderElementsProps "vray6RenderElements"
-		theSet.parent=thePass
-		LPM_treeview_rollout.addPassTV thePassNode
-
-	)
-
-	-- Dabelow vray6
-	on vray6PropsAdd picked do
-	(
-		thePassNode=LPM_treeview_rollout.tv.selectedNode
-		thePass=thePassNode.tag.value
-		theSet=LPM_Fun.createVray6Props "vray6"
-		theSet.parent=thePass
-		LPM_treeview_rollout.addPassTV thePassNode
-
-	)
-
-		-- Dabelow vrayRenderElements
+	-- Dabelow vrayRenderElements
 	on vrayRenderElementsPropsAdd picked do
 	(
 		thePassNode=LPM_treeview_rollout.tv.selectedNode
