@@ -1155,34 +1155,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		if(iNode==undefined) then return false
 		if(iNode.level <= 0) then return false
 		iNode.beginEdit()
-		(dotNetClass "System.Windows.Forms.Application").DoEvents()
-		bindLabelEditorEvents()
-	)
-
-	fn labelEditorKeyDown sender e =
-	(
-		if tv.selectedNode == undefined then return false
-
-		case e.keycode.tostring() of
-		(
-			"Escape": (tv.selectedNode.EndEdit true; e.SuppressKeyPress = true)
-			"Return": (tv.selectedNode.EndEdit false; e.SuppressKeyPress = true)
-			"Enter": (tv.selectedNode.EndEdit false; e.SuppressKeyPress = true)
-			"F2": (tv.selectedNode.EndEdit false; e.SuppressKeyPress = true)
-		)
-	)
-
-	fn bindLabelEditorEvents =
-	(
-		if (tv.controls != undefined) and (tv.controls.count > 0) then
-		(
-			local tb = tv.controls.item[0]
-			if tb != undefined then
-			(
-				try(dotNet.removeEventHandler tb "KeyDown" labelEditorKeyDown)catch()
-				dotNet.addEventHandler tb "KeyDown" labelEditorKeyDown
-			)
-		)
 	)
 
 	fn hideBySet theSet=
@@ -1425,20 +1397,11 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 		if tv.selectedNode != undefined then
 		(
-			if (e.keycode.tostring()=="Escape") and tv.selectedNode.isEditing then
-			(
-				tv.selectedNode.EndEdit true
-			)
-
 			if (e.keycode.tostring()=="F2") or (e.keycode.tostring()=="Return") or (e.keycode.tostring()=="Enter") then
 			(
 				if tv.selectedNode.isEditing then
 				(
 					tv.selectedNode.EndEdit false
-				)
-				else if tv.selectedNode.level > 0 then
-				(
-					renameNode tv.selectedNode
 				)
 			)
 		)
@@ -1460,6 +1423,39 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			"NumPad2":
 			(
 				if keyboard.altPressed == true then( LPM_treeview_rollout.offsetSelectedShot LPM_treeview_rollout.tv #decrement )
+			)
+			"F2":
+			(
+				if theNode != undefined then
+				(
+					if theNode.isEditing then
+					(
+						theNode.EndEdit false
+					)
+					else if theNode.level >0 then renameNode (tv.selectedNode)
+				)
+			)
+			"Return":
+			(
+				if theNode != undefined then
+				(
+					if theNode.isEditing then
+					(
+						theNode.EndEdit false
+					)
+					else if theNode.level >0 then renameNode (tv.selectedNode)
+				)
+			)
+			"Enter":
+			(
+				if theNode != undefined then
+				(
+					if theNode.isEditing then
+					(
+						theNode.EndEdit false
+					)
+					else if theNode.level >0 then renameNode (tv.selectedNode)
+				)
 			)
 			"F5":
 			(
