@@ -1,8 +1,8 @@
-# LPM (Light Pass Manager) for 3ds Max
+# LPM (Layer Pass Manager) for 3ds Max
 
 ## Project Overview
 
-LPM v3.00.04 is a MaxScript-based light pass management system for Autodesk 3ds Max. It provides hierarchical shot/pass organization, multi-renderer support (V-Ray, Scanline), render farm integration (Deadline 10), and Nuke/After Effects export.
+LPM v3.00.04 is a MaxScript-based layer pass management system for Autodesk 3ds Max. It provides hierarchical shot/pass organization, multi-renderer support (V-Ray, Scanline), render farm integration (Deadline 10), and Nuke/After Effects export.
 
 ## Key Architecture
 
