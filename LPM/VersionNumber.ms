@@ -1,1 +1,1 @@
-LPM_VersionNumber = "3.00.04"
+LPM_VersionNumber = "3.00.06"
