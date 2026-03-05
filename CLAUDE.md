@@ -44,31 +44,25 @@ The UI uses `System.Windows.Forms` controls hosted in MaxScript via `dotNetContr
 ## Critical Implementation Details
 
 ### TreeView Inline Rename System (Treeview.ms)
-The rename system uses a **custom TextBox overlay** (NOT native TreeView LabelEdit):
-- `editBox` (dotNetControl TextBox) is positioned over the node being edited
-- `showEditBox()` disables the TreeView and focuses the TextBox
-- `commitEditBox()` saves the edit data back to the node's tag value
-- `hideEditBox()` hides the TextBox, re-enables TreeView, returns focus
+The rename system uses **native TreeView LabelEdit** (`tv.LabelEdit = true`):
+- `renameNode(iNode)` sets an `allowLabelEdit` gate and calls `iNode.BeginEdit()`
+- `BeforeLabelEdit` checks the gate (blocks unwanted edits from slow double-click)
+- `AfterLabelEdit` commits the new name to the node's tag value and calls `updateTV()`
 
-**Key event flow:**
-- Enter/F2 on TreeView → `renameNode()` → `showEditBox()`
-- Enter/F2 on editBox → `commitEditBox()` → saves + `hideEditBox()`
-- ESC on editBox → `hideEditBox()` (cancel)
-- Click outside (lostFocus) → `hideEditBox()` (cancel)
+**Rename triggers:**
+- F2 on TreeView → `renameNode()` via `keyUp` handler
+- Right-click context menu → Rename → `renameNode()` via `rcMenus.ms`
+- Enter commits an active edit (native behavior), does NOT start a new rename
+- Escape cancels an active edit (native behavior)
 
-**Known .NET compatibility issue (3dsMax 2024→2026):**
-The .NET framework update in 3dsMax 2026 changed how single-line TextBox controls handle the Enter key. Enter is treated as a "dialog key" and consumed before reaching key event handlers unless `AcceptsReturn = true` is set. The fix also uses `keyDown` instead of `keyUp` for more reliable key capture, with `e.SuppressKeyPress = true` to prevent default processing.
-
-A `editJustCompleted` guard flag prevents re-entry into rename mode when the Enter/F2 keyUp propagates to the TreeView after a commit.
+**3dsMax 2026 .NET Core 8 compatibility:**
+`PreviewKeyDown` sets `e.IsInputKey = true` for Enter and Escape so they are not consumed as dialog keys by the .NET Core 8 hosting layer. The native TreeView LabelEdit then handles commit/cancel on its own.
 
 ### Shot Version Increment/Decrement (Treeview.ms)
 - Alt+NumPad8 → increment shot version string
 - Alt+NumPad2 → decrement shot version string
 - Implemented in `offsetSelectedShot()`, calls `LPM_Fun.offsetVersionString()`
-- Only fires when TreeView has focus (not during editBox rename)
-
-### Custom Double-Click Detection (Treeview.ms)
-The TreeView uses manual timing-based "slow double-click" detection (600-1100ms delta) in the `MouseUp` handler for rename, separate from the native `MouseDoubleClick` event which opens properties dialogs.
+- Only fires when TreeView has focus (not during label edit)
 
 ## Renderer Support
 - `LPM/renderers/renderer_vray7.20.08.ms` — V-Ray 7.20

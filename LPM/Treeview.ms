@@ -95,9 +95,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local lastMouseDown = timeStamp()
 	local preventExpand = false
 	local TmpSelNode = undefined
-	local editJustCompleted = false
 	local allowLabelEdit = false
-	local isEditingLabel = false
 
 	struct leafType (type, leaf, index, active)
 
@@ -1348,17 +1346,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	on tv BeforeLabelEdit e do
 	(
 		if allowLabelEdit then
-		(
 			allowLabelEdit = false
-			isEditingLabel = true
-		)
 		else
 			e.CancelEdit = true
 	)
 
 	on tv AfterLabelEdit e do
 	(
-		isEditingLabel = false
 		if e.CancelEdit then return()
 		if e.Label == undefined then return()
 
@@ -1387,47 +1381,17 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			)
 			default: ( try(theNode.tag.value.name="LPM_"+word)catch() )
 		)
-		editJustCompleted = true
 		LPM_treeview_rollout.updateTV()
 	)
 
-	-- PreviewKeyDown fires BEFORE .NET's dialog key processing.
-	-- Setting e.IsInputKey = true prevents Enter/ESC from being consumed
-	-- as dialog keys by 3dsMax 2026's .NET Core 8 hosting layer.
-	-- We also handle the action directly here as belt-and-suspenders,
-	-- in case IsInputKey alone doesn't propagate to the native label edit.
+	-- PreviewKeyDown marks Enter/Escape as input keys so 3dsMax 2026's
+	-- .NET Core 8 hosting layer does not consume them as dialog keys.
+	-- Native TreeView LabelEdit handles commit (Enter) and cancel (Escape).
 	on tv PreviewKeyDown e do
 	(
 		local key = e.keycode.tostring()
-		if key == "Return" then
-		(
+		if key == "Return" or key == "Escape" then
 			e.IsInputKey = true
-			if isEditingLabel then
-			(
-				if tv.selectedNode != undefined then
-					tv.selectedNode.EndEdit false
-			)
-			else
-			(
-				local theNode = tv.selectedNode
-				if theNode != undefined and theNode.level > 0 then
-				(
-					if editJustCompleted then
-						editJustCompleted = false
-					else
-						renameNode theNode
-				)
-			)
-		)
-		else if key == "Escape" then
-		(
-			e.IsInputKey = true
-			if isEditingLabel then
-			(
-				if tv.selectedNode != undefined then
-					tv.selectedNode.EndEdit true
-			)
-		)
 	)
 
 	on tv keyDown e do
@@ -1450,15 +1414,8 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		(
 			"F2":
 			(
-				if editJustCompleted then
-					editJustCompleted = false
-				else if theNode.level >0 then renameNode (tv.selectedNode)
-			)
-			"Return":
-			(
-				if editJustCompleted then
-					editJustCompleted = false
-				else if theNode.level >0 then renameNode (tv.selectedNode)
+				if theNode != undefined and theNode.level > 0 then
+					renameNode theNode
 			)
 			"F5":
 			(
