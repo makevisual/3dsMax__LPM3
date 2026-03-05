@@ -44,19 +44,19 @@ The UI uses `System.Windows.Forms` controls hosted in MaxScript via `dotNetContr
 ## Critical Implementation Details
 
 ### TreeView Inline Rename System (Treeview.ms)
-The rename system uses **native TreeView LabelEdit** (`tv.LabelEdit = true`):
-- `renameNode(iNode)` sets an `allowLabelEdit` gate and calls `iNode.BeginEdit()`
-- `BeforeLabelEdit` checks the gate (blocks unwanted edits from slow double-click)
+The rename system uses **native TreeView LabelEdit** (`tv.LabelEdit = true`) with zero custom state flags:
+- `renameNode(iNode)` calls `iNode.BeginEdit()` (used by right-click context menus)
+- `BeforeLabelEdit` blocks root nodes (level 0) only — all other nodes are renameable
 - `AfterLabelEdit` commits the new name to the node's tag value and calls `updateTV()`
 
 **Rename triggers:**
-- F2 on TreeView → `renameNode()` via `keyUp` handler
+- F2 on TreeView → native LabelEdit behavior
+- Slow double-click → native LabelEdit behavior
 - Right-click context menu → Rename → `renameNode()` via `rcMenus.ms`
-- Enter commits an active edit (native behavior), does NOT start a new rename
-- Escape cancels an active edit (native behavior)
+- Enter commits an active edit, Escape cancels
 
 **3dsMax 2026 .NET Core 8 compatibility:**
-`PreviewKeyDown` sets `e.IsInputKey = true` for Enter and Escape so they are not consumed as dialog keys by the .NET Core 8 hosting layer. The native TreeView LabelEdit then handles commit/cancel on its own.
+`PreviewKeyDown` sets `e.IsInputKey = true` for Enter and Escape, then explicitly calls `EndEdit(false)` (commit) or `EndEdit(true)` (cancel) using `tv.selectedNode.IsEditing` to detect active edits. This is required because the .NET Core 8 hosting layer consumes these keys as dialog keys before they reach the native edit control.
 
 ### Shot Version Increment/Decrement (Treeview.ms)
 - Alt+NumPad8 → increment shot version string

@@ -95,7 +95,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local lastMouseDown = timeStamp()
 	local preventExpand = false
 	local TmpSelNode = undefined
-	local allowLabelEdit = false
 
 	struct leafType (type, leaf, index, active)
 
@@ -1124,7 +1123,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	fn renameNode iNode=
 	(
-		allowLabelEdit = true
 		iNode.BeginEdit()
 	)
 
@@ -1345,9 +1343,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv BeforeLabelEdit e do
 	(
-		if allowLabelEdit then
-			allowLabelEdit = false
-		else
+		if e.Node.level == 0 then
 			e.CancelEdit = true
 	)
 
@@ -1384,14 +1380,24 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		LPM_treeview_rollout.updateTV()
 	)
 
-	-- PreviewKeyDown marks Enter/Escape as input keys so 3dsMax 2026's
-	-- .NET Core 8 hosting layer does not consume them as dialog keys.
-	-- Native TreeView LabelEdit handles commit (Enter) and cancel (Escape).
+	-- PreviewKeyDown handles Enter/Escape for label edit commit/cancel.
+	-- In 3dsMax 2026's .NET Core 8, these keys are consumed as dialog keys
+	-- before reaching the native edit control, so we must call EndEdit explicitly.
 	on tv PreviewKeyDown e do
 	(
 		local key = e.keycode.tostring()
-		if key == "Return" or key == "Escape" then
+		if key == "Return" then
+		(
 			e.IsInputKey = true
+			if tv.selectedNode != undefined and tv.selectedNode.IsEditing then
+				tv.selectedNode.EndEdit false
+		)
+		else if key == "Escape" then
+		(
+			e.IsInputKey = true
+			if tv.selectedNode != undefined and tv.selectedNode.IsEditing then
+				tv.selectedNode.EndEdit true
+		)
 	)
 
 	on tv keyDown e do
@@ -1412,11 +1418,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 		case e.keycode.tostring() of
 		(
-			"F2":
-			(
-				if theNode != undefined and theNode.level > 0 then
-					renameNode theNode
-			)
 			"F5":
 			(
 				LPM_ProSequencerUpdate()
