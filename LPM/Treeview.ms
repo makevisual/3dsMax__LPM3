@@ -97,6 +97,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local TmpSelNode = undefined
 	local editJustCompleted = false
 	local allowLabelEdit = false
+	local isEditingLabel = false
 
 	struct leafType (type, leaf, index, active)
 
@@ -1347,13 +1348,17 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	on tv BeforeLabelEdit e do
 	(
 		if allowLabelEdit then
+		(
 			allowLabelEdit = false
+			isEditingLabel = true
+		)
 		else
 			e.CancelEdit = true
 	)
 
 	on tv AfterLabelEdit e do
 	(
+		isEditingLabel = false
 		if e.CancelEdit then return()
 		if e.Label == undefined then return()
 
@@ -1386,6 +1391,45 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		LPM_treeview_rollout.updateTV()
 	)
 
+	-- PreviewKeyDown fires BEFORE .NET's dialog key processing.
+	-- Setting e.IsInputKey = true prevents Enter/ESC from being consumed
+	-- as dialog keys by 3dsMax 2026's .NET Core 8 hosting layer.
+	-- We also handle the action directly here as belt-and-suspenders,
+	-- in case IsInputKey alone doesn't propagate to the native label edit.
+	on tv PreviewKeyDown e do
+	(
+		local key = e.keycode.tostring()
+		if key == "Return" then
+		(
+			e.IsInputKey = true
+			if isEditingLabel then
+			(
+				if tv.selectedNode != undefined then
+					tv.selectedNode.EndEdit false
+			)
+			else
+			(
+				local theNode = tv.selectedNode
+				if theNode != undefined and theNode.level > 0 then
+				(
+					if editJustCompleted then
+						editJustCompleted = false
+					else
+						renameNode theNode
+				)
+			)
+		)
+		else if key == "Escape" then
+		(
+			e.IsInputKey = true
+			if isEditingLabel then
+			(
+				if tv.selectedNode != undefined then
+					tv.selectedNode.EndEdit true
+			)
+		)
+	)
+
 	on tv keyDown e do
 	(
 		if (keyboard.controlpressed)and ((e.keycode.tostring())=="Z") then
@@ -1404,14 +1448,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 		case e.keycode.tostring() of
 		(
-			"NumPad8":
-			(
-				if keyboard.altPressed == true then( LPM_treeview_rollout.offsetSelectedShot LPM_treeview_rollout.tv #increment )
-			)
-			"NumPad2":
-			(
-				if keyboard.altPressed == true then( LPM_treeview_rollout.offsetSelectedShot LPM_treeview_rollout.tv #decrement )
-			)
 			"F2":
 			(
 				if editJustCompleted then
