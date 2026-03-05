@@ -1050,7 +1050,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		btn_versionDown.pos 			= [xSize-20, 22]
 
 		-- TreeView (shifted down by 22 for name field row)
-		tv.Location 					= dotNetObject "System.Drawing.Point" 0 44
+		tv.Location 					= dotNetObject "System.Drawing.Point" 0 0
 		tv.size 						= dotNetSize
 
 		dnc_textBoxOutputPath.pos 		= [0,yPos+2]
