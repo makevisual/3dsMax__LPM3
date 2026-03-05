@@ -95,6 +95,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local lastMouseDown = timeStamp()
 	local preventExpand = false
 	local TmpSelNode = undefined
+	local nameFieldUpdating = false
 
 	struct leafType (type, leaf, index, active)
 
@@ -127,6 +128,9 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	fn FreezeWindow =
 	(
 		tv.enabled 							= false
+		dnc_nodeName.enabled 				= false
+		btn_versionUp.enabled 				= false
+		btn_versionDown.enabled 			= false
 		btn_openRenderDir.enabled 			= false
 		ddl_selectProcessor.enabled 		= false
 		btn_execute.enabled 				= false
@@ -138,6 +142,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		btn_openRenderDir.enabled 			= true
 		ddl_selectProcessor.enabled 		= true
 		btn_execute.enabled 				= true
+		updateNodeNameField()
 	)
 
 	fn initTreeView tv=
@@ -264,6 +269,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	fn updateNodeNameField =
 	(
+		nameFieldUpdating = true
 		local selNode = tv.selectedNode
 		if selNode != undefined and selNode.level > 0 then
 		(
@@ -300,6 +306,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			btn_versionUp.enabled = false
 			btn_versionDown.enabled = false
 		)
+		nameFieldUpdating = false
 	)
 
 	fn duplicateSelectedShot tv =
@@ -2357,6 +2364,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on dnc_nodeName TextChanged e do
 	(
+		if nameFieldUpdating then return()
 		local selNode = tv.selectedNode
 		if selNode == undefined or selNode.level <= 0 then return()
 
