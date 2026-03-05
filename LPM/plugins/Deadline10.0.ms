@@ -909,9 +909,14 @@ struct LPM_DeadlineAPI
 	 				ui_update()
 
 	 				-- Perform Idiot checks, or skip if enabled
-	 				if LPM_IdiotChecksEnabled == False
+	 				if LPM_IdiotChecksEnabled = False
 	 				then ( idiotCheck_skip() )
  					else ( idiotCheck_run() )
+ 					
+-- TODO: Relink Idiot checks 					
+--	 				if LPM_treeview_rollout.skipIdiotChecks.checked
+--	 				then ( idiotCheck_skip() )
+-- 					else ( idiotCheck_run() )
  	
 	 				-- Move Log to bottom of Dialog
 	 				submitLog.pos=[ 3 , 630 ]

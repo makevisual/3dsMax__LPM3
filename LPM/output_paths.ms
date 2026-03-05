@@ -23,11 +23,6 @@ struct output_pathFunctionsStr
     	theFile=getFilenameFile LPM_Root.fullOutputPath
     	theType=getFilenameType LPM_Root.fullOutputPath
 
-    	print(LPM_Root.fullOutputPath)
-		print(thePath)
-		print(theFile)
-		print(theType)
-
 		previewFilePath = ( thePath + theFile + ".####" + theType )
 
 		return previewFilePath

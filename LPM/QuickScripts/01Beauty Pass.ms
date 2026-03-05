@@ -42,10 +42,6 @@
   		newSet.intP[4] = 3 -- invisible to camera
  		newSet.parent=thePass
 
--- 		---- Environment Operator
---		theSet=LPM_Fun.createVray6RenderElementsProps "vray6RenderElements"
---		theSet.parent=thePass
-
  		---- Environment Operator
 		theSet=LPM_Fun.createVrayRenderElementsProps "vrayRenderElements"
 		theSet.parent=thePass

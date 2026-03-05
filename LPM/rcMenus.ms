@@ -1152,7 +1152,7 @@ rollout LPM_atmRollout "Env, Effects, Atmosphere" width:235 height:445
 )
 
 -------------------------------------------------------------------------------------------------------   LPM_commonRollout   -------------------------------------------------------------------------------------------------------
-rollout LPM_commonRollout "Common Properties" width:370 height:310
+rollout LPM_commonRollout "Common Properties" width:370 height:350
 (
 	GroupBox 			grp1 "Time Output" pos:[24,4] width:335 height:111 enabled:false
 		checkbox 		timeOutputTgl 		"" pos:[4,9] width:15 height:16
@@ -1172,15 +1172,19 @@ rollout LPM_commonRollout "Common Properties" width:370 height:310
 		spinner 		_renderPixelAspect "Pixel Aspect:" pos:[285,153] width:64 height:16 enabled:false range:[0.001,1000,1]
 		spinner 		aspect 				"Aspect:" pos:[288,175] width:62 height:16 enabled:false
 
-	GroupBox 			grp5 "File Type Override ( V-Ray will revert to .exr )" 		pos:[24,207] width:335 height:50 enabled:false
-		checkbox 		fileTypeTgl "" 					pos:[4,218] width:15 height:20
-		button 			pickTypeButton "Pick" 			pos:[30,230] width:60 height:20 enabled:false
-		edittext 		_fileType "" 					pos:[91,230] width:53 height:20 readOnly:true
-		checkbutton 	chkbtn_enableDeepOutput ".EXR Deep Output" pos:[160,230] width:190 height:20
+	GroupBox 			RenderTypeGroup "Render Type"	pos:[24,202] width:335 height:44
+		checkbox 		renderTypeTgl "" 				pos:[4,209] width:15 height:16
+		dropdownList 	renderTypeDDL "" 				pos:[34,216] width:315 height:21 items:#("view", "region", "crop", "blowup")
 
-	GroupBox 			grp7 "Camera" 					pos:[23,260] width:336 height:44 enabled:false
-		checkbox 		cameraTgl "" 					pos:[4,267] width:15 height:20
-		dropdownList 	_CameraDdl "" 					pos:[31,275] width:320 height:20 enabled:false items:#("--") --270 width
+	GroupBox 			grp5 "File Type Override ( V-Ray will revert to .exr )" 		pos:[24,251] width:335 height:50 enabled:false
+		checkbox 		fileTypeTgl "" 					pos:[4,258] width:15 height:20
+		button 			pickTypeButton "Pick" 			pos:[30,270] width:60 height:20 enabled:false
+		edittext 		_fileType "" 					pos:[91,270] width:53 height:20 readOnly:true
+		checkbutton 	chkbtn_enableDeepOutput ".EXR Deep Output" pos:[160,270] width:190 height:20
+
+	GroupBox 			grp7 "Camera" 					pos:[23,300] width:336 height:44 enabled:false
+		checkbox 		cameraTgl "" 					pos:[4,307] width:15 height:20
+		dropdownList 	_CameraDdl "" 					pos:[31,315] width:320 height:20 enabled:false items:#("--") --270 width
 
 	local presetData=#()
 	local presetNames=#()
@@ -1216,17 +1220,22 @@ rollout LPM_commonRollout "Common Properties" width:370 height:310
 			state=cameraTgl.checked
 			grp7.enabled=state
 			_CameraDDl.enabled=state
+
+			state=renderTypeTgl.checked
+			renderTypeDDL.enabled=state
+			RenderTypeGroup.enabled=state
 	)
 
-	on timeOutputTgl 	changed state do (toggleState())
-	on outputSizeTgl 	changed state do (toggleState()) 
-	on fileTypeTgl 		changed state do (toggleState()) 
-	on filePathTgl 		changed state do (toggleState())  
-	on cameraTgl 		changed state do  (toggleState())  
-	on editPreScript 	pressed do ( try(edit preScript.text)catch() )
-	on editPostScript 	pressed do ( try(edit postScript.text)catch() )
+	on timeOutputTgl changed state do (toggleState())
+	on outputSizeTgl changed state do (toggleState()) 
+	on fileTypeTgl changed state do (toggleState()) 
+	on filePathTgl changed state do (toggleState())  
+	on cameraTgl changed state do  (toggleState())  
+	on renderTypeTgl changed state do (toggleState())  
+	on editPreScript pressed do ( try(edit preScript.text)catch() )
+	on editPostScript pressed do ( try(edit postScript.text)catch() )
 
-	on pickTypeButton 	pressed do
+	on pickTypeButton pressed do
 	(
 		if(LPM_Root.fileType==undefined) then
 			LPM_Root.fileType="exr"
@@ -1305,6 +1314,9 @@ rollout LPM_commonRollout "Common Properties" width:370 height:310
 		_fileType.text=cp._fileType
 		chkbtn_enableDeepOutput.checked = cp.deepEXR
 
+		for i=1 to renderTypeDDL.items.count where renderTypeDDL.items[i]==cp.renderType do
+			renderTypeDDL.selection=i
+
 		cameraTgl.checked=cp.cameraTgl
 		if(isvalidNode cp._camera) then
 		(
@@ -1335,6 +1347,8 @@ rollout LPM_commonRollout "Common Properties" width:370 height:310
 		cp.outputSizeTgl=outputSizeTgl.checked
 		cp.fileTypeTgl=fileTypeTgl.checked
 		cp._fileType=_fileType.text
+		cp.renderTypeTgl=renderTypeTgl.checked
+		cp.renderType=renderTypeDDL.selected
 		cp.deepEXR=chkbtn_enableDeepOutput.checked
 		cp.cameraTgl=cameraTgl.checked
 
@@ -1445,6 +1459,7 @@ rollout layerPicker "Pick Layers" height:420 width:200
 		LPM_Fun.setIni "Layer Picker" "Y_Size" (layerPicker.height as string)
 
 		theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
+		--theObjectSet.layers=(for i=1 to theLayers.items.count where theLayers.selection[i] collect theLayers.items[i])
 		theObjectSet.layers = LPM_Fun.SaveListView theLayers
 		LPM_treeview_rollout.UnFreezeWindow()
 		thePassNode=LPM_treeview_rollout.tv.selectedNode.parent
@@ -1481,7 +1496,6 @@ rcMenu rc_MainMenu
 	(
 		menuItem	renderDialog			"File Output"
 		menuItem	deadlineSettingsDialog	"Deadline Settings"
-		menuItem	uiDialog				"UI Dialog"
 	)
 
 	subMenu "Utilities"
@@ -1530,7 +1544,6 @@ rcMenu rc_MainMenu
 	on helpMenuNew 					picked do( shellLaunch "https://makevisual.com/brain/mediawiki/index.php?title=Using_LPM_for_rendering_in_3dsMax" "" )
 	on renderDialog 				picked do( filein (LPM_Dir + "RenderRO.ms"))
 	on deadlineSettingsDialog 		picked do( filein (LPM_Dir + "deadlineRO.ms"))
-	on uiDialog                     picked do( filein (LPM_Dir + "uiRO.ms"))
 )
 
 -------------------------------------------------------------------------------------------------------   RootMenu   -------------------------------------------------------------------------------------------------------
@@ -2159,29 +2172,7 @@ rcMenu rc_PassMenu
 
 	)
 
-	-- Dabelow vray6
-	on vray6RenderElementsPropsAdd picked do
-	(
-		thePassNode=LPM_treeview_rollout.tv.selectedNode
-		thePass=thePassNode.tag.value
-		theSet=LPM_Fun.createVray6RenderElementsProps "vray6RenderElements"
-		theSet.parent=thePass
-		LPM_treeview_rollout.addPassTV thePassNode
-
-	)
-
-	-- Dabelow vray6
-	on vray6PropsAdd picked do
-	(
-		thePassNode=LPM_treeview_rollout.tv.selectedNode
-		thePass=thePassNode.tag.value
-		theSet=LPM_Fun.createVray6Props "vray6"
-		theSet.parent=thePass
-		LPM_treeview_rollout.addPassTV thePassNode
-
-	)
-
-		-- Dabelow vrayRenderElements
+	-- Dabelow vrayRenderElements
 	on vrayRenderElementsPropsAdd picked do
 	(
 		thePassNode=LPM_treeview_rollout.tv.selectedNode
