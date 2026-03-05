@@ -95,6 +95,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local lastMouseDown = timeStamp()
 	local preventExpand = false
 	local TmpSelNode = undefined
+	local nameFieldUpdating = false
 
 	struct leafType (type, leaf, index, active)
 
@@ -113,7 +114,11 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
  		dropDownList 	ddl_previewSize 		"" 			pos:[160,32] items:#("10","25","50","75","100","150","200") width:45
 		button  	 	btn_quickScripts 		"" 			pos:[160,70] height:20 width:20 images:#(LPM_iconPath+"bolt.bmp",undefined,1,1,1,1,1,true)
 
-	dotNetControl 		tv 						"TreeView"  pos:[0,(54-33)] align:#left
+	dotNetControl 		dnc_nodeName 			"TextBox" 	pos:[0,22] align:#left
+		button 			btn_versionUp 			"+" 		pos:[180,22] height:20 width:20 tooltip:"Increment version (e.g. v001 -> v002)"
+		button 			btn_versionDown 		"-" 		pos:[200,22] height:20 width:20 tooltip:"Decrement version (e.g. v002 -> v001)"
+
+	dotNetControl 		tv 						"TreeView"  pos:[0,(54-33+22)] align:#left
 	dotNetControl 		dnc_textBoxOutputPath 	"TextBox" 	pos:[0,60] align:#left
 		button 			btn_setRenderDir 		"Set" 		pos:[185,200] height:21 width:20 tooltip:"Sets the render directory"
 		button 			btn_openRenderDir 		"..." 		pos:[202,200] height:21 width:17 tooltip:"Opens the render directory"
@@ -123,6 +128,9 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	fn FreezeWindow =
 	(
 		tv.enabled 							= false
+		dnc_nodeName.enabled 				= false
+		btn_versionUp.enabled 				= false
+		btn_versionDown.enabled 			= false
 		btn_openRenderDir.enabled 			= false
 		ddl_selectProcessor.enabled 		= false
 		btn_execute.enabled 				= false
@@ -134,6 +142,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		btn_openRenderDir.enabled 			= true
 		ddl_selectProcessor.enabled 		= true
 		btn_execute.enabled 				= true
+		updateNodeNameField()
 	)
 
 	fn initTreeView tv=
@@ -143,6 +152,10 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		dnc_textBoxOutputPath.BackColor = dotNetColor tmpcol
 		dnc_textBoxOutputPath.ForeColor = LPM_FontColor
 		dnc_textBoxOutputPath.ReadOnly = true
+		dnc_nodeName.BackColor = dotNetColor tmpcol
+		dnc_nodeName.ForeColor = LPM_FontColor
+		dnc_nodeName.Enabled = false
+		dnc_nodeName.text = ""
 		tv.BackColor = LPM_BackColor
 		tv.AllowDrop = true -- allow DragandDrop for the Treeview
 
@@ -245,9 +258,55 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		-- Have to put this prefix on, LPM is expecting it and will trim the name.
 		newString = ("LPM_"+newString) 
 
-		-- Assign the new name and update the tree view		
+		-- Assign the new name and update the node text directly (preserves selection)
 		theNode.tag.value.name = newString
-		LPM_treeview_rollout.updateTV()
+		local nodeType = theNode.tag.value.type
+		if nodeType == "shot" then
+			theNode.text = LPM_Fun.getShotName theNode.tag.value
+		else
+			theNode.text = LPM_Fun.generatePassName theNode.tag.value
+	)
+
+	fn updateNodeNameField =
+	(
+		nameFieldUpdating = true
+		local selNode = tv.selectedNode
+		if selNode != undefined and selNode.level > 0 then
+		(
+			local nodeType = selNode.tag.value.type
+			local displayName = undefined
+
+			case nodeType of
+			(
+				"wildcard": ( displayName = selNode.text )
+				"shot":     ( displayName = LPM_Fun.getName selNode.tag.value.name )
+				"pass":     ( displayName = LPM_Fun.getName selNode.tag.value.name )
+				default:    ( try( displayName = LPM_Fun.getName selNode.tag.value.name )catch() )
+			)
+
+			if displayName != undefined then
+			(
+				dnc_nodeName.Enabled = true
+				dnc_nodeName.text = displayName
+			)
+			else
+			(
+				dnc_nodeName.Enabled = false
+				dnc_nodeName.text = ""
+			)
+
+			-- Enable +/- only for shots (which have version strings)
+			btn_versionUp.enabled = (nodeType == "shot")
+			btn_versionDown.enabled = (nodeType == "shot")
+		)
+		else
+		(
+			dnc_nodeName.Enabled = false
+			dnc_nodeName.text = ""
+			btn_versionUp.enabled = false
+			btn_versionDown.enabled = false
+		)
+		nameFieldUpdating = false
 	)
 
 	fn duplicateSelectedShot tv =
@@ -969,7 +1028,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	fn LPM_Resize theSize=
 	(
 		-- Control for minimum size
-		ySize 		= ((theSize.y - (104 - 34  ) ) as integer)
+		ySize 		= ((theSize.y - (104 - 34) - 22) as integer)
 		if(ySize<0) then(ysize=0)
 
 		-- make some useful numbers
@@ -977,12 +1036,21 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		xSize 		= ((theSize.x))
 		yPos 		= ((theSize.y - 48) as integer)
 
-		-- Place each of the objects
+		-- Row 1: Camera + preview dropdowns
 		ddl_camera.pos 					= [0,0]
 		ddl_camera.width 				= amax #(20, (xSize-123))
 		ddl_previewType.pos 			= [ xSize-124, 	ddl_camera.pos[2] ]
 		ddl_previewSize.pos 			= [ xSize-65, 	ddl_camera.pos[2] ]
 		btn_quickScripts.pos 			= [ xSize-20, 	ddl_camera.pos[2] ]
+
+		-- Row 2: Node name field + version buttons
+		dnc_nodeName.pos 				= [0, 22]
+		dnc_nodeName.width 				= xSize - 42
+		btn_versionUp.pos 				= [xSize-40, 22]
+		btn_versionDown.pos 			= [xSize-20, 22]
+
+		-- TreeView (shifted down by 22 for name field row)
+		tv.Location 					= dotNetObject "System.Drawing.Point" 0 44
 		tv.size 						= dotNetSize
 
 		dnc_textBoxOutputPath.pos 		= [0,yPos+2]
@@ -1613,6 +1681,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 				)
 			)
 		)
+		updateNodeNameField()
 	)
 
 	on tv BeforeExpand Arg do
@@ -2061,6 +2130,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			popUpMenu rc_RootMenu
 
 		oldHitNode = hitNode
+		updateNodeNameField()
 	)
 
 	on tv NodeMouseDoubleClick arg do
@@ -2292,6 +2362,57 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		)
 	)
 
+	on dnc_nodeName TextChanged e do
+	(
+		if nameFieldUpdating then return()
+		local selNode = tv.selectedNode
+		if selNode == undefined or selNode.level <= 0 then return()
+
+		local word = dnc_nodeName.text
+		local nodeType = selNode.tag.value.type
+
+		if (nodeType == "shot" or nodeType == "pass") then
+			word = LPM_Fun.removeBadChars word
+
+		case nodeType of
+		(
+			"wildcard": ( selNode.Parent.tag.value.wildCard[selNode.tag.value.index] = word )
+			"shot":
+			(
+				local pos = findstring word "[["
+				if pos != undefined then
+					selNode.tag.value.name = "LPM_" + (substring word 1 pos)
+				else
+					selNode.tag.value.name = "LPM_" + word
+				selNode.text = LPM_Fun.getShotName selNode.tag.value
+			)
+			"pass":
+			(
+				selNode.tag.value.name = "LPM_" + word
+				selNode.text = LPM_Fun.generatePassName selNode.tag.value
+			)
+			default: ( try( selNode.tag.value.name = "LPM_" + word )catch() )
+		)
+	)
+
+	on btn_versionUp pressed do
+	(
+		if tv.selectedNode != undefined and tv.selectedNode.level > 0 then
+		(
+			offsetSelectedShot tv #increment
+			updateNodeNameField()
+		)
+	)
+
+	on btn_versionDown pressed do
+	(
+		if tv.selectedNode != undefined and tv.selectedNode.level > 0 then
+		(
+			offsetSelectedShot tv #decrement
+			updateNodeNameField()
+		)
+	)
+
 	on ddl_camera selected it do
 	(
 		if(selected==1) then
@@ -2341,6 +2462,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		
 		initTreeView tv
 		fillInTreeView tv
+		updateNodeNameField()
 
 		for i=1 to ddl_previewSize.items.count do
 			if((LPM_root.previewSize as string)==ddl_previewSize.items[i]) do
