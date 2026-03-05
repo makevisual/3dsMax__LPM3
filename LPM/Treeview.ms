@@ -88,7 +88,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local prevSelection
 	local stopper
 	local LPM_doubleClick=false
-	local rNode=undefined
 	local DragNode, DropNode
 	local m=dotNetClass "System.Windows.Forms.DragDropEffects" -- Drag and drop effects
 	local sTime=timeStamp()
@@ -96,6 +95,9 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	local lastMouseDown = timeStamp()
 	local preventExpand = false
 	local TmpSelNode = undefined
+	local editJustCompleted = false
+	local allowLabelEdit = false
+	local isEditingLabel = false
 
 	struct leafType (type, leaf, index, active)
 
@@ -120,9 +122,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		button 			btn_openRenderDir 		"..." 		pos:[202,200] height:21 width:17 tooltip:"Opens the render directory"
 	dropDownList    	ddl_selectProcessor 	"" 			pos:[40,200] items:processorList width:200
 		button 			btn_execute 			" Execute " pos:[40,200] width:120
-
-	-- This is the rename filed
-	dotNetControl editBox "TextBox"  pos:[0,70] height:20 width:120
 
 	fn FreezeWindow =
 	(
@@ -228,6 +227,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		getIconFromBitmap "renderImageOff" 					--Dabelow vrayRebderElements
 
 		tv.imageList = ilTv
+		tv.LabelEdit = true
 	)
 
 	fn deleteSelectedPass tv =
@@ -1124,39 +1124,10 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		createDialog matPicker pos:(LPM_Fun.getRoPos matPicker.width)
 	)
 
-	fn hideEditBox=
-	(
-		editBox.visible = false
-		tv.enabled = true
-		tv.refresh()
-		tv.focus()
-	)
-
-	-- TODO: Finish Fixing this 
-	fn showEditBox=
-	(
-		if(rNode==undefined) then
-			return false
-		tv.enabled = false
-		editBox.pos = [tv.pos.x+rNode.bounds.x,tv.pos.y+rNode.bounds.y]
-		if rNode.tag.value.type == "pass" then
-		(
-			editBox.text = LPM_Fun.getName rNode.tag.value.name
-		)
-		else
-		(
-			editBox.text = rNode.text
-		)
-
-		editBox.visible = true
-		editBox.focus()
-	)
-
-	-- TODO: Finish Fixing this 
 	fn renameNode iNode=
 	(
-		rNode=iNode
-		showEditBox()
+		allowLabelEdit = true
+		iNode.BeginEdit()
 	)
 
 	fn hideBySet theSet=
@@ -1374,57 +1345,87 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv textChanged arg do()
 
-
-
-	on editBox lostFocus e do
+	on tv BeforeLabelEdit e do
 	(
-		hideEditBox()
-	)
-
-	on editBox MouseWheel e do
-	(
-		hideEditBox()
-	)
-	on editBox keyUp e do
-	(
-		case e.keycode.tostring() of
+		if allowLabelEdit then
 		(
-			"Return":
+			allowLabelEdit = false
+			isEditingLabel = true
+		)
+		else
+			e.CancelEdit = true
+	)
+
+	on tv AfterLabelEdit e do
+	(
+		isEditingLabel = false
+		if e.CancelEdit then return()
+		if e.Label == undefined then return()
+
+		theNode = e.Node
+		type = theNode.tag.value.type
+		word = e.Label
+		if(type=="shot" or type=="pass") then word = LPM_Fun.removeBadChars word
+
+		theNode.text = word
+		case type of
+		(
+			"wildcard": ( theNode.Parent.tag.value.wildCard[theNode.tag.value.index]=word )
+			"shot":
 			(
-				theNode=rNode
-				type = theNode.tag.value.type
-				word=editBox.text
-				if(type=="shot" or type=="pass") then word=LPM_Fun.removeBadChars word
-
-				theNode.text = word
-				case type of
-				(
-					"wildcard": (	theNode.Parent.tag.value.wildCard[theNode.tag.value.index]=word)
-					"shot":
-					(
-						pos=findstring word "[["
-						if(pos!=undefined) then
-							theNode.tag.value.name="LPM_"+(substring word 1 pos)
-						else
-							theNode.tag.value.name="LPM_"+word
-						theNode.text=LPM_Fun.getShotName theNode.tag.value
-					)
-					"pass":
-					(
-						theNode.tag.value.name="LPM_"+word
-						theNode.text = LPM_Fun.generatePassName theNode.tag.value
-					)
-					default:	(try(theNode.tag.value.name="LPM_"+word)catch())
-
-				)
-				hideEditBox()
-
-				LPM_treeview_rollout.updateTV()
+				pos=findstring word "[["
+				if(pos!=undefined) then
+					theNode.tag.value.name="LPM_"+(substring word 1 pos)
+				else
+					theNode.tag.value.name="LPM_"+word
+				theNode.text=LPM_Fun.getShotName theNode.tag.value
 			)
-			"Escape":
+			"pass":
 			(
-				hideEditBox()
+				theNode.tag.value.name="LPM_"+word
+				theNode.text = LPM_Fun.generatePassName theNode.tag.value
+			)
+			default: ( try(theNode.tag.value.name="LPM_"+word)catch() )
+		)
+		editJustCompleted = true
+		LPM_treeview_rollout.updateTV()
+	)
 
+	-- PreviewKeyDown fires BEFORE .NET's dialog key processing.
+	-- Setting e.IsInputKey = true prevents Enter/ESC from being consumed
+	-- as dialog keys by 3dsMax 2026's .NET Core 8 hosting layer.
+	-- We also handle the action directly here as belt-and-suspenders,
+	-- in case IsInputKey alone doesn't propagate to the native label edit.
+	on tv PreviewKeyDown e do
+	(
+		local key = e.keycode.tostring()
+		if key == "Return" then
+		(
+			e.IsInputKey = true
+			if isEditingLabel then
+			(
+				if tv.selectedNode != undefined then
+					tv.selectedNode.EndEdit false
+			)
+			else
+			(
+				local theNode = tv.selectedNode
+				if theNode != undefined and theNode.level > 0 then
+				(
+					if editJustCompleted then
+						editJustCompleted = false
+					else
+						renameNode theNode
+				)
+			)
+		)
+		else if key == "Escape" then
+		(
+			e.IsInputKey = true
+			if isEditingLabel then
+			(
+				if tv.selectedNode != undefined then
+					tv.selectedNode.EndEdit true
 			)
 		)
 	)
@@ -1447,21 +1448,17 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 		case e.keycode.tostring() of
 		(
-			"NumPad8":
-			(
-				if keyboard.altPressed == true then( LPM_treeview_rollout.offsetSelectedShot LPM_treeview_rollout.tv #increment )
-			)
-			"NumPad2":
-			(
-				if keyboard.altPressed == true then( LPM_treeview_rollout.offsetSelectedShot LPM_treeview_rollout.tv #decrement )
-			)
 			"F2":
 			(
-				if theNode.level >0 then renameNode (tv.selectedNode)
+				if editJustCompleted then
+					editJustCompleted = false
+				else if theNode.level >0 then renameNode (tv.selectedNode)
 			)
 			"Return":
 			(
-				if theNode.level >0 then renameNode (tv.selectedNode)
+				if editJustCompleted then
+					editJustCompleted = false
+				else if theNode.level >0 then renameNode (tv.selectedNode)
 			)
 			"F5":
 			(
@@ -1733,12 +1730,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 				if(arg.x>(38+level*20) and (button=="Left") and (preventExpand==false)) then
 				(
 					sTime=nTime
-					if (delta > 600) and (delta < 1100) and (oldHitNode==hitNode)  then
-					(
-						print "Rename Double Click"
-						print ("hitNode - " + ( hitNode as string ) )
-						renameNode hitNode
-					)
 				)
 
 				if((15+level*20) < (arg.x)) and ((arg.x) < (37+level*20)) then
@@ -2387,9 +2378,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 		print(LPM_Root.rootDir)
 		dnc_textBoxOutputPath.text = LPM_Root.rootDir
-
-		editBox.visible = false
-		editBox.borderStyle = (dotNetClass "BorderStyle").FixedSingle
 
 		lpm_fun.preFileOpenCallback_Add()
 		
