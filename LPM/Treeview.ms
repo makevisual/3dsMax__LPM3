@@ -773,6 +773,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		tv.imageList = undefined
 		ilTv.images.clear()
 		initTreeView tv
+		tv.nodes.clear()
 		fillInTreeView tv
 	)
 

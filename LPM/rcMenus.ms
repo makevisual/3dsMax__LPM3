@@ -2008,7 +2008,7 @@ rcmenu rc_shotPassMenu
 			LPM_treeview_rollout.tv.selectedNode.remove()
 			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeview_rollout.fillInTreeView LPM_treeview_rollout.tv -- DABELOW
+			LPM_treeview_rollout.updateTV() -- DABELOW
 		)
 	)
 )
