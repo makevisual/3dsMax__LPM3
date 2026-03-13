@@ -32,17 +32,14 @@ function renderImage_Override_PreRender =
     (
         Freecamera:
             (
-            print "Free"
             paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
             )
         Targetcamera:
             (
-            print "Target"
             paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
             )
         Physical:
             (
-            print "PHYS"
             newCam.specify_fov = off
             paramWire.connect curCam.baseObject[#Lens_Focal_Length_mm] newCam.baseObject[#Lens_Focal_Length_mm] ( "Lens_Focal_Length_mm  * " + ( ( 1 / curFov ) as string ) )
             )
@@ -52,19 +49,13 @@ function renderImage_Override_PreRender =
     LPM_Root.renderCamera = newCam
 
     -- TODO:?
-    -- Store the original resoultion
-    LPM_OperatorData.renderImage.resXOriginal = renderHeight
-    LPM_OperatorData.renderImage.resYOriginal = renderWidth
-    print "---original res----"
-    print renderHeight
-    print renderWidth
+    -- Store the original resolution
+    LPM_OperatorData.renderImage.resXOriginal = renderWidth
+    LPM_OperatorData.renderImage.resYOriginal = renderHeight
 
     -- Set the desired resolution
-    renderHeight = LPM_OperatorData.renderImage.resXOverride
-    renderWidth  = LPM_OperatorData.renderImage.resYOverride
-    print "---overscan res----"
-    print renderHeight
-    print renderWidth
+    renderWidth  = LPM_OperatorData.renderImage.resXOverride
+    renderHeight = LPM_OperatorData.renderImage.resYOverride
 
 )
 
@@ -79,16 +70,13 @@ function renderImage_Override_PostRender =
         delete curDelete
 	)catch()
 
-    -- TODO:
     -- reset resolution
-    renderHeight = LPM_OperatorData.renderImage.resXOriginal
-    renderWidth  = LPM_OperatorData.renderImage.resYOriginal
+    renderWidth  = LPM_OperatorData.renderImage.resXOriginal
+    renderHeight = LPM_OperatorData.renderImage.resYOriginal
 )
 
 function curPrerenderAction =
 (
-    print "== renderImage PreRenderAction =="
-
     -- Construct object for storing pre-render state for use for restoring later
     LPM_OperatorData.renderImage = renderImage_RestoreDataStr()
 
@@ -98,8 +86,6 @@ function curPrerenderAction =
 
 function curPostRenderAction =
 (
-    print "== renderImage PostRenderAction =="
-
     -- call each of the postrender functions
     renderImage_Override_PostRender()
 )

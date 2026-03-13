@@ -34,10 +34,7 @@
 					renderers.current=renderTypes[renderPicker.selection]()
 					renderSceneDialog.open()
 					
-					if(classof renderers.current)==mental_ray_renderer then
-						tabbedDialogs.setCurrentPage #render #(188154248, 1489465121)
-					else
-						tabbedDialogs.setCurrentPage #render #(1126448576, 479530250)
+					tabbedDialogs.setCurrentPage #render #(1126448576, 479530250)
 					
 					callbacks.addScript #tabbedDialogDeleted "LPM_renderer_closed()" id:#myscript_update
 				)

@@ -38,14 +38,7 @@ if(LPM_treeview_rollout.tv.selectedNode.tag.value.initialized)then
 
 renderSceneDialog.open()
 
-if(classof renderers.current)==mental_ray_renderer then
-(
-	tabbedDialogs.setCurrentPage #render #(188154248, 1489465121)
-)
-else
-(
-	tabbedDialogs.setCurrentPage #render #(1126448576, 479530250)
-)
+tabbedDialogs.setCurrentPage #render #(1126448576, 479530250)
 LPM_treeview_rollout.FreezeWindow()
 
 callbacks.addScript #tabbedDialogDeleted "LPM_renderer_closed()" id:#myscript_update

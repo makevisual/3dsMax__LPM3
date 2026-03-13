@@ -21,7 +21,7 @@ version:2
 		renderType type:#integer default:3
 		previewSize type:#integer default:50
 		LastActivePass type:#string default:""
-		PostConvertVrimg2exr type:#string default:"C:\\Program Files\\Chaos Group\\V-Ray\\3dsmax 2014 for x64\\tools\\vrimg2exr.exe"
+		PostConvertVrimg2exr type:#string default:"" -- Set to your vrimg2exr.exe path (e.g. C:\Program Files\Chaos Group\V-Ray\...\tools\vrimg2exr.exe)
 		PostConvert type:#boolean default:false
 		PostConvertCompression type:#integer default:3
 		PostConvertHalfFoat type:#boolean default:false
