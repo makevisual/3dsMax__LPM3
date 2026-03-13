@@ -293,14 +293,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		tv.LabelEdit = true
 	)
 
-	fn reloadIcons =
-	(
-		tv.imageList = undefined
-		ilTv.images.clear()
-		initTreeView tv
-		fillInTreeView tv
-	)
-
 	fn deleteSelectedPass tv =
 	(
 		theNode=tv.selectedNode
@@ -774,6 +766,14 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		tvRoot.Expand()
 		if(shotRoot.expanded) then ( shotRootTv.expand() )
 		tv.endUpdate()
+	)
+
+	fn reloadIcons =
+	(
+		tv.imageList = undefined
+		ilTv.images.clear()
+		initTreeView tv
+		fillInTreeView tv
 	)
 
 	fn hideByPass thePass=
