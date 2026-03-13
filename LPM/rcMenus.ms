@@ -1496,6 +1496,9 @@ rcMenu rc_MainMenu
 	(
 		menuItem	renderDialog			"File Output"
 		menuItem	deadlineSettingsDialog	"Deadline Settings"
+		seperator	s_iconColor
+		menuItem	iconColorBlacks			"Disabled Icons: Black"
+		menuItem	iconColorReds			"Disabled Icons: Red"
 	)
 
 	subMenu "Utilities"
@@ -1544,6 +1547,20 @@ rcMenu rc_MainMenu
 	on helpMenuNew 					picked do( shellLaunch "https://makevisual.com/brain/mediawiki/index.php?title=Using_LPM_for_rendering_in_3dsMax" "" )
 	on renderDialog 				picked do( filein (LPM_Dir + "RenderRO.ms"))
 	on deadlineSettingsDialog 		picked do( filein (LPM_Dir + "deadlineRO.ms"))
+
+	on iconColorBlacks picked do
+	(
+		LPM_disabledIconFolder = "blacks"
+		LPM_Fun.setIni "Settings" "disabledIconColor" "blacks"
+		LPM_treeview_rollout.reloadIcons()
+	)
+
+	on iconColorReds picked do
+	(
+		LPM_disabledIconFolder = "reds"
+		LPM_Fun.setIni "Settings" "disabledIconColor" "reds"
+		LPM_treeview_rollout.reloadIcons()
+	)
 )
 
 -------------------------------------------------------------------------------------------------------   RootMenu   -------------------------------------------------------------------------------------------------------
@@ -1991,7 +2008,7 @@ rcmenu rc_shotPassMenu
 			LPM_treeview_rollout.tv.selectedNode.remove()
 			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeview_rollout.fillInTreeView LPM_treeview_rollout.tv -- DABELOW
+			LPM_treeview_rollout.updateTV() -- DABELOW
 		)
 	)
 )
