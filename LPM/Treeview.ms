@@ -33,6 +33,10 @@ if (LPM_Fun.getIni "Settings" "ShowSkipButton" booleanClass false) then
 	LPM_RendButttonSize = 20
 )
 
+LPM_disabledIconFolder = LPM_Fun.getIni "Settings" "disabledIconColor" string "blacks"
+if (getINISetting (getdir #plugcfg + "\\LPM.ini") "Settings" "disabledIconColor") == "" then
+	LPM_Fun.setIni "Settings" "disabledIconColor" "blacks"
+
 ilTv = dotNetObject "System.Windows.Forms.ImageList"
 ilTv.imageSize = dotNetObject "System.Drawing.Size" 16 15
 
@@ -52,6 +56,13 @@ fn getIconFromBitmap iconFileName =
 	theFileName = LPM_iconPath + iconFileName +".bmp"
 	img = dotNetClass "System.Drawing.Image" --create an image
 	ilTv.images.add (img.fromFile theFileName) --add to the list
+)
+
+fn getIconFromFolder subfolder iconFileName =
+(
+	theFileName = LPM_iconPath + subfolder + "/" + iconFileName + ".bmp"
+	img = dotNetClass "System.Drawing.Image"
+	ilTv.images.add (img.fromFile theFileName)
 )
 
 fn dotNetColor clr =
@@ -125,6 +136,48 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	dropDownList    	ddl_selectProcessor 	"" 			pos:[40,200] items:processorList width:200
 		button 			btn_execute 			" Execute " pos:[40,200] width:120
 
+	fn updateNodeNameField =
+	(
+		nameFieldUpdating = true
+		local selNode = tv.selectedNode
+		if selNode != undefined and selNode.level > 0 then
+		(
+			local nodeType = selNode.tag.value.type
+			local displayName = undefined
+
+			case nodeType of
+			(
+				"wildcard": ( displayName = selNode.text )
+				"shot":     ( displayName = LPM_Fun.getName selNode.tag.value.name )
+				"pass":     ( displayName = LPM_Fun.getName selNode.tag.value.name )
+				default:    ( try( displayName = LPM_Fun.getName selNode.tag.value.name )catch() )
+			)
+
+			if displayName != undefined then
+			(
+				dnc_nodeName.Enabled = true
+				dnc_nodeName.text = displayName
+			)
+			else
+			(
+				dnc_nodeName.Enabled = false
+				dnc_nodeName.text = ""
+			)
+
+			-- Enable +/- only for shots (which have version strings)
+			btn_versionUp.enabled = (nodeType == "shot")
+			btn_versionDown.enabled = (nodeType == "shot")
+		)
+		else
+		(
+			dnc_nodeName.Enabled = false
+			dnc_nodeName.text = ""
+			btn_versionUp.enabled = false
+			btn_versionDown.enabled = false
+		)
+		nameFieldUpdating = false
+	)
+
 	fn FreezeWindow =
 	(
 		tv.enabled 							= false
@@ -170,35 +223,35 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		getIconFromBitmap "Render"
 		getIconFromBitmap "Enviroment"
 		getIconFromBitmap "Common"
-		getIconFromBitmap "Disabled"
-		getIconFromBitmap "objectSetOn"
-		getIconFromBitmap "objectSetOff"
-		getIconFromBitmap "lightSetOn"
-		getIconFromBitmap "lightSetOff"
+		getIconFromFolder LPM_disabledIconFolder "Disabled"
+		getIconFromFolder "grays" "objectSetOff"
+		getIconFromFolder LPM_disabledIconFolder "objectSetOff"
+		getIconFromFolder "grays" "lightSetOff"
+		getIconFromFolder LPM_disabledIconFolder "lightSetOff"
 		getIconFromBitmap "Shot"
-		getIconFromBitmap "ShotOff"
+		getIconFromFolder LPM_disabledIconFolder "ShotOff"
 		getIconFromBitmap "ShotRoot"
 		getIconFromBitmap "xrefOn" --"xrefProps"
 		getIconFromBitmap "xrefOn"
-		getIconFromBitmap "xrefOff"
-		getIconFromBitmap "CommonOff"
-		getIconFromBitmap "EnviromentOff"
-		getIconFromBitmap "RenderOff"
+		getIconFromFolder LPM_disabledIconFolder "xrefOff"
+		getIconFromFolder LPM_disabledIconFolder "CommonOff"
+		getIconFromFolder LPM_disabledIconFolder "EnviromentOff"
+		getIconFromFolder LPM_disabledIconFolder "RenderOff"
 		getIconFromBitmap "missing"
 		getIconFromBitmap "missing"
 		getIconFromBitmap "passGroupOn"
-		getIconFromBitmap "passGroupOff"
+		getIconFromFolder LPM_disabledIconFolder "passGroupOff"
 		getIconFromBitmap "scriptOn"
-		getIconFromBitmap "scriptOff"
-		getIconFromBitmap "RootOff"
+		getIconFromFolder LPM_disabledIconFolder "scriptOff"
+		getIconFromFolder LPM_disabledIconFolder "RootOff"
 		getIconFromBitmap "missing" --"ModifyObject"
 		getIconFromBitmap "missing" --"ModifyObjectOff"
 		getIconFromBitmap "missing" --"Node_group"
 		getIconFromBitmap "missing"
 		getIconFromBitmap "missing"
 		getIconFromBitmap "xrefOn" 	--"xrefObjProps"
-		getIconFromBitmap "xrefOff" --"xrefObjPropsOff"
-		getIconFromBitmap "xrefOff" --"xrefPropsOff"
+		getIconFromFolder LPM_disabledIconFolder "xrefOff" --"xrefObjPropsOff"
+		getIconFromFolder LPM_disabledIconFolder "xrefOff" --"xrefPropsOff"
 		getIconFromBitmap "missing"
 		getIconFromBitmap "missing"
 		getIconFromBitmap "missing"
@@ -206,7 +259,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		getIconFromBitmap "missing" --"vray"
 		getIconFromBitmap "missing" --"vrayOff"
 		getIconFromBitmap "Deadline"
-		getIconFromBitmap "DeadlineOff"
+		getIconFromFolder LPM_disabledIconFolder "DeadlineOff"
 
 		-- NOTE -- All additional icons should be added to the end of the list, because icons are called by index
 		-- Addition of new items will offset following icons
@@ -219,11 +272,11 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		getIconFromBitmap "missing" 						--Dabelow vray5
 
 		getIconFromBitmap "CameraOverscan" 					--Dabelow cameraOverscan
-		getIconFromBitmap "CameraOverscanOff" 				--Dabelow cameraOverscan
+		getIconFromFolder LPM_disabledIconFolder "CameraOverscanOff" 				--Dabelow cameraOverscan
 		getIconFromBitmap "NukeExportOperator" 				--Dabelow nukeExport
-		getIconFromBitmap "NukeExportOperatorOff" 			--Dabelow nukeExport
+		getIconFromFolder LPM_disabledIconFolder "NukeExportOperatorOff" 	--Dabelow nukeExport
 		getIconFromBitmap "AfterEffectsExportOperator" 		--Dabelow aeExport
-		getIconFromBitmap "AfterEffectsExportOperatorOff" 	--Dabelow aeExport
+		getIconFromFolder LPM_disabledIconFolder "AfterEffectsExportOperatorOff" 	--Dabelow aeExport
 
 		getIconFromBitmap "missing" 			 			--Dabelow vray6
 		getIconFromBitmap "missing" 						--Dabelow vray6
@@ -231,10 +284,10 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		getIconFromBitmap "missing" 						--Dabelow vray6
 
 		getIconFromBitmap "vrayRenderElements" 				--Dabelow vrayRebderElements
-		getIconFromBitmap "vrayRenderElementsOff" 			--Dabelow vrayRebderElements
+		getIconFromFolder LPM_disabledIconFolder "vrayRenderElementsOff" 			--Dabelow vrayRebderElements
 
 		getIconFromBitmap "renderImage" 					--Dabelow vrayRebderElements
-		getIconFromBitmap "renderImageOff" 					--Dabelow vrayRebderElements
+		getIconFromFolder LPM_disabledIconFolder "renderImageOff" 					--Dabelow vrayRebderElements
 
 		tv.imageList = ilTv
 		tv.LabelEdit = true
@@ -265,48 +318,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			theNode.text = LPM_Fun.getShotName theNode.tag.value
 		else
 			theNode.text = LPM_Fun.generatePassName theNode.tag.value
-	)
-
-	fn updateNodeNameField =
-	(
-		nameFieldUpdating = true
-		local selNode = tv.selectedNode
-		if selNode != undefined and selNode.level > 0 then
-		(
-			local nodeType = selNode.tag.value.type
-			local displayName = undefined
-
-			case nodeType of
-			(
-				"wildcard": ( displayName = selNode.text )
-				"shot":     ( displayName = LPM_Fun.getName selNode.tag.value.name )
-				"pass":     ( displayName = LPM_Fun.getName selNode.tag.value.name )
-				default:    ( try( displayName = LPM_Fun.getName selNode.tag.value.name )catch() )
-			)
-
-			if displayName != undefined then
-			(
-				dnc_nodeName.Enabled = true
-				dnc_nodeName.text = displayName
-			)
-			else
-			(
-				dnc_nodeName.Enabled = false
-				dnc_nodeName.text = ""
-			)
-
-			-- Enable +/- only for shots (which have version strings)
-			btn_versionUp.enabled = (nodeType == "shot")
-			btn_versionDown.enabled = (nodeType == "shot")
-		)
-		else
-		(
-			dnc_nodeName.Enabled = false
-			dnc_nodeName.text = ""
-			btn_versionUp.enabled = false
-			btn_versionDown.enabled = false
-		)
-		nameFieldUpdating = false
 	)
 
 	fn duplicateSelectedShot tv =
@@ -755,6 +766,15 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		tvRoot.Expand()
 		if(shotRoot.expanded) then ( shotRootTv.expand() )
 		tv.endUpdate()
+	)
+
+	fn reloadIcons =
+	(
+		tv.imageList = undefined
+		ilTv.images.clear()
+		initTreeView tv
+		tv.nodes.clear()
+		fillInTreeView tv
 	)
 
 	fn hideByPass thePass=
