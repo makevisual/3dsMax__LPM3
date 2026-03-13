@@ -29,6 +29,7 @@ global LPM_renderer_closed
 global LPM_ObjSetPropsBuff
 global LPM_LightSetPropsBuff
 global LPM_iconPath = LPM_Dir + "icons/"
+global LPM_disabledIconFolder = "blacks"
 global LPM_BackColor 					
 global LPM_FontColor
 global LPM_ContinueLoad
