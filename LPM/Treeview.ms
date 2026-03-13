@@ -12,7 +12,7 @@ try
 (
 	if LPM_Root.LastActivePass != "" then
 	(
-		passArray=for it in (LPM_FUn.getallchildren LPM_Root) where it.type=="pass" collect it
+		passArray=for it in (LPM_Fun.getallchildren LPM_Root) where it.type=="pass" collect it
 
 		for i = 1 to passArray.count do
 		(
