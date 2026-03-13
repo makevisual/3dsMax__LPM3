@@ -125,6 +125,48 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	dropDownList    	ddl_selectProcessor 	"" 			pos:[40,200] items:processorList width:200
 		button 			btn_execute 			" Execute " pos:[40,200] width:120
 
+	fn updateNodeNameField =
+	(
+		nameFieldUpdating = true
+		local selNode = tv.selectedNode
+		if selNode != undefined and selNode.level > 0 then
+		(
+			local nodeType = selNode.tag.value.type
+			local displayName = undefined
+
+			case nodeType of
+			(
+				"wildcard": ( displayName = selNode.text )
+				"shot":     ( displayName = LPM_Fun.getName selNode.tag.value.name )
+				"pass":     ( displayName = LPM_Fun.getName selNode.tag.value.name )
+				default:    ( try( displayName = LPM_Fun.getName selNode.tag.value.name )catch() )
+			)
+
+			if displayName != undefined then
+			(
+				dnc_nodeName.Enabled = true
+				dnc_nodeName.text = displayName
+			)
+			else
+			(
+				dnc_nodeName.Enabled = false
+				dnc_nodeName.text = ""
+			)
+
+			-- Enable +/- only for shots (which have version strings)
+			btn_versionUp.enabled = (nodeType == "shot")
+			btn_versionDown.enabled = (nodeType == "shot")
+		)
+		else
+		(
+			dnc_nodeName.Enabled = false
+			dnc_nodeName.text = ""
+			btn_versionUp.enabled = false
+			btn_versionDown.enabled = false
+		)
+		nameFieldUpdating = false
+	)
+
 	fn FreezeWindow =
 	(
 		tv.enabled 							= false
@@ -265,48 +307,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			theNode.text = LPM_Fun.getShotName theNode.tag.value
 		else
 			theNode.text = LPM_Fun.generatePassName theNode.tag.value
-	)
-
-	fn updateNodeNameField =
-	(
-		nameFieldUpdating = true
-		local selNode = tv.selectedNode
-		if selNode != undefined and selNode.level > 0 then
-		(
-			local nodeType = selNode.tag.value.type
-			local displayName = undefined
-
-			case nodeType of
-			(
-				"wildcard": ( displayName = selNode.text )
-				"shot":     ( displayName = LPM_Fun.getName selNode.tag.value.name )
-				"pass":     ( displayName = LPM_Fun.getName selNode.tag.value.name )
-				default:    ( try( displayName = LPM_Fun.getName selNode.tag.value.name )catch() )
-			)
-
-			if displayName != undefined then
-			(
-				dnc_nodeName.Enabled = true
-				dnc_nodeName.text = displayName
-			)
-			else
-			(
-				dnc_nodeName.Enabled = false
-				dnc_nodeName.text = ""
-			)
-
-			-- Enable +/- only for shots (which have version strings)
-			btn_versionUp.enabled = (nodeType == "shot")
-			btn_versionDown.enabled = (nodeType == "shot")
-		)
-		else
-		(
-			dnc_nodeName.Enabled = false
-			dnc_nodeName.text = ""
-			btn_versionUp.enabled = false
-			btn_versionDown.enabled = false
-		)
-		nameFieldUpdating = false
 	)
 
 	fn duplicateSelectedShot tv =
