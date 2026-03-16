@@ -305,7 +305,6 @@ fn saveRenderPreset =
 	case (classof renderers.current) of
 	(
 		Default_Scanline_Renderer: renderpresets.Save 0 ((getdir #temp) +"\\temp.rps") #{32,33,34}
-		mental_ray_renderer: renderpresets.Save 0 ((getdir #temp) +"\\temp.rps") #{32,33,34}
 		Default: renderpresets.Save 0 ((getdir #temp) +"\\temp.rps") #{32}
 	)
 
@@ -383,7 +382,6 @@ fn saveRenderPresetNew =
 	case (classof renderers.current) of
 	(
 		Default_Scanline_Renderer: renderpresets.Save 0 ((getdir #temp) +"\\temp.rps") #{32,33,34}
-		mental_ray_renderer: renderpresets.Save 0 ((getdir #temp) +"\\temp.rps") #{32,33,34}
 		Default: renderpresets.Save 0 ((getdir #temp) +"\\temp.rps") #{32}
 	)
 

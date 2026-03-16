@@ -548,13 +548,13 @@ struct LPM_RenderAPI
 						tmp[19]=it.baseObject.color_mode
 						tmp[22]=it.baseObject.invisible						
 					)
-					-- TODO: soring and restoring vray sun lights is causing errors, disabling override for them for now
+					-- TODO: storing and restoring vray sun lights is causing errors, disabling override for them for now
 					-- VraySun objects do not have all the same properties as a standard vray light
 					if (not LPM_VRayInstalled) or ((classof(it) != VRayLight) and (classof(it) != VRaySun)) then
 					(
-						try( tmp[4]=it.color 						)catch(print" problem storting light ")
-						try( tmp[16]=it.baseObject.projectorMap 	)catch(print" problem storting light ")
-						try( tmp[17]=it.baseObject.projector 		)catch(print" problem storting light ")
+						try( tmp[4]=it.color 						)catch(print" problem storing light ")
+						try( tmp[16]=it.baseObject.projectorMap 	)catch(print" problem storing light ")
+						try( tmp[17]=it.baseObject.projector 		)catch(print" problem storing light ")
 					)
 
 					tmp
@@ -1119,7 +1119,7 @@ struct LPM_RenderAPI
 					)
 					
 					-- Added handling for vray sun nodes
-					-- TODO: soring and restoring vray sun lights is causing errors, disabling override for them for now
+					-- TODO: storing and restoring vray sun lights is causing errors, disabling override for them for now
 					if (not LPM_VRayInstalled) or ((classof(it) != VRayLight) and (classof(it) != VRaySun)) then
 					(
 						try( theNode.color=it[4]    					)catch()
@@ -1294,7 +1294,7 @@ struct LPM_RenderAPI
 				LPM_Render.execScriptNodes thePass #postLPM
 				LPM_Root.PostRenderFrameScript = false
 				LPM_Root.PostRenderFrameScriptText = ""
-				LPM_Root.PostConvertVrimg2exr = LPM_Fun.getIni "Settings" "PostConvertVrimg2exr" string "C:\\Program Files\\Chaos Group\\V-Ray\\3dsmax 2014 for x64\\tools\\vrimg2exr.exe"
+				LPM_Root.PostConvertVrimg2exr = LPM_Fun.getIni "Settings" "PostConvertVrimg2exr" string ""
 				LPM_Root.PostConvert = false
 				LPM_Root.PostConvertCompression = 3
 				LPM_Root.PostConvertHalfFoat = false
@@ -1415,7 +1415,7 @@ fn LPM_renderPass thePass renderType theShot:undefined=
 --	catch(recoveryException = #render)
 
 	if recoveryException != #none
-	then ( messagebox("An error has occured in LPM during "+ recoveryException + "\nAttempting to restore the scene."))
+	then ( messagebox("An error has occurred in LPM during "+ recoveryException + "\nAttempting to restore the scene."))
 	else()
 
 		-- Post render actions
@@ -1459,7 +1459,7 @@ fn LPM_renderPass thePass renderType theShot:undefined=
 		if RndDialogOpened then(renderSceneDialog.open())
 
 	if recoveryException != #none
-	then ( messagebox("LPM sucsussfully attempted as scene recovery, \nPlease review your scene for any issues."))
+	then ( messagebox("LPM successfully attempted scene recovery, \nPlease review your scene for any issues."))
 	else()
 --	)
 )

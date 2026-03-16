@@ -24,22 +24,19 @@ function cameraOverscan_Override_PreRender =
     curFov = LPM_OperatorData.cameraOverscan.fovOverride
 
     -- Wire the FOV 
-    case curClass of
+    case ( classof curCam ) of
     (
         Freecamera:
             (
-            print "Free"
             paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
             )
         Targetcamera:
             (
-            print "Target"
             paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
             )
         Physical:
             (
-            print "PHYS"
-            paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )0
+            paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
             )
     )
     
@@ -62,8 +59,6 @@ function cameraOverscan_Override_PostRender =
 
 function curPrerenderAction =
 (
-    print "== cameraOverscan PreRenderAction =="
-
     -- Construct object for storing pre-render state for use for restoring later
     LPM_OperatorData.cameraOverscan = cameraOverscan_RestoreDataStr()
 
@@ -73,8 +68,6 @@ function curPrerenderAction =
 
 function curPostRenderAction =
 (
-    print "== cameraOverscan PostRenderAction =="
-
     -- call each of the postrender functions
     cameraOverscan_Override_PostRender()
 )
