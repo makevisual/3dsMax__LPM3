@@ -82,7 +82,7 @@ try
 (
 	if rendOutputFilename == "" then
 	(
-		rendOutputFilename = ""
+		rendOutputFilename = (dotNetClass "System.Environment").GetEnvironmentVariable "LOCALAPPDATA" + @"\LPM\render_tmp.exr"
 	)
 )
 catch()
