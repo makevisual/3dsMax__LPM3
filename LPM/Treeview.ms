@@ -82,7 +82,7 @@ try
 (
 	if rendOutputFilename == "" then
 	(
-		rendOutputFilename = "D:\\tmp.exr"
+		rendOutputFilename = ""
 	)
 )
 catch()

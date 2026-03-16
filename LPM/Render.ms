@@ -552,9 +552,9 @@ struct LPM_RenderAPI
 					-- VraySun objects do not have all the same properties as a standard vray light
 					if (not LPM_VRayInstalled) or ((classof(it) != VRayLight) and (classof(it) != VRaySun)) then
 					(
-						try( tmp[4]=it.color 						)catch(print" problem storting light ")
-						try( tmp[16]=it.baseObject.projectorMap 	)catch(print" problem storting light ")
-						try( tmp[17]=it.baseObject.projector 		)catch(print" problem storting light ")
+						try( tmp[4]=it.color 						)catch(print" problem storing light ")
+						try( tmp[16]=it.baseObject.projectorMap 	)catch(print" problem storing light ")
+						try( tmp[17]=it.baseObject.projector 		)catch(print" problem storing light ")
 					)
 
 					tmp
