@@ -176,6 +176,13 @@ struct LPM_RenderAPI
 		)
 	),
 
+	-- Classify a light as VRay or standard based on class name.
+	-- All VRay light classes (VRayLight, VRaySun, VRayIES, VRayAmbientLight, etc.) follow the "VRay*" naming convention.
+	-- Guarded by LPM_VRayInstalled so the pattern check is skipped when VRay is not loaded.
+	fn isVRayLight obj = (
+		LPM_VRayInstalled and (matchPattern ((classof obj) as string) pattern:"VRay*")
+	),
+
 	fn LightSetsApply lightNodes hitNodes lightSetArray =
 	(
 		for k=1 to lightNodes.count do
@@ -185,28 +192,10 @@ struct LPM_RenderAPI
 			for it in lightNodes[i] where ((finditem hitNodes it)==0) do
 			(
 				append hitNodes it
+				local isVRay = isVRayLight it
 
-				-- TODO: Remove these TRY CATCH blocks
-
-				try
-				(
-					case lightSetArray[i].pEnable of
-					(
-						2:
-						(
-							it.on = true
-							it.ishidden = false
-						)
-						3:
-						(
-							it.on = false
-							it.ishidden = true
-						)
-					)
-				)
-				catch()
-
-				try
+				-- Enable/Disable: VRay lights use .enabled, standard lights use .on
+				if isVRay then
 				(
 					case lightSetArray[i].pEnable of
 					(
@@ -222,41 +211,46 @@ struct LPM_RenderAPI
 						)
 					)
 				)
-				catch()
-
-				try
+				else
 				(
-					if (lightSetArray[i].pMultiplierEnable) then
+					case lightSetArray[i].pEnable of
 					(
-						it.baseObject.multiplier = lightSetArray[i].pMultiplier
+						2:
+						(
+							it.on = true
+							it.ishidden = false
+						)
+						3:
+						(
+							it.on = false
+							it.ishidden = true
+						)
 					)
 				)
-				catch()
 
-				try
+				-- Multiplier (both types use .multiplier on baseObject)
+				if (lightSetArray[i].pMultiplierEnable) then
 				(
-					if lightSetArray[i].pColorEnable then
-					(
-						it.color=lightSetArray[i].pColor
-					)
+					it.baseObject.multiplier = lightSetArray[i].pMultiplier
 				)
-				catch()
 
-				try
+				-- Color (both types use .color)
+				if lightSetArray[i].pColorEnable then
 				(
-					case lightSetArray[i].pCastShadows of
-					(
-						2:(it.baseObject.castShadows = true)
-						3:(it.baseObject.castShadows = false)
-					)
+					it.color = lightSetArray[i].pColor
 				)
-				catch()
 
-				-- VRay-specific light properties -- only attempted when VRay is installed.
-				-- Previously these were individual try/catch blocks that silently swallowed
-				-- failures on non-VRay systems. Now gated by an explicit global check.
-				if LPM_VRayInstalled then
+				-- Cast Shadows (both types use .castShadows on baseObject)
+				case lightSetArray[i].pCastShadows of
 				(
+					2:(it.baseObject.castShadows = true)
+					3:(it.baseObject.castShadows = false)
+				)
+
+				-- Type-specific properties
+				if isVRay then
+				(
+					-- VRay light properties
 					case lightSetArray[i].pAffectDiffuse of
 					(
 						2:(it.baseObject.affect_diffuse = true)
@@ -291,49 +285,34 @@ struct LPM_RenderAPI
 					if lightSetArray[i].pTextureEnable then
 						it.baseObject.texmap = lightSetArray[i].pTexture
 				)
-
-
-				---------    default part
-				try
+				else
 				(
+					-- Standard light properties
 					case lightSetArray[i].pAffectDiffuse of
 					(
 						2:(it.baseObject.affectDiffuse = true)
 						3:(it.baseObject.affectDiffuse = false)
 					)
-				)
-				catch()
 
-				try
-				(
 					case lightSetArray[i].pAffectSpecular of
 					(
 						2:(it.baseObject.affectSpecular = true)
 						3:(it.baseObject.affectSpecular = false)
 					)
-				)
-				catch()
 
-				try
-				(
 					if lightSetArray[i].pTextureEnable then
 					(
 						tmpProjector = it.baseObject.projector
-						it.baseObject.projectorMap=lightSetArray[i].pTexture
+						it.baseObject.projectorMap = lightSetArray[i].pTexture
 						it.baseObject.projector = tmpProjector
 					)
-				)
-				catch()
 
-				try
-				(
 					case lightSetArray[i].pUseTexture of
 					(
 						2:(it.baseObject.projector = true)
 						3:(it.baseObject.projector = false)
 					)
 				)
-				catch()
 			)
 		)
 	),
