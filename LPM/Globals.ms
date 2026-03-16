@@ -11,7 +11,6 @@ global LPM_treeview_rollout
 global LPM_RenderRo
 global LPM_multiCameraRo
 global LPM_RenderPass
-global LPM_render
 global LPM_Data
 global LPM_Render
 global LPM_atmRollout
