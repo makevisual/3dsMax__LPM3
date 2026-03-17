@@ -189,17 +189,17 @@ Based on the above, here are concrete work items we can tackle:
 - [x] Remove unimplemented render mode stubs from processor dropdown *(done — 8b6c34b)*
 
 ### Medium Effort
-- [ ] Consolidate nukeExport + aeExport into shared base (they're identical)
 - [ ] Consolidate cameraOverscan + renderImage into shared base
 - [ ] Extract shared VRay renderer code into a base, with version-specific overrides
 - [x] Make Deadline repository path configurable via INI/environment *(already was — vestigial hardcoded line removed in 8b6c34b)*
 - [x] Add logging to critical `try()catch()` blocks *(light restoration phase — 8b6c34b)*
 - [x] Remove unimplemented render mode stubs from processor dropdown *(done — 8b6c34b; see §7 Roadmap)*
+- [x] Add tyFlow plugin detection (`TyFlowCheck.ms`) following VRayCheck pattern
 
 ### Larger Effort
-- [ ] Redesign renderer dispatch for flexible version matching *(already uses wildcard `matchPattern` — may not need changes)*
+- [x] Redesign renderer dispatch for flexible version matching *(matchPattern wildcard approach is sufficient and safe)*
 - [ ] Finish camera hooks (Render.ms TODO items)
-- [ ] Complete the render element handling architecture
+- [x] Complete render element handling architecture *(post-render restore + skip guard fix)*
 - [x] Address Deadline batch name submission *(done — 25cdb89)*
 
 ---
@@ -230,12 +230,14 @@ These three render modes were removed from the processor dropdown (commit 8b6c34
 - **Related files:** `NukeAPI.ms` (Nuke integration API), `MAKE_nukeem.ms` (hardcoded paths — TODO #24)
 - **Related TODOs:** #20 (use `LPM_Root.renderCamera` not `selection[1]`), #22 (bare TODOs), #24-26 (NukeAPI incomplete)
 - **Dropdown entry to restore:** `"Export - Nuke Scene"`
+- **Note:** Will have significantly different code from AE export — keep as separate operator (do not consolidate)
 
 ### After Effects Export
 - **Purpose:** Export camera/scene data for After Effects
 - **Status:** Stub operator exists (`operator_aeExport.ms`), `EditAeExport()` function stub in `Treeview.ms`
 - **Related TODOs:** #21 (use `LPM_Root.renderCamera`), #23 (bare TODOs)
 - **Dropdown entry to restore:** `"Export - After Effects Camera"`
+- **Note:** Will have significantly different code from Nuke export — keep as separate operator (do not consolidate)
 
 ---
 
