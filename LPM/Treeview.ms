@@ -1135,14 +1135,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	--Dabelow nukeExport
 	fn EditNukeExport =
 	(
-		messagebox(" Feature not ready for production ")
-		-- createDialog nukeExportPropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
+		messagebox "Nuke Export is not yet implemented in LPM."
 	)
 
 	--Dabelow aeExport
 	fn EditAeExport =
 	(
-		createDialog aeExportPropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
+		messagebox "After Effects Export is not yet implemented in LPM."
 	)
 
 	fn AddXrefSceneOverride =
@@ -1381,7 +1380,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		if curMode == "Render - TyPreview"
 		then
 		(
-			messagebox(" Typreview not implemented yet")
+			messagebox "TyPreview render mode is not yet available in LPM."
 		)
 
 		if curMode == "Export - Bake 3dsMax Files"
@@ -1394,13 +1393,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		if curMode == "Export - Nuke Scene"
 		then
 		(
-			messagebox(" Nuke Export not implemented yet")
+			messagebox "Nuke Export is not yet available in LPM."
 		)
 
-		if curMode == "Export - After Effects Camera"		
+		if curMode == "Export - After Effects Camera"
 		then
 		(
-			messagebox(" AE Export not implemented yet")
+			messagebox "After Effects Export is not yet available in LPM."
 		)
 	)
 

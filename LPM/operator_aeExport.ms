@@ -1,76 +1,14 @@
+-- After Effects Export Operator — NOT YET IMPLEMENTED
 -- 3/16/2021 Aaron Dabelow theonlyaaron@gmail.com
+--
+-- This file is a placeholder. The aeExportPropsCA custom attribute
+-- exists in CA.ms but the operator logic has not been written.
+--
+-- When implementing, follow the pattern in operator_cameraOverscan.ms:
+--   1. Define a restore data struct
+--   2. Define pre/post render functions using LPM_Root.renderCamera (NOT selection[1])
+--   3. Hook into LPM_RenderDispatchAction dispatch via curPrerenderAction/curPostRenderAction
 
-struct cameraOverscan_RestoreDataStr
-(
-    newCamAnimhanlde     = undefined,
-    fovOverride          = undefined,
-    resXOriginal         = undefined,
-    resYOriginal         = undefined,
-    resOverride          = undefined,
-    resXOverride         = undefined,
-    resYOverride         = undefined,
-    null                 = undefined
- )
-
-function cameraOverscan_Override_PreRender =
-(
-    -- Fetch the global variable and assign the current state to it
-    curCam = selection[1] -- TODO get the real correct camera 
-    newCam = copy curCam
-    newCam.name = ( curCam.name + "_temp-overscan" )
-
-    -- Store the animhandle of the new camera, to be deleted later
-    LPM_OperatorData.cameraOverscan.newCamAnimhanlde  = getHandleByAnim newCam
-    curFov = LPM_OperatorData.cameraOverscan.fovOverride
-
-    -- Wire the FOV 
-    case ( classof curCam ) of
-    (
-        Freecamera:
-            (
-            paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
-            )
-        Targetcamera:
-            (
-            paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
-            )
-        Physical:
-            (
-            paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
-            )
-    )
-    
-
-    -- TODO:
-    -- Set as the camera to actually render from 
-    -- Set as the resolution to actually render 
-    
-)
-
-function cameraOverscan_Override_PostRender =
-(
-    -- Delete the new camera that was created 
-    curDelete = getAnimByHandle LPM_OperatorData.cameraOverscan.newCamAnimhanlde 
-    --delete curDelete
-
-    -- TODO:
-    -- reset resolution
-)
-
-function curPrerenderAction =
-(
-    -- Construct object for storing pre-render state for use for restoring later
-    LPM_OperatorData.cameraOverscan = cameraOverscan_RestoreDataStr()
-
-    -- call each of the prerender functions
-    cameraOverscan_Override_PreRender()
-)
-
-function curPostRenderAction =
-(
-    -- call each of the postrender functions
-    cameraOverscan_Override_PostRender()
-)
-
-if LPM_RenderDispatchAction == #preRender then curPrerenderAction()
-if LPM_RenderDispatchAction == #postRender then curPostRenderAction()
+-- No-op: do nothing when dispatched
+function curPrerenderAction = ()
+function curPostRenderAction = ()

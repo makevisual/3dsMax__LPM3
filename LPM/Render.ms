@@ -176,164 +176,133 @@ struct LPM_RenderAPI
 		)
 	),
 
+	-- Classify a light as VRay or standard based on class name.
+	-- All VRay light classes (VRayLight, VRaySun, VRayIES, VRayAmbientLight, etc.) follow the "VRay*" naming convention.
+	-- Guarded by LPM_VRayInstalled so the pattern check is skipped when VRay is not loaded.
+	-- Returns: true if obj is a VRay light, false otherwise (MaxScript returns last evaluated expression)
+	fn isVRayLight obj = (
+		LPM_VRayInstalled and (matchPattern ((classof obj) as string) pattern:"VRay*")
+	),
+
 	fn LightSetsApply lightNodes hitNodes lightSetArray =
 	(
-		for k=1 to lightNodes.count do
+		for lightSetIdx=lightNodes.count to 1 by -1 do
 		(
-			i=lightNodes.count+1-k
-
-			for it in lightNodes[i] where ((finditem hitNodes it)==0) do
+			for curLight in lightNodes[lightSetIdx] where ((finditem hitNodes curLight)==0) do
 			(
-				append hitNodes it
+				append hitNodes curLight
+				local isVRay = isVRayLight curLight
 
-				-- TODO: Remove these TRY CATCH blocks
-
-				try
+				-- Enable/Disable: .on is universal for all light nodes
+				case lightSetArray[lightSetIdx].pEnable of
 				(
-					case lightSetArray[i].pEnable of
+					2:
 					(
-						2:
-						(
-							it.on = true
-							it.ishidden = false
-						)
-						3:
-						(
-							it.on = false
-							it.ishidden = true
-						)
+						curLight.on = true
+						curLight.ishidden = false
+					)
+					3:
+					(
+						curLight.on = false
+						curLight.ishidden = true
 					)
 				)
-				catch()
 
-				try
+				-- VRay lights additionally use .enabled
+				if isVRay then
 				(
-					case lightSetArray[i].pEnable of
+					case lightSetArray[lightSetIdx].pEnable of
 					(
-						2:
-						(
-							it.enabled = true
-							it.ishidden = false
-						)
-						3:
-						(
-							it.enabled = false
-							it.ishidden = true
-						)
+						2: ( curLight.enabled = true )
+						3: ( curLight.enabled = false )
 					)
 				)
-				catch()
 
-				try
+				-- Multiplier (both types use .multiplier on baseObject)
+				if (lightSetArray[lightSetIdx].pMultiplierEnable) then
 				(
-					if (lightSetArray[i].pMultiplierEnable) then
-					(
-						it.baseObject.multiplier = lightSetArray[i].pMultiplier
-					)
+					curLight.baseObject.multiplier = lightSetArray[lightSetIdx].pMultiplier
 				)
-				catch()
 
-				try
+				-- Color (both types use .color)
+				if lightSetArray[lightSetIdx].pColorEnable then
 				(
-					if lightSetArray[i].pColorEnable then
-					(
-						it.color=lightSetArray[i].pColor
-					)
+					curLight.color = lightSetArray[lightSetIdx].pColor
 				)
-				catch()
 
-				try
+				-- Cast Shadows (both types use .castShadows on baseObject)
+				case lightSetArray[lightSetIdx].pCastShadows of
 				(
-					case lightSetArray[i].pCastShadows of
-					(
-						2:(it.baseObject.castShadows = true)
-						3:(it.baseObject.castShadows = false)
-					)
+					2:(curLight.baseObject.castShadows = true)
+					3:(curLight.baseObject.castShadows = false)
 				)
-				catch()
 
-				-- VRay-specific light properties -- only attempted when VRay is installed.
-				-- Previously these were individual try/catch blocks that silently swallowed
-				-- failures on non-VRay systems. Now gated by an explicit global check.
-				if LPM_VRayInstalled then
+				-- Type-specific properties
+				if isVRay then
 				(
-					case lightSetArray[i].pAffectDiffuse of
+					-- VRay light properties
+					case lightSetArray[lightSetIdx].pAffectDiffuse of
 					(
-						2:(it.baseObject.affect_diffuse = true)
-						3:(it.baseObject.affect_diffuse = false)
+						2:(curLight.baseObject.affect_diffuse = true)
+						3:(curLight.baseObject.affect_diffuse = false)
 					)
 
-					case lightSetArray[i].pAffectSpecular of
+					case lightSetArray[lightSetIdx].pAffectSpecular of
 					(
-						2:(it.baseObject.affect_specular = true)
-						3:(it.baseObject.affect_specular = false)
+						2:(curLight.baseObject.affect_specular = true)
+						3:(curLight.baseObject.affect_specular = false)
 					)
 
-					case lightSetArray[i].pAffectReflections of
+					case lightSetArray[lightSetIdx].pAffectReflections of
 					(
-						2:(it.baseObject.affect_reflections = true)
-						3:(it.baseObject.affect_reflections = false)
+						2:(curLight.baseObject.affect_reflections = true)
+						3:(curLight.baseObject.affect_reflections = false)
 					)
 
-					case lightSetArray[i].pUseTexture of
+					case lightSetArray[lightSetIdx].pUseTexture of
 					(
-						2:(it.baseObject.texmap_on = true)
-						3:(it.baseObject.texmap_on = false)
+						2:(curLight.baseObject.texmap_on = true)
+						3:(curLight.baseObject.texmap_on = false)
 					)
 
 					-- TODO: This is where the V-Ray Light is being modified, needs to be restored
-					case lightSetArray[i].pVrayInvisible of
+					case lightSetArray[lightSetIdx].pVrayInvisible of
 					(
-						2:(it.baseObject.invisible = true)
-						3:(it.baseObject.invisible = false)
+						2:(curLight.baseObject.invisible = true)
+						3:(curLight.baseObject.invisible = false)
 					)
 
-					if lightSetArray[i].pTextureEnable then
-						it.baseObject.texmap = lightSetArray[i].pTexture
+					if lightSetArray[lightSetIdx].pTextureEnable then
+						curLight.baseObject.texmap = lightSetArray[lightSetIdx].pTexture
 				)
-
-
-				---------    default part
-				try
+				else
 				(
-					case lightSetArray[i].pAffectDiffuse of
+					-- Standard light properties
+					case lightSetArray[lightSetIdx].pAffectDiffuse of
 					(
-						2:(it.baseObject.affectDiffuse = true)
-						3:(it.baseObject.affectDiffuse = false)
+						2:(curLight.baseObject.affectDiffuse = true)
+						3:(curLight.baseObject.affectDiffuse = false)
 					)
-				)
-				catch()
 
-				try
-				(
-					case lightSetArray[i].pAffectSpecular of
+					case lightSetArray[lightSetIdx].pAffectSpecular of
 					(
-						2:(it.baseObject.affectSpecular = true)
-						3:(it.baseObject.affectSpecular = false)
+						2:(curLight.baseObject.affectSpecular = true)
+						3:(curLight.baseObject.affectSpecular = false)
 					)
-				)
-				catch()
 
-				try
-				(
-					if lightSetArray[i].pTextureEnable then
+					if lightSetArray[lightSetIdx].pTextureEnable then
 					(
-						tmpProjector = it.baseObject.projector
-						it.baseObject.projectorMap=lightSetArray[i].pTexture
-						it.baseObject.projector = tmpProjector
+						tmpProjector = curLight.baseObject.projector
+						curLight.baseObject.projectorMap = lightSetArray[lightSetIdx].pTexture
+						curLight.baseObject.projector = tmpProjector
 					)
-				)
-				catch()
 
-				try
-				(
-					case lightSetArray[i].pUseTexture of
+					case lightSetArray[lightSetIdx].pUseTexture of
 					(
-						2:(it.baseObject.projector = true)
-						3:(it.baseObject.projector = false)
+						2:(curLight.baseObject.projector = true)
+						3:(curLight.baseObject.projector = false)
 					)
 				)
-				catch()
 			)
 		)
 	),
