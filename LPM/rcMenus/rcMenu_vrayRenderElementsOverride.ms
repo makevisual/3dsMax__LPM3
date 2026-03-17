@@ -123,7 +123,7 @@ rollout vrayRenderElementsPropsRoll "VRay Render Elements Override 1.0" width:32
 		LVsetColumns 		elementList #("","Elements" )
 
 		-- Get the scene node for the element operator
-		cp 		=LPM_treeviewRollout.tv.selectedNode.tag.value
+		cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
 		theNode = cp
 
 		ca = custAttributes.get theNode 1
@@ -157,14 +157,14 @@ rcMenu rc_vrayRenderElementsPropsMenu
 	
 	on copyProps picked do
 	(
-		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
 	
 	on removeProps picked do
 	(
-		theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 		delete theNode
-		LPM_treeviewRollout.tv.selectedNode.remove()
+		LPM_treeview_rollout.tv.selectedNode.remove()
 	)
 	on editProps picked do
 	(		

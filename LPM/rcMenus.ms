@@ -7,7 +7,7 @@ filein @"rcMenus\rcMenu_renderImage.ms"							-- Dabelow renderImage
 filein @"rcMenus\rcMenu_nukeExport.ms"							-- Dabelow nukeExport
 filein @"rcMenus\rcMenu_aeExport.ms"							-- Dabelow aeExport
 
- rollout lightSetProps ("Editing: "+ (LPM_Fun.getname LPM_treeviewRollout.tv.selectedNode.tag.value.name)) width:195 height:265
+ rollout lightSetProps ("Editing: "+ (LPM_Fun.getname LPM_treeview_rollout.tv.selectedNode.tag.value.name)) width:195 height:265
 	(
 		GroupBox grp3 "Light Control" pos:[5,0] width:184 height:260
 
@@ -46,8 +46,8 @@ filein @"rcMenus\rcMenu_aeExport.ms"							-- Dabelow aeExport
 
 		on lightSetProps open do
 		(
-			LPM_treeviewRollout.FreezeWindow()
-			theLightSet  						=LPM_treeviewRollout.tv.selectedNode.tag.value
+			LPM_treeview_rollout.FreezeWindow()
+			theLightSet  						=LPM_treeview_rollout.tv.selectedNode.tag.value
 			pEnable.selection 					= theLightSet.pEnable
 			pCastShadows.selection 				= theLightSet.pCastShadows
 			pColorEnable.checked 				= theLightSet.pColorEnable
@@ -75,7 +75,7 @@ filein @"rcMenus\rcMenu_aeExport.ms"							-- Dabelow aeExport
 
 		on lightSetProps close do
 		(
-			theLightSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theLightSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 			theLightSet.pEnable=pEnable.selection
 			theLightSet.pMultiplierEnable = pMultiplierEnable.checked
 			theLightSet.pMultiplier = pMultiplier.value
@@ -89,8 +89,8 @@ filein @"rcMenus\rcMenu_aeExport.ms"							-- Dabelow aeExport
 			theLightSet.pVrayInvisible = pVrayInvisible.selection
 			theLightSet.pTextureEnable=pTextureEnable.checked
 			theLightSet.pTexture=pTexture.map
-			LPM_Fun.setIcon LPM_treeviewRollout.tv.selectedNode
-			LPM_treeviewRollout.UnFreezeWindow()
+			LPM_Fun.setIcon LPM_treeview_rollout.tv.selectedNode
+			LPM_treeview_rollout.UnFreezeWindow()
 		)
 
 		on pTexture picked TmpMap do
@@ -179,7 +179,7 @@ filein @"rcMenus\rcMenu_aeExport.ms"							-- Dabelow aeExport
 
 -------------------------------------------------------------------------------------------------------   LPM_objectSetProps   -------------------------------------------------------------------------------------------------------
 
-rollout LPM_objectSetProps ("Editing: "+(LPM_Fun.getname LPM_treeviewRollout.tv.selectedNode.tag.value.name))
+rollout LPM_objectSetProps ("Editing: "+(LPM_Fun.getname LPM_treeview_rollout.tv.selectedNode.tag.value.name))
 (
 
 	GroupBox grp5 "Render Control" pos:[3,3] width:190 height:325
@@ -338,9 +338,9 @@ rollout LPM_objectSetProps ("Editing: "+(LPM_Fun.getname LPM_treeviewRollout.tv.
 
 	on LPM_objectSetProps open do
 	(
-		LPM_treeviewRollout.FreezeWindow()
+		LPM_treeview_rollout.FreezeWindow()
 
-		theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 		pColor.Color=theObjectSet.pColor
 
 
@@ -378,7 +378,7 @@ rollout LPM_objectSetProps ("Editing: "+(LPM_Fun.getname LPM_treeviewRollout.tv.
 	)
 	on editMax pressed do
 	(
-		theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 		setUserPropBuffer theObjectSet  theObjectSet.userProp
 		select theObjectSet
 		max properties
@@ -393,7 +393,7 @@ rollout LPM_objectSetProps ("Editing: "+(LPM_Fun.getname LPM_treeviewRollout.tv.
 		(
 			TempLayer = LayerManager.newLayerFromName "VrPropertiesOverrideTempLayer"
 
-			theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 
 			theBuffer=theObjectSet.userProp
 
@@ -414,7 +414,7 @@ rollout LPM_objectSetProps ("Editing: "+(LPM_Fun.getname LPM_treeviewRollout.tv.
 
 	on LPM_objectSetProps close do
 	(
-		theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 		theObjectSet.intP=#(pRenderable.selection,pCastShadows.selection,pReceiveShadows.selection,\
 			pVisibleToCamera.selection, pVisibleToReflect.selection,pMotionBlur.selection,pApplyAtmospherics.selection,pRenderOccluded.selection)
 		if(pOverrideUserProps.checked) then
@@ -427,14 +427,14 @@ rollout LPM_objectSetProps ("Editing: "+(LPM_Fun.getname LPM_treeviewRollout.tv.
 		theObjectSet.intP[10]=pRenderableTrue.selection
 
 		theObjectSet.pColor=pColor.Color
-		--LPM_treeviewRollout.tv.selectedNode.ForeColor=(dotNetClass "System.Drawing.Color").fromARGB  theObjectSet.pColor.r theObjectSet.pColor.g theObjectSet.pColor.b
-		LPM_Fun.setIcon LPM_treeviewRollout.tv.selectedNode
+		--LPM_treeview_rollout.tv.selectedNode.ForeColor=(dotNetClass "System.Drawing.Color").fromARGB  theObjectSet.pColor.r theObjectSet.pColor.g theObjectSet.pColor.b
+		LPM_Fun.setIcon LPM_treeview_rollout.tv.selectedNode
 
 
 		theObjectSet.visible=pVisible.selection
 		theObjectSet.selectable=pSelectable.selection
 
-		LPM_treeviewRollout.UnFreezeWindow()
+		LPM_treeview_rollout.UnFreezeWindow()
 	)
 )
 
@@ -450,16 +450,16 @@ rollout wildCardRO "Wildcard" width:217 height:57
 
 	on wildCardRO open do
 	(
-		LPM_treeviewRollout.FreezeWindow()
-		treenode=LPM_treeviewRollout.tv.selectedNode
+		LPM_treeview_rollout.FreezeWindow()
+		treenode=LPM_treeview_rollout.tv.selectedNode
 		WildText.text=treenode.Parent.tag.value.wildCard[treenode.tag.value.index]
 	)
 	on wildCardRO close do
 	(
-		treenode=LPM_treeviewRollout.tv.selectedNode
+		treenode=LPM_treeview_rollout.tv.selectedNode
 		treenode.Parent.tag.value.wildCard[treenode.tag.value.index]=WildText.text
-		LPM_treeviewRollout.UnFreezeWindow()
-		LPM_treeviewRollout.tv.selectedNode.text=WildText.text
+		LPM_treeview_rollout.UnFreezeWindow()
+		LPM_treeview_rollout.tv.selectedNode.text=WildText.text
 	)
 	on test pressed do
 	(
@@ -532,8 +532,8 @@ rollout LPM_scriptRO1 "Main options" --width:500 height:434
 
 	on LPM_scriptRO1 open do
 	(
-		LPM_treeviewRollout.FreezeWindow()
-		scriptObj=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.FreezeWindow()
+		scriptObj=LPM_treeview_rollout.tv.selectedNode.tag.value
 
 		PreRender.checked=scriptObj.preRender
 		PostRender.checked=scriptObj.postRender
@@ -559,7 +559,7 @@ rollout LPM_scriptRO1 "Main options" --width:500 height:434
 		ScriptObj.script2=LPM_scriptRO3.scriptText.text
 		scriptObj.PostRenderFrameScriptText = LPM_scriptRO4.scriptText.text
 
-		LPM_treeviewRollout.UnFreezeWindow()
+		LPM_treeview_rollout.UnFreezeWindow()
 	)
 
 )
@@ -678,9 +678,9 @@ rollout ModifierOverRollout "Modifiers Override" width:217 height:361
 
 	on ModifierOverRollout open do
 	(
-		LPM_treeviewRollout.FreezeWindow()
+		LPM_treeview_rollout.FreezeWindow()
 
-		theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 
 		activeNode = theNode.activeNode
 		activeModifiersArray = theNode.activeModifiers
@@ -690,7 +690,7 @@ rollout ModifierOverRollout "Modifiers Override" width:217 height:361
 
 	on ModifierOverRollout close do
 	(
-		LPM_treeviewRollout.UnFreezeWindow()
+		LPM_treeview_rollout.UnFreezeWindow()
 
 		if activeNode != 0 then
 		(
@@ -736,16 +736,16 @@ rollout XrefSceneRollout "Xref Scene Override" width:400 height:300
 
 	on XrefSceneRollout open do
 	(
-		LPM_treeviewRollout.FreezeWindow()
+		LPM_treeview_rollout.FreezeWindow()
 
-		theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 		activeXrefSceneArray = theNode.fileNames
 		fnUpdateUI ()
 	)
 
 	on XrefSceneRollout close do
 	(
-		LPM_treeviewRollout.UnFreezeWindow()
+		LPM_treeview_rollout.UnFreezeWindow()
 
 		theNode.fileNames = #()
 
@@ -806,15 +806,15 @@ rollout XrefObjRollout "Xref Object Override" width:400 height:300
 
 	on XrefObjRollout open do
 	(
-		LPM_treeviewRollout.FreezeWindow()
-		theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.FreezeWindow()
+		theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 		activeXrefObjArray = theNode.fileNames
 		fnUpdateUI ()
 	)
 
 	on XrefObjRollout close do
 	(
-		LPM_treeviewRollout.UnFreezeWindow()
+		LPM_treeview_rollout.UnFreezeWindow()
 
 		theNode.fileNames = #()
 
@@ -890,8 +890,8 @@ rollout LPM_atmRollout "Env, Effects, Atmosphere" width:235 height:445
 
 	on LPM_atmRollout open do
 	(
-		LPM_treeviewRollout.FreezeWindow()
-		theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.FreezeWindow()
+		theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 
 		re = maxOps.GetCurRenderElementMgr()
 		for i=1 to re.NumRenderElements() do
@@ -1146,7 +1146,7 @@ rollout LPM_atmRollout "Env, Effects, Atmosphere" width:235 height:445
 		theNode.exposureOverride=exposureOverride.checked
 		theNode.exposureInt=exposureDDL.selection
 		theNode.initialized=true
-		LPM_treeviewRollout.UnFreezeWindow()
+		LPM_treeview_rollout.UnFreezeWindow()
 
 	)
 )
@@ -1288,9 +1288,9 @@ rollout LPM_commonRollout "Common Properties" width:370 height:350
 
 	on LPM_commonRollout open do
 	(
-		LPM_treeviewRollout.FreezeWindow()
-		cp=LPM_treeviewRollout.tv.selectedNode.tag.value
-		theNode=LPM_treeviewRollout.tv.selectedNode
+		LPM_treeview_rollout.FreezeWindow()
+		cp=LPM_treeview_rollout.tv.selectedNode.tag.value
+		theNode=LPM_treeview_rollout.tv.selectedNode
 
 		cameraList=for i in $cameras where (superclassof i==camera) collect i
 		cameraNameList=for it in cameraList collect it.name
@@ -1330,7 +1330,7 @@ rollout LPM_commonRollout "Common Properties" width:370 height:350
 	on LPM_commonRollout close do
 	(
 		try(
-		cp=LPM_treeviewRollout.tv.selectedNode.tag.value
+		cp=LPM_treeview_rollout.tv.selectedNode.tag.value
 
 		cp.initialized=true
 		cp._rendTimeType=_rendTimeType.state
@@ -1362,7 +1362,7 @@ rollout LPM_commonRollout "Common Properties" width:370 height:350
 				)
 		)
 		theNode.text=LPM_Fun.generateCommonPropName cp
-		LPM_treeviewRollout.UnFreezeWindow()
+		LPM_treeview_rollout.UnFreezeWindow()
 	)
 	catch( messagebox "LPM failed to save common properties" title:"LPM Error")
 	)
@@ -1375,21 +1375,21 @@ rollout setPicker "Pick the Set"
 
 	on setPicker open do
 	(
-		LPM_treeviewRollout.FreezeWindow()
+		LPM_treeview_rollout.FreezeWindow()
 		if(getNumNamedSelSets()==0) then
 			theSets.items=#("")
 		theSets.items=(for i=1 to getNumNamedSelSets() collect getNamedSelSetName i)
 	)
 	on setPicker close do
 	(
-		theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 		theObjectSet.namedSet[theObjectSet.namedSet.count+1]=theSets.selected
-		LPM_treeviewRollout.UnFreezeWindow()
+		LPM_treeview_rollout.UnFreezeWindow()
 
-		thePassNode=LPM_treeviewRollout.tv.selectedNode.parent
-		LPM_treeviewRollout.addPassTv thePassNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode.parent
+		LPM_treeview_rollout.addPassTv thePassNode
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 )
 
@@ -1402,7 +1402,7 @@ rollout matPicker "Pick the Material"
 
 	on matPicker open do
 	(
-		LPM_treeviewRollout.FreezeWindow()
+		LPM_treeview_rollout.FreezeWindow()
 		theSets.items=(for it in scenematerials collect it.name)
 	)
 
@@ -1410,14 +1410,14 @@ rollout matPicker "Pick the Material"
 	(
 		if(theSets.selection>0) then
 		(
-			theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 			append theObjectSet.mats theSets.selected
 		)
-		LPM_treeviewRollout.UnFreezeWindow()
-		thePassNode=LPM_treeviewRollout.tv.selectedNode.parent
-		LPM_treeviewRollout.addPassTv thePassNode
+		LPM_treeview_rollout.UnFreezeWindow()
+		thePassNode=LPM_treeview_rollout.tv.selectedNode.parent
+		LPM_treeview_rollout.addPassTv thePassNode
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 )
 
@@ -1430,8 +1430,8 @@ rollout layerPicker "Pick Layers" height:420 width:200
 
 	on layerPicker open do
 	(
-		theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
-		LPM_treeviewRollout.FreezeWindow()
+		theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.FreezeWindow()
 		fn compareFN v1 v2 = if((LPM_Fun.uppercase v1) < (LPM_Fun.uppercase v2)) then return -1 else return 1
 
 		items=#()
@@ -1458,14 +1458,14 @@ rollout layerPicker "Pick Layers" height:420 width:200
 		LPM_Fun.setIni "Layer Picker" "X_Size" (layerPicker.width as string)
 		LPM_Fun.setIni "Layer Picker" "Y_Size" (layerPicker.height as string)
 
-		theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 		--theObjectSet.layers=(for i=1 to theLayers.items.count where theLayers.selection[i] collect theLayers.items[i])
 		theObjectSet.layers = LPM_Fun.SaveListView theLayers
-		LPM_treeviewRollout.UnFreezeWindow()
-		thePassNode=LPM_treeviewRollout.tv.selectedNode.parent
-		LPM_treeviewRollout.addPassTv thePassNode
+		LPM_treeview_rollout.UnFreezeWindow()
+		thePassNode=LPM_treeview_rollout.tv.selectedNode.parent
+		LPM_treeview_rollout.addPassTv thePassNode
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 
 	on layerPicker resized theSize do
@@ -1552,14 +1552,14 @@ rcMenu rc_MainMenu
 	(
 		LPM_disabledIconFolder = "blacks"
 		LPM_Fun.setIni "Settings" "disabledIconColor" "blacks"
-		LPM_treeviewRollout.reloadIcons()
+		LPM_treeview_rollout.reloadIcons()
 	)
 
 	on iconColorReds picked do
 	(
 		LPM_disabledIconFolder = "reds"
 		LPM_Fun.setIni "Settings" "disabledIconColor" "reds"
-		LPM_treeviewRollout.reloadIcons()
+		LPM_treeview_rollout.reloadIcons()
 	)
 )
 
@@ -1591,7 +1591,7 @@ rcMenu rc_RootMenu
 
 		for it in LPM_Root.children where it.type=="pass" do ( it.active = true	)
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 
 	)
 
@@ -1604,7 +1604,7 @@ rcMenu rc_RootMenu
 		)
 
 		for it in LPM_Root.children where it.type=="pass" do ( it.active = false )
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 
 	)
 
@@ -1629,7 +1629,7 @@ rcMenu rc_RootMenu
 	(
 		theProps=LPM_Fun.createPassGroup "Group"
 		theProps.parent=LPM_Root
-		newPg=LPM_treeviewRollout.createPassGroupTv theProps
+		newPg=LPM_treeview_rollout.createPassGroupTv theProps
 	)
 
 	on addPass picked do
@@ -1667,7 +1667,7 @@ rcMenu rc_RootMenu
 			)
 		)
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 
 	)
 	on deleteAllPasses picked do
@@ -1695,7 +1695,7 @@ rcMenu rc_RootMenu
 					for jt in (LPM_Fun.getAllChildren it) do delete jt
 				)
 
-				LPM_treeviewRollout.updateTV()
+				LPM_treeview_rollout.updateTV()
 			)
 		)
 	)
@@ -1714,8 +1714,8 @@ rcMenu rc_shotRootMenu
 	on newShot picked do
 	(
 		theShot=LPM_Fun.createShot LPM_Root
-		shotNode=LPM_treeviewRollout.createShotTv theShot
-		LPM_treeviewRollout.addShotTv shotNode
+		shotNode=LPM_treeview_rollout.createShotTv theShot
+		LPM_treeview_rollout.addShotTv shotNode
 		LPM_Treeview_Rollout.renameNode shotNode
 		--shotNode.beginEdit()
 	)
@@ -1728,7 +1728,7 @@ rcMenu rc_shotRootMenu
 		(	it.parent=undefined
 			it.parent=shotRoot
 		)
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 	on deleteAllShots picked do
 	(
@@ -1742,7 +1742,7 @@ rcMenu rc_shotRootMenu
 				(
 					for jt in (LPM_Fun.getAllChildren it) do delete jt
 				)
-				LPM_treeviewRollout.updateTV()
+				LPM_treeview_rollout.updateTV()
 			)
 		)
 	)
@@ -1766,13 +1766,13 @@ rcMenu rc_PassGroup
 	(
 		undo "LPM delete" on
 		(
-			grp=LPM_treeviewRollout.tv.selectedNode.tag.value
+			grp=LPM_treeview_rollout.tv.selectedNode.tag.value
 			for child in grp.children do
 			(
 				child.parent=LPM_Root
 			)
 			delete grp
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on deleteGroupChildren picked do
@@ -1781,16 +1781,16 @@ rcMenu rc_PassGroup
 		(
 			if(querybox "Are you sure you want to delete the group and all its passes?") then
 			(
-				grp=LPM_treeviewRollout.tv.selectedNode.tag.value
+				grp=LPM_treeview_rollout.tv.selectedNode.tag.value
 				chld=LPM_Fun.getAllChildren grp
 				delete chld
-				LPM_treeviewRollout.updateTV()
+				LPM_treeview_rollout.updateTV()
 			)
 		)
 	)
 	fn submitPG RenderType=
 	(
-		pg=LPM_treeviewRollout.tv.selectedNode.tag.value
+		pg=LPM_treeview_rollout.tv.selectedNode.tag.value
 		whoToRender=#()
 
 		whoToRender=for pass in pg.children where  (isvalidnode pass) and (pass.type=="pass") and (pass.active)  collect #(pass)
@@ -1855,79 +1855,79 @@ rcMenu rc_shotMenu
 
 	on renameShot picked do 
 	(
-		LPM_treeviewRollout.renameNode LPM_treeviewRollout.tv.selectedNode
+		LPM_treeview_rollout.renameNode LPM_treeview_rollout.tv.selectedNode
 	)
 
 	on nameIncrement picked do 
 	(
-		LPM_treeviewRollout.offsetSelectedShot LPM_treeviewRollout.tv #increment
+		LPM_treeview_rollout.offsetSelectedShot LPM_treeview_rollout.tv #increment
 	)
 
 	on nameDecrement picked do 
 	(
-		LPM_treeviewRollout.offsetSelectedShot LPM_treeviewRollout.tv #decrement
+		LPM_treeview_rollout.offsetSelectedShot LPM_treeview_rollout.tv #decrement
 	)
 
 
 	on AddCommon picked do
 	(
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		if((LPM_Fun.firstChildByType thePass "commonProps")==undefined) then
 		(
 			theProps=LPM_Fun.createCommonProps "commonProps"
 			theProps.parent=thePass
-			LPM_treeviewRollout.addShotTv LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.addShotTv LPM_treeview_rollout.tv.selectedNode
 		)
 	)
 
 	on AddCameraOverscan picked do
 	(
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		if((LPM_Fun.firstChildByType thePass "cameraOverscan")==undefined) then
 		(
 			theProps=LPM_Fun.createCameraOverscanProps "cameraOverscan"
 			theProps.parent=thePass
-			LPM_treeviewRollout.addShotTv LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.addShotTv LPM_treeview_rollout.tv.selectedNode
 		)
 	)
 
 	on AddRenderImage picked do
 	(
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		if((LPM_Fun.firstChildByType thePass "renderImage")==undefined) then
 		(
 			theProps=LPM_Fun.createRenderImageProps "renderImage"
 			theProps.parent=thePass
-			LPM_treeviewRollout.addShotTv LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.addShotTv LPM_treeview_rollout.tv.selectedNode
 		)
 	)
 
 
 	on AddNukeExport picked do
 	(
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		if((LPM_Fun.firstChildByType thePass "nukeExport")==undefined) then
 		(
 			theProps=LPM_Fun.createNukeExportProps "nukeExport"
 			theProps.parent=thePass
-			LPM_treeviewRollout.addShotTv LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.addShotTv LPM_treeview_rollout.tv.selectedNode
 		)
 	)
 
 	on AddAeExport picked do
 	(
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		if((LPM_Fun.firstChildByType thePass "aeExport")==undefined) then
 		(
 			theProps=LPM_Fun.createAeExportProps "aeExport"
 			theProps.parent=thePass
-			LPM_treeviewRollout.addShotTv LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.addShotTv LPM_treeview_rollout.tv.selectedNode
 		)
 	)
 
 	on revealInExplorerShot picked do
 	(
-		theShot = LPM_treeviewRollout.tv.selectedNode.tag.value
+		theShot = LPM_treeview_rollout.tv.selectedNode.tag.value
 		curPath = ( LPM_Root.rootDir + (LPM_Fun.getName theShot.name) + @"\" )
 		shellLaunch curPath ""
 	)
@@ -1941,7 +1941,7 @@ rcMenu rc_shotMenu
 	(
 		undo "LPM delete" on
 		(
-			LPM_treeviewRollout.deleteSelectedPass LPM_treeviewRollout.tv
+			LPM_treeview_rollout.deleteSelectedPass LPM_treeview_rollout.tv
 		)
 	)
 
@@ -1949,14 +1949,14 @@ rcMenu rc_shotMenu
 	(
 		undo "LPM delete" on
 		(
-			LPM_treeviewRollout.duplicateSelectedShot LPM_treeviewRollout.tv
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.duplicateSelectedShot LPM_treeview_rollout.tv
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 
 	on renderShot picked do
 	(
-		theShot=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theShot=LPM_treeview_rollout.tv.selectedNode.tag.value
 
 		whoToRender=#()
 		if(theShot.allpasses) then
@@ -1978,7 +1978,7 @@ rcMenu rc_shotMenu
 	)
 	on renderShotNetwork picked do
 	(
-		theShot=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theShot=LPM_treeview_rollout.tv.selectedNode.tag.value
 
 		whoToRender=#()
 		if(theShot.allpasses) then
@@ -2001,14 +2001,14 @@ rcmenu rc_shotPassMenu
 	(
 		undo "LPM delete" on
 		(
-			theShot=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
-			index=LPM_treeviewRollout.tv.selectedNode.tag.value.index
+			theShot=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
+			index=LPM_treeview_rollout.tv.selectedNode.tag.value.index
 			deleteItem theShot.passes index
 			deleteItem theSHot.passesOn index
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV() -- DABELOW
+			LPM_treeview_rollout.updateTV() -- DABELOW
 		)
 	)
 )
@@ -2052,34 +2052,34 @@ rcMenu rc_PassMenu
 	)
 	on renamePassSettings picked do
 	(
-		LPM_treeviewRollout.renameNode LPM_treeviewRollout.tv.selectedNode
+		LPM_treeview_rollout.renameNode LPM_treeview_rollout.tv.selectedNode
 	)
 	on deletePass picked do
 	(
 		undo "LPM delete" on
 		(
-			LPM_treeviewRollout.deleteSelectedPass LPM_treeviewRollout.tv
+			LPM_treeview_rollout.deleteSelectedPass LPM_treeview_rollout.tv
 
 			LPM_activePass = undefined
 
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on previewThisPass picked do
 	(
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		LPM_renderPass thePass #preview
 	)
 	on preview50ThisPass picked do
 	(
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		LPM_renderPass thePass #previewHalf
 	)
 	on renderThisPass picked do
 	(
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		LPM_renderPass thePass #local
 	)
 	
@@ -2087,7 +2087,7 @@ rcMenu rc_PassMenu
 	(
 		if not((LPM_Root.renderType==2) or (LPM_Root.renderType==4)) then
 		(
-			LPM_Fun.whoToRender=#(#(LPM_treeviewRollout.tv.selectedNode.tag.value))
+			LPM_Fun.whoToRender=#(#(LPM_treeview_rollout.tv.selectedNode.tag.value))
 			LPM_Fun.launchNetworkRender()
 		)
 		else
@@ -2098,7 +2098,7 @@ rcMenu rc_PassMenu
 	on viewPass picked do
 	(
 		gc light:true delayed:false
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		fname= LPM_Fun.getPreviewFile thePass
 		theBM=undefined
 		if((getfiles fname).count != 0) then
@@ -2111,65 +2111,65 @@ rcMenu rc_PassMenu
 	)
 	on viewPassRam picked do
 	(
-		thePath=(LPM_Fun.getPassPath LPM_Root (LPM_treeviewRollout.tv.selectedNode.tag.value)  elementName:"Beauty")
+		thePath=(LPM_Fun.getPassPath LPM_Root (LPM_treeview_rollout.tv.selectedNode.tag.value)  elementName:"Beauty")
 		LPM_Fun.viewRamplayer thePath
 	)
 
 	on commonPropsAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		thePass.expanded = true
 		if((LPM_Fun.firstChildByType thePass "commonProps")==undefined) then
 		(
 			theProps=LPM_Fun.createCommonProps "Common Props"
 			theProps.parent=thePass
-			LPM_treeviewRollout.addPassTV thePassNode
+			LPM_treeview_rollout.addPassTV thePassNode
 			--edit: Jake Jeziorski with auto-name option it's just annoying to rename
 		)
 	)
 	on newOperator picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		thePass.expanded = true
 		LPM_Operators.fnNewOperator thePass
-		LPM_treeviewRollout.addPassTV thePassNode
+		LPM_treeview_rollout.addPassTV thePassNode
 	)
 	on scriptAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		thePass.expanded = true
 		theScript=LPM_Fun.createScript "Script"
 		theScript.parent=thePass
-		LPM_treeviewRollout.addPassTV thePassNode
-		LPM_fun.editLabelByNode theScript LPM_treeviewRollout.tvroot
+		LPM_treeview_rollout.addPassTV thePassNode
+		LPM_fun.editLabelByNode theScript LPM_treeview_rollout.tvroot
 	)
 
 	on xrefObjAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		thePass.expanded = true
 		if((LPM_Fun.firstChildByType thePass "xrefObj")==undefined) then
 		(
 			theProps=LPM_Fun.createNode "Xref Object" "xrefObj"
 			theProps.parent=thePass
-			LPM_treeviewRollout.addPassTV thePassNode
+			LPM_treeview_rollout.addPassTV thePassNode
 		)
 	)
 
 	on xrefSceneAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		thePass.expanded = true
 		if((LPM_Fun.firstChildByType thePass "xrefScene")==undefined) then
 		(
 			theProps=LPM_Fun.createNode "Xref Scene" "xrefScene"
 			theProps.parent=thePass
-			LPM_treeviewRollout.addPassTV thePassNode
+			LPM_treeview_rollout.addPassTV thePassNode
 		)
 	)
 
@@ -2181,85 +2181,85 @@ rcMenu rc_PassMenu
 	-- Dabelow
 	on deadlineAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		theSet=LPM_Fun.createDeadlineProps "Deadline"
 		theSet.parent=thePass
-		LPM_treeviewRollout.addPassTV thePassNode
+		LPM_treeview_rollout.addPassTV thePassNode
 
 	)
 
 	-- Dabelow vrayRenderElements
 	on vrayRenderElementsPropsAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		theSet=LPM_Fun.createVrayRenderElementsProps "vrayRenderElements"
 		theSet.parent=thePass
-		LPM_treeviewRollout.addPassTV thePassNode
+		LPM_treeview_rollout.addPassTV thePassNode
 
 	)
 
 	on vrayPropsAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		theSet=LPM_Fun.createVrayProps "Vray Override"
 
 		theSet.parent=thePass
-		LPM_treeviewRollout.addPassTV thePassNode
+		LPM_treeview_rollout.addPassTV thePassNode
 
 	)
 
 	on effectsPropsAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		thePass.expanded = true
 		if((LPM_Fun.firstChildByType thePass "envProps")==undefined) then
 		(
 			envProps=LPM_Fun.createNode "Environment Override" "envProps"
 			envProps.parent=thePass
-			LPM_treeviewRollout.addPassTV thePassNode
+			LPM_treeview_rollout.addPassTV thePassNode
 		)
 	)
 
 	on ModifierOverAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		thePass.expanded = true
 		theModifierOver = LPM_Fun.createNode "Modifier Override" "ModifierOver"
 		theModifierOver.parent=thePass
-		LPM_treeviewRollout.addPassTV thePassNode
-		LPM_fun.editLabelByNode theModifierOver LPM_treeviewRollout.tvroot
+		LPM_treeview_rollout.addPassTV thePassNode
+		LPM_fun.editLabelByNode theModifierOver LPM_treeview_rollout.tvroot
 
 	)
 
 	on objectSetAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		thePass.expanded = true
 		theSet=LPM_Fun.createObjectSet "New Set"
 		theSet.parent=thePass
-		LPM_treeviewRollout.addPassTV thePassNode
-		LPM_fun.editLabelByNode theSet LPM_treeviewRollout.tvroot
+		LPM_treeview_rollout.addPassTV thePassNode
+		LPM_fun.editLabelByNode theSet LPM_treeview_rollout.tvroot
 	)
 	on lightSetAdd picked do
 	(
-		thePassNode=LPM_treeviewRollout.tv.selectedNode
+		thePassNode=LPM_treeview_rollout.tv.selectedNode
 		thePass=thePassNode.tag.value
 		thePass.expanded = true
 		theSet=LPM_Fun.createLightSet "New Set"
 		theSet.parent=thePass
-		LPM_treeviewRollout.addPassTV thePassNode
-		LPM_fun.editLabelByNode theSet LPM_treeviewRollout.tvroot
+		LPM_treeview_rollout.addPassTV thePassNode
+		LPM_fun.editLabelByNode theSet LPM_treeview_rollout.tvroot
 	)
 	on duplicatePass picked do
 	(
-		oldNode=LPM_treeviewRollout.tv.selectedNode
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		oldNode=LPM_treeview_rollout.tv.selectedNode
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		theCopy=copy thePass
 		thePass.layer.addnode theCopy
 
@@ -2271,16 +2271,16 @@ rcMenu rc_PassMenu
 			thePass.layer.addnode newProp
 		)
 		newNode=LPM_Treeview_rollout.createPassTv theCopy oldNode.parent
-		LPM_treeviewRollout.addPassTV newNode
+		LPM_treeview_rollout.addPassTV newNode
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 		--newNode.beginEdit()
 	)
 
 	on duplicateInstPass picked do
 	(
-		oldNode=LPM_treeviewRollout.tv.selectedNode
-		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		oldNode=LPM_treeview_rollout.tv.selectedNode
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 		theCopy=copy thePass
 		thePass.layer.addnode theCopy
 
@@ -2325,58 +2325,58 @@ rcMenu rc_PassMenu
 			)
 		)
 		newNode=LPM_Treeview_rollout.createPassTv theCopy oldNode.parent
-		LPM_treeviewRollout.addPassTV newNode
+		LPM_treeview_rollout.addPassTV newNode
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 		--newNode.beginEdit()
 	)
 
 	on paste picked do
 	(
-		if(isvalidnode LPM_treeviewRollout.copyNode) then
+		if(isvalidnode LPM_treeview_rollout.copyNode) then
 		(
-			newNode=copy LPM_treeviewRollout.copyNode
-			newNode.name=LPM_treeviewRollout.copyNode.name
+			newNode=copy LPM_treeview_rollout.copyNode
+			newNode.name=LPM_treeview_rollout.copyNode.name
 			newNode.parent=undefined
 			LPM_Fun.addToLPMLayer newNode
 
-			thePassNode=LPM_treeviewRollout.tv.selectedNode
-			thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+			thePassNode=LPM_treeview_rollout.tv.selectedNode
+			thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 			thePass.expanded = true
-			case LPM_treeviewRollout.copyNode.type of
+			case LPM_treeview_rollout.copyNode.type of
 			(
 				"commonProps":for it in thePass.children where it.type=="commonProps" do (delete it)
 				"envProps":for it in thePass.children where it.type=="envProps" do (delete it)
 			)
 
 			newNode.parent=thePass
-			LPM_treeviewRollout.addPassTV thePassNode
+			LPM_treeview_rollout.addPassTV thePassNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on pasteInstanced picked do
 	(
-		if(isvalidnode LPM_treeviewRollout.copyNode) then
+		if(isvalidnode LPM_treeview_rollout.copyNode) then
 		(
-			newNode=instance LPM_treeviewRollout.copyNode
-			newNode.name=LPM_treeviewRollout.copyNode.name
+			newNode=instance LPM_treeview_rollout.copyNode
+			newNode.name=LPM_treeview_rollout.copyNode.name
 			newNode.parent=undefined
 			LPM_Fun.addToLPMLayer newNode
 
-			thePassNode=LPM_treeviewRollout.tv.selectedNode
-			thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+			thePassNode=LPM_treeview_rollout.tv.selectedNode
+			thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
 			thePass.expanded = true
-			case LPM_treeviewRollout.copyNode.type of
+			case LPM_treeview_rollout.copyNode.type of
 			(
 				"commonProps":for it in thePass.children where it.type=="commonProps" do (delete it)
 				"envProps":for it in thePass.children where it.type=="envProps" do (delete it)
 			)
 
 			newNode.parent=thePass
-			LPM_treeviewRollout.addPassTV thePassNode
+			LPM_treeview_rollout.addPassTV thePassNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 )
@@ -2393,26 +2393,26 @@ rcMenu rc_commonPropsMenu
 	menuItem   removeProps "Delete"
 	on copyProps picked do
 	(
-		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
 
 	on removeProps picked do
 	(
 		undo "LPM delete" on
 		(
-			theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 			delete theNode
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on editProps picked do ( createDialog LPM_commonRollout pos:(LPM_Fun.getRoPos  LPM_commonRollout.width) )
 
 	on selectCamera picked do
 	(
-		cp=LPM_treeviewRollout.tv.selectedNode.tag.value
+		cp=LPM_treeview_rollout.tv.selectedNode.tag.value
 		if(isvalidnode cp._Camera) then(select cp._Camera)
 	)
 )
@@ -2424,22 +2424,22 @@ rcMenu rc_AutoMaskMenu
 	seperator sp66re
 	menuItem    removeAutoMask "Delete"
 
-	on copyAutoMask picked do ( LPM_treeviewRollout.copyNode = LPM_treeviewRollout.tv.selectedNode.tag.value )
+	on copyAutoMask picked do ( LPM_treeview_rollout.copyNode = LPM_treeview_rollout.tv.selectedNode.tag.value )
 
 	on removeAutoMask picked do
 	(
 		undo "LPM delete" on
 		(
-			theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 			delete theNode
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 
-	on EditAutoMask picked do ( LPM_treeviewRollout.EditAutoMask() )
+	on EditAutoMask picked do ( LPM_treeview_rollout.EditAutoMask() )
 )
 
 -------------------------------------------------------------------------------------------------------   ObjectSetMenu   -------------------------------------------------------------------------------------------------------
@@ -2485,13 +2485,13 @@ rcMenu rc_ObjectSetMenu
 			messagebox "Vray not installed"
 		else
 		(
-			if(LPM_treeviewRollout.tv.selectedNode.tag.value.type=="objectSet") then
+			if(LPM_treeview_rollout.tv.selectedNode.tag.value.type=="objectSet") then
 			(
 				TempLayer = LayerManager.newLayerFromName "VrPropertiesOverrideTempLayer"
 
 				if TempLayer == undefined then ( TempLayer = LayerManager.getLayerFromName "VrPropertiesOverrideTempLayer" )
 
-				theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+				theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 				theBuffer=theObjectSet.userProp
 				newBox=box()
 				TempLayer.addnode newBox
@@ -2511,106 +2511,106 @@ rcMenu rc_ObjectSetMenu
 		)
 	)
 
-	on copySetProps picked do ( LPM_treeviewRollout.CopySetProps() )
+	on copySetProps picked do ( LPM_treeview_rollout.CopySetProps() )
 
-	on PasteSetProps picked do ( LPM_treeviewRollout.PasteSetProps() )
+	on PasteSetProps picked do ( LPM_treeview_rollout.PasteSetProps() )
 
 	on clearAll picked do
 	(
 		undo "LPM clear" on
 		(
-			theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 			theObjectSet.namedSet=#()
 			theObjectSet.layers=#()
 			theObjectSet.wildcard=#()
 			theObjectSet.nodes=#()
 			theObjectSet.mats=#()
 
-			thePassNode=LPM_treeviewRollout.tv.selectedNode.parent
-			LPM_treeviewRollout.addPassTv thePassNode
+			thePassNode=LPM_treeview_rollout.tv.selectedNode.parent
+			LPM_treeview_rollout.addPassTv thePassNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on clearLayers picked do
 	(
 		undo "LPM clear" on
 		(
-			theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 			theObjectSet.layers=#()
 
-			thePassNode=LPM_treeviewRollout.tv.selectedNode.parent
-			LPM_treeviewRollout.addPassTv thePassNode
+			thePassNode=LPM_treeview_rollout.tv.selectedNode.parent
+			LPM_treeview_rollout.addPassTv thePassNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on clearNamed picked do
 	(
 		undo "LPM clear" on
 		(
-			theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 			theObjectSet.namedSet=#()
 
-			thePassNode=LPM_treeviewRollout.tv.selectedNode.parent
-			LPM_treeviewRollout.addPassTv thePassNode
+			thePassNode=LPM_treeview_rollout.tv.selectedNode.parent
+			LPM_treeview_rollout.addPassTv thePassNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on clearWild picked do
 	(
 		undo "LPM clear" on
 		(
-			theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 			theObjectSet.wildcard=#()
 
-			thePassNode=LPM_treeviewRollout.tv.selectedNode.parent
-			LPM_treeviewRollout.addPassTv thePassNode
+			thePassNode=LPM_treeview_rollout.tv.selectedNode.parent
+			LPM_treeview_rollout.addPassTv thePassNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on clearObjects picked do
 	(
 		undo "LPM clear" on
 		(
-			theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 			theObjectSet.nodes=#()
 
-			thePassNode=LPM_treeviewRollout.tv.selectedNode.parent
-			LPM_treeviewRollout.addPassTv thePassNode
+			thePassNode=LPM_treeview_rollout.tv.selectedNode.parent
+			LPM_treeview_rollout.addPassTv thePassNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 
 	on rc_ObjectSetMenu 	open 	do ( addNamedSet.enabled=getNumNamedSelSets()>0 )
-	on addLayers 			picked 	do ( LPM_treeviewRollout.addVisibleLayers() )
-	on addMats 				picked 	do ( LPM_treeviewRollout.addMats())
-	on addWildCard 			picked 	do ( LPM_treeviewRollout.addWildCard())
-	on addNamedSet 			picked 	do ( LPM_treeviewRollout.addNamedSet())
-	on addObjects 			picked 	do ( LPM_treeviewRollout.addSelectedObjects() )
-	on copySet 				picked 	do ( LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value	)
-	on addGroups 			picked 	do ( LPM_treeviewRollout.addSelectedGroups() )
+	on addLayers 			picked 	do ( LPM_treeview_rollout.addVisibleLayers() )
+	on addMats 				picked 	do ( LPM_treeview_rollout.addMats())
+	on addWildCard 			picked 	do ( LPM_treeview_rollout.addWildCard())
+	on addNamedSet 			picked 	do ( LPM_treeview_rollout.addNamedSet())
+	on addObjects 			picked 	do ( LPM_treeview_rollout.addSelectedObjects() )
+	on copySet 				picked 	do ( LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value	)
+	on addGroups 			picked 	do ( LPM_treeview_rollout.addSelectedGroups() )
 
 	on deleteSet picked do
 	(
 		undo "LPM delete" on
 		(
-			theObjectSetNode=LPM_treeviewRollout.tv.selectedNode
+			theObjectSetNode=LPM_treeview_rollout.tv.selectedNode
 			theObjectSet=theObjectSetNode.tag.value
 			delete theObjectSet
 			theObjectSetNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 
 	on selectObjects picked do
 	(
-		objSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+		objSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 		tmpCollection=#()
 		--named sets
 		for it in objSet.namedSet do
@@ -2645,7 +2645,7 @@ rcMenu rc_ObjectSetMenu
 
 	on editSet picked do
 	(
-		if(LPM_treeviewRollout.tv.selectedNode.tag.value.type=="objectSet")
+		if(LPM_treeview_rollout.tv.selectedNode.tag.value.type=="objectSet")
 		then(createDialog LPM_objectSetProps 194 403 pos:(LPM_Fun.getRoPos  194))
 		else(createDialog lightSetProps  pos:(LPM_Fun.getRoPos  194))
 	)
@@ -2660,7 +2660,7 @@ rcMenu rc_matMenu
 
 	on selectObj picked do
 	(
-		theMat=LPM_treeviewRollout.tv.selectedNode.tag.value.leaf
+		theMat=LPM_treeview_rollout.tv.selectedNode.tag.value.leaf
 		max select none
 			for sceneMat in scenematerials where (sceneMat.name==theMat) do
 				for it in objects where it.material==sceneMat do select it
@@ -2669,15 +2669,15 @@ rcMenu rc_matMenu
 	(
 		undo "LPM delete" on
 		(
-			theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-			theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+			theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+			theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 
 			LPM_Fun.pruneArray theParent.mats theObj.leaf
 
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 )
@@ -2692,7 +2692,7 @@ rcMenu rc_objectMenu
 
 	on selectObj picked do
 	(
-		theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
 		try(select theObj.leaf)catch()
 	)
 
@@ -2700,15 +2700,15 @@ rcMenu rc_objectMenu
 	(
 		undo "LPM delete" on
 		(
-			theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-			theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+			theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+			theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 
 			LPM_Fun.pruneArray theParent.nodes theObj.leaf
 
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 )
@@ -2729,19 +2729,19 @@ rcMenu rc_layerMenu
 	(
 		undo "LPM delete" on
 		(
-			theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-			theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+			theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+			theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 
 			LPM_Fun.pruneArray theParent.layers theObj.leaf
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on addSelectedToLayer picked do
 	(
-		theLayerName=(LPM_treeviewRollout.tv.selectedNode.tag.value).leaf
+		theLayerName=(LPM_treeview_rollout.tv.selectedNode.tag.value).leaf
 		theLayer=LayerManager.getLayerFromName theLayerName
 
 		theSelection=getCurrentSelection()
@@ -2749,14 +2749,14 @@ rcMenu rc_layerMenu
 	)
 	on makeActiveLayer picked do
 	(
-		theLayerName=(LPM_treeviewRollout.tv.selectedNode.tag.value).leaf
+		theLayerName=(LPM_treeview_rollout.tv.selectedNode.tag.value).leaf
 		theLayer=LayerManager.getLayerFromName theLayerName
 		theLayer.current=true
 	)
 
 	on selectObjectsOnLayer picked do
 	(
-		theLayerName=(LPM_treeviewRollout.tv.selectedNode.tag.value).leaf
+		theLayerName=(LPM_treeview_rollout.tv.selectedNode.tag.value).leaf
 		theLayer=LayerManager.getLayerFromName theLayerName
 		theLayer.select on
 	)
@@ -2775,14 +2775,14 @@ rcMenu rc_wildCardMenu
 	(
 		undo "LPM delete" on
 		(
-			theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-			theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+			theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+			theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 
 			theParent.wildcard=(for i=1 to theParent.wildCard.count where i!=theObj.index collect theParent.wildCard[i])
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 )
@@ -2797,14 +2797,14 @@ rcMenu rc_namedSetMenu
 	(
 		undo "LPM delete" on
 		(
-			theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-			theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+			theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+			theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 
 			theParent.namedSet=(for i=1 to theParent.namedSet.count where i!=theObj.index collect theParent.namedSet[i])
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 )
@@ -2822,22 +2822,22 @@ rcMenu rc_xrefObj
 	menuItem remove "Delete"
 	on refresh picked do
 	(
-		LPM_treeviewRollout.AddXrefObjOverride()
+		LPM_treeview_rollout.AddXrefObjOverride()
 	)
 	on CopyXrefObj picked do
 	(
-		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
 	on remove picked do
 	(
 		undo "LPM delete" on
 		(
-			theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 			delete theNode
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on openXrefDialog picked do
@@ -2860,22 +2860,22 @@ rcMenu rc_xrefScene
 	menuItem remove "Delete"
 	on refresh picked do
 	(
-		LPM_treeviewRollout.AddXrefSceneOverride()
+		LPM_treeview_rollout.AddXrefSceneOverride()
 	)
 	on CopyXrefScene picked do
 	(
-		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
 	on remove picked do
 	(
 		undo "LPM delete" on
 		(
-			theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 			delete theNode
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on openXrefDialog picked do
@@ -2895,23 +2895,23 @@ rcMenu rc_scriptMenu
 	menuItem    remove "Delete"
 	on copyAtm picked do
 	(
-		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
 	on remove picked do
 	(
 		undo "LPM delete" on
 		(
-			theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 			delete theNode
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on editItem picked do
 	(
-		LPM_treeviewRollout.AddScriptOverride()
+		LPM_treeview_rollout.AddScriptOverride()
 	)
 
 )
@@ -2932,7 +2932,7 @@ rcMenu rc_ModifierOverMenu
 	(
 		try
 		(
-			theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 
 			if theNode.activeNode != undefined then
 			(
@@ -2947,25 +2947,25 @@ rcMenu rc_ModifierOverMenu
 
 	on copyModifierOver picked do
 	(
-		LPM_treeviewRollout.copyNode = LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.copyNode = LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
 
 	on remove picked do
 	(
 		undo "LPM delete" on
 		(
-			theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 			delete theNode
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 
 	on EditModifierOver picked do
 	(
-		LPM_treeviewRollout.AddModifierOverride()
+		LPM_treeview_rollout.AddModifierOverride()
 	)
 
 )
@@ -2983,19 +2983,19 @@ rcMenu rc_atmPropsMenu
 
 	on copyAtm picked do
 	(
-		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
 
 	on remove picked do
 	(
 		undo "LPM delete" on
 		(
-			theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 			delete theNode
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 
@@ -3025,7 +3025,7 @@ rcMenu rc_RenderPropsMenu
 
 	on copyProps picked do
 	(
-		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
 
 	on editProps picked do
@@ -3037,17 +3037,17 @@ rcMenu rc_RenderPropsMenu
 	(
 		undo "LPM delete" on
 		(
-			theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 			delete theNode
-			LPM_treeviewRollout.tv.selectedNode.remove()
-			LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+			LPM_treeview_rollout.tv.selectedNode.remove()
+			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 	on loadDefault picked do
 	(
-		theProp=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theProp=LPM_treeview_rollout.tv.selectedNode.tag.value
 		try ( theProp.propsAlternate=LPM_Fun.saveRenderPresetNew() )
 		catch( theProp.props=LPM_Fun.saveRenderPreset()	)
 
@@ -3055,7 +3055,7 @@ rcMenu rc_RenderPropsMenu
 	)
 	on setAsDefault picked do
 	(
-		theProp=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theProp=LPM_treeview_rollout.tv.selectedNode.tag.value
 		if(theProp.initialized) then
 		(
 			try ( LPM_Fun.loadRenderPresetNew theProp.propsAlternate )

@@ -914,7 +914,7 @@ struct LPM_DeadlineAPI
  					else ( idiotCheck_run() )
  					
 -- TODO: Relink Idiot checks 					
---	 				if LPM_treeviewRollout.skipIdiotChecks.checked
+--	 				if LPM_treeview_rollout.skipIdiotChecks.checked
 --	 				then ( idiotCheck_skip() )
 -- 					else ( idiotCheck_run() )
  	

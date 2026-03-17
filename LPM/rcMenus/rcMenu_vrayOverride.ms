@@ -176,9 +176,9 @@ rollout vrayPropsRoll "test Vray Overrides 1.1" width:370
 	
 	on vrayPropsRoll open do
 	(		
-		LPM_treeviewRollout.tv.enabled=false
-		cp=LPM_treeviewRollout.tv.selectedNode.tag.value
-		theNode=LPM_treeviewRollout.tv.selectedNode
+		LPM_treeview_rollout.tv.enabled=false
+		cp=LPM_treeview_rollout.tv.selectedNode.tag.value
+		theNode=LPM_treeview_rollout.tv.selectedNode
 		
 		qualityType.state = cp.qualityType
 		
@@ -267,7 +267,7 @@ rollout vrayPropsRoll "test Vray Overrides 1.1" width:370
 					
 		theNode.text=LPM_Fun.generateVrayPropName cp
 		
-		LPM_treeviewRollout.tv.enabled=true
+		LPM_treeview_rollout.tv.enabled=true
 	)
 )
 
@@ -279,14 +279,14 @@ rcMenu rc_vrayPropsMenu
 	
 	on copyProps picked do
 	(
-		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
 	
 	on removeProps picked do
 	(
-		theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 		delete theNode
-		LPM_treeviewRollout.tv.selectedNode.remove()
+		LPM_treeview_rollout.tv.selectedNode.remove()
 	)
 	on editProps picked do
 	(		

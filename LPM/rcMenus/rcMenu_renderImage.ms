@@ -15,7 +15,7 @@ rollout renderImagePropsRoll "Render Image Override 1.0" width:225 height:130
 	function updateCA = 
 	(
 		-- Get the scene node for the element operator
-		cp 		=LPM_treeviewRollout.tv.selectedNode.tag.value
+		cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
 		theNode = cp
 
 		ca = custAttributes.get theNode 1
@@ -62,7 +62,7 @@ rollout renderImagePropsRoll "Render Image Override 1.0" width:225 height:130
 	on renderImagePropsRoll open do
 
 	(
-		cp 		=LPM_treeviewRollout.tv.selectedNode.tag.value
+		cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
 		theNode = cp
 
 		ca = custAttributes.get theNode 1
@@ -86,7 +86,7 @@ rollout renderImagePropsRoll "Render Image Override 1.0" width:225 height:130
 
 
 		-- cp  	=theNode.tag.value
-		-- cp 		=LPM_treeviewRollout.tv.selectedNode.tag.value
+		-- cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
 		-- print "==== cp"
 		-- print cp
 		-- show cp
@@ -99,13 +99,13 @@ rollout renderImagePropsRoll "Render Image Override 1.0" width:225 height:130
 		--theNode.text = LPM_Fun.generaterenderImageName cp
 
 		--LPM_Fun.generaterenderImageName cp
-		--LPM_treeviewRollout.tv.enabled=true
+		--LPM_treeview_rollout.tv.enabled=true
 
 		----theNode.text=LPM_Fun.generateCommonPropName cp
  		--LPM_Fun.generaterenderImageName theNode			-- Dabelow renderImage
 
 
-		LPM_treeviewRollout.UnFreezeWindow()
+		LPM_treeview_rollout.UnFreezeWindow()
 
 	)
 )
@@ -120,14 +120,14 @@ rcMenu rc_renderImagePropsMenu
 	
 	on copyProps picked do
 	(
-		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
 	
 	on removeProps picked do
 	(
-		theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 		delete theNode
-		LPM_treeviewRollout.tv.selectedNode.remove()
+		LPM_treeview_rollout.tv.selectedNode.remove()
 	)
 	on editProps picked do
 	(		

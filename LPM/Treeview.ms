@@ -6,7 +6,7 @@ LPM_Callback="LPM_Fun.destroyAllDialogs()"
 callbacks.addScript #filePostOpen LPM_Callback id:#closeLPM
 callbacks.addScript #systemPostNew LPM_Callback id:#closeLPM
 callbacks.addScript #systemPostReset LPM_Callback id:#closeLPM
-try(destroyDialog LPM_treeviewRollout)catch()
+try(destroyDialog LPM_treeview_rollout)catch()
 
 try
 (
@@ -87,7 +87,7 @@ try
 )
 catch()
 
-rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
+rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 (
 	local copyNode
 	local colorBackup
@@ -1166,7 +1166,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 		thePassNode=tv.selectedNode.parent
 		addPassTv thePassNode
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 
 	fn addSelectedGroups=
@@ -1180,7 +1180,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 		thePassNode=tv.selectedNode.parent
 		addPassTv thePassNode
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 
 	fn addWildcard=
@@ -1190,7 +1190,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 		thePassNode=tv.selectedNode.parent
 		addPassTv thePassNode
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 
 	fn addVisibleLayers=
@@ -1252,11 +1252,11 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 
 	fn CopySetProps =
 	(
-		if(LPM_treeviewRollout.tv.selectedNode.tag.value.type=="objectSet") then
+		if(LPM_treeview_rollout.tv.selectedNode.tag.value.type=="objectSet") then
 		(
 			LPM_ObjSetPropsBuff = LPM_ObjSetProps()
 
-			theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 
 			LPM_ObjSetPropsBuff.intP = #()
 			for i = 1 to theObjectSet.intP.count do
@@ -1276,7 +1276,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 		(
 			LPM_LightSetPropsBuff = LPM_LightSetProps()
 
-			theLightSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theLightSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 
 			LPM_LightSetPropsBuff.pEnable = theLightSet.pEnable
 			LPM_LightSetPropsBuff.pMultiplierEnable = theLightSet.pMultiplierEnable
@@ -1292,14 +1292,14 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 			LPM_LightSetPropsBuff.expanded = theLightSet.expanded
 		)
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 
 	fn PasteSetProps =
 	(
-		if(LPM_treeviewRollout.tv.selectedNode.tag.value.type=="objectSet")and(LPM_ObjSetPropsBuff.intp!=undefined) then
+		if(LPM_treeview_rollout.tv.selectedNode.tag.value.type=="objectSet")and(LPM_ObjSetPropsBuff.intp!=undefined) then
 		(
-			theObjectSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theObjectSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 			theObjectSet.intP = LPM_ObjSetPropsBuff.intP
 			theObjectSet.pMatEnable = LPM_ObjSetPropsBuff.pMatEnable
 			theObjectSet.pMaterial = LPM_ObjSetPropsBuff.pMaterial
@@ -1310,9 +1310,9 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 			theObjectSet.userProp = LPM_ObjSetPropsBuff.userProp
 		)
 
-		if(LPM_treeviewRollout.tv.selectedNode.tag.value.type=="lightSet")and(LPM_LightSetPropsBuff.pEnable!=undefined) then
+		if(LPM_treeview_rollout.tv.selectedNode.tag.value.type=="lightSet")and(LPM_LightSetPropsBuff.pEnable!=undefined) then
 		(
-			theLightSet=LPM_treeviewRollout.tv.selectedNode.tag.value
+			theLightSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 			theLightSet.pEnable = LPM_LightSetPropsBuff.pEnable
 			theLightSet.pMultiplierEnable = LPM_LightSetPropsBuff.pMultiplierEnable
 			theLightSet.pMultiplier = LPM_LightSetPropsBuff.pMultiplier
@@ -1327,7 +1327,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 			theLightSet.expanded = LPM_LightSetPropsBuff.expanded
 		)
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 
 	on btn_quickScripts pressed do
@@ -1464,7 +1464,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 			)
 			default: ( try(theNode.tag.value.name="LPM_"+word)catch() )
 		)
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 
 	-- PreviewKeyDown handles Enter/Escape for label edit commit/cancel.
@@ -1492,7 +1492,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 		if (keyboard.controlpressed)and ((e.keycode.tostring())=="Z") then
 		(
 			max undo
-			LPM_treeviewRollout.updateTV()
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 
@@ -1508,7 +1508,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 			"F5":
 			(
 				LPM_ProSequencerUpdate()
-				LPM_treeviewRollout.updateTV()
+				LPM_treeview_rollout.updateTV()
 			)
 			"Delete":
 			(
@@ -1520,7 +1520,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 						(
 							if(querybox "Are you sure you want to delete the group and all its passes?") then
 							(
-								grp=LPM_treeviewRollout.tv.selectedNode.tag.value
+								grp=LPM_treeview_rollout.tv.selectedNode.tag.value
 								chld=LPM_Fun.getAllChildren grp
 								delete chld
 							)
@@ -1532,14 +1532,14 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 						)
 						"objectSet":
 						(
-							theObjectSetNode=LPM_treeviewRollout.tv.selectedNode
+							theObjectSetNode=LPM_treeview_rollout.tv.selectedNode
 							theObjectSet=theObjectSetNode.tag.value
 							delete theObjectSet
 							theObjectSetNode.remove()
 						)
 						"lightSet":
 						(
-							theObjectSetNode=LPM_treeviewRollout.tv.selectedNode
+							theObjectSetNode=LPM_treeview_rollout.tv.selectedNode
 							theObjectSet=theObjectSetNode.tag.value
 							delete theObjectSet
 							theObjectSetNode.remove()
@@ -1547,34 +1547,34 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 
 						"vrayProps":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 
 						"renderProps":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"envProps":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"commonProps":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"script":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"generic":
 						(
@@ -1582,61 +1582,61 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 						)
 						"xrefObj":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"xrefScene":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"ModifierOver":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						-- Dabelow
 						"Deadline":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"vrayRenderElements":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"cameraOverscan":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						-- Dabelow renderImage
 						"renderImage":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						-- Dabelow nukeExport
 						"nukeExport":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						-- Dabelow aeExport
 						"aeExport":
 						(
-							theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 
 						"shot":
@@ -1646,57 +1646,57 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 						)
 						"ShotPass":
 						(
-							theShot=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
-							index=LPM_treeviewRollout.tv.selectedNode.tag.value.index
+							theShot=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
+							index=LPM_treeview_rollout.tv.selectedNode.tag.value.index
 							deleteItem theShot.passes index
 							deleteItem theSHot.passesOn index
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"object":
 						(
-							theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-							theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+							theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+							theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 							LPM_Fun.pruneArray theParent.nodes theObj.leaf
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"light":
 						(
-							theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-							theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+							theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+							theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 							LPM_Fun.pruneArray theParent.nodes theObj.leaf
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"layer":
 						(
-							theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-							theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+							theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+							theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 							LPM_Fun.pruneArray theParent.layers theObj.leaf
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"wildCard":
 						(
-							theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-							theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+							theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+							theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 							theParent.wildcard=(for i=1 to theParent.wildCard.count where i!=theObj.index collect theParent.wildCard[i])
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"namedSet":
 						(
-							theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-							theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+							theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+							theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 							theParent.namedSet=(for i=1 to theParent.namedSet.count where i!=theObj.index collect theParent.namedSet[i])
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 						"mat":
 						(
-							theObj=LPM_treeviewRollout.tv.selectedNode.tag.value
-							theParent=LPM_treeviewRollout.tv.selectedNode.parent.tag.value
+							theObj=LPM_treeview_rollout.tv.selectedNode.tag.value
+							theParent=LPM_treeview_rollout.tv.selectedNode.parent.tag.value
 							LPM_Fun.pruneArray theParent.mats theObj.leaf
-							LPM_treeviewRollout.tv.selectedNode.remove()
+							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 					)
-					LPM_treeviewRollout.updateTV()
-					LPM_activeElement = LPM_treeviewRollout.tv.selectedNode
+					LPM_treeview_rollout.updateTV()
+					LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 				)
 			)
 		)
@@ -2194,7 +2194,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 					"xrefObj":(AddXrefObjOverride())
 					"xrefScene":(AddXrefSceneOverride())
 					"ShotPass":popUpMenu rc_shotPassMenu
-					"script":(LPM_treeviewRollout.AddScriptOverride())
+					"script":(LPM_treeview_rollout.AddScriptOverride())
 					"passGroup":popUpMenu rc_PassGroup
 					"mat":popUpMenu rc_matMenu
 					"generic":
@@ -2296,7 +2296,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 					if (keyboard.shiftpressed) then
 					(
 						thePass=dropNode.tag.value
-						LPM_treeviewRollout.updateTV()
+						LPM_treeview_rollout.updateTV()
 					)
 					else
 					(
@@ -2441,14 +2441,14 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 		updateddl_camera()
 	)
 
-	on LPM_treeviewRollout resized theSize do
+	on LPM_treeview_rollout resized theSize do
 	(
-		if theSize[1] < 345 then ( LPM_treeviewRollout.width = 345 )
-		if theSize[2] < 240 then ( LPM_treeviewRollout.height = 240 )
-		LPM_Resize [LPM_treeviewRollout.width,LPM_treeviewRollout.height]
+		if theSize[1] < 345 then ( LPM_treeview_rollout.width = 345 )
+		if theSize[2] < 240 then ( LPM_treeview_rollout.height = 240 )
+		LPM_Resize [LPM_treeview_rollout.width,LPM_treeview_rollout.height]
 	)
 
-	on LPM_treeviewRollout open do
+	on LPM_treeview_rollout open do
 	(
 --		lpm_fun.preFileOpenCallback_Add()
 --		lpm_fun.vrayDR_restartSlaves_check() -- dabelow
@@ -2503,7 +2503,7 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 		LPM_Resize (getDialogSize LPM_Treeview_Rollout)
 	)
 
-	on LPM_treeviewRollout close do
+	on LPM_treeview_rollout close do
 	(
 		lpm_fun.preFileOpenCallback_Remove()
 
@@ -2515,10 +2515,10 @@ rollout LPM_treeviewRollout ( "LPM v" + LPM_VersionNumber )
 		)
 
 		--Store the position/size
-		LPM_Fun.setIni "LPM Window" "X_Position" ((GetDialogPos LPM_treeviewRollout)[1] as string)
-		LPM_Fun.setIni  "LPM Window" "Y_Position" ((GetDialogPos LPM_treeviewRollout)[2] as string)
-		LPM_Fun.setIni "LPM Window" "X_Size" (LPM_treeviewRollout.width as string)
-		LPM_Fun.setIni "LPM Window" "Y_Size" (LPM_treeviewRollout.height as string)
+		LPM_Fun.setIni "LPM Window" "X_Position" ((GetDialogPos LPM_treeview_rollout)[1] as string)
+		LPM_Fun.setIni  "LPM Window" "Y_Position" ((GetDialogPos LPM_treeview_rollout)[2] as string)
+		LPM_Fun.setIni "LPM Window" "X_Size" (LPM_treeview_rollout.width as string)
+		LPM_Fun.setIni "LPM Window" "Y_Size" (LPM_treeview_rollout.height as string)
 		LPM_Fun.destroyAllDialogs()
 	)
 )
@@ -2588,7 +2588,7 @@ if freshOpen then
 	LPM_Root.fileType 				= LPM_Fun.getIni "Settings" "Default Format" string "exr" 												-- Set default filetype
 )
 
-createDialog LPM_treeviewRollout pos:[xPos,yPos] height:SizeY width:sizeX menu:rc_MainMenu    style:#(#style_toolwindow, #style_sysmenu,#style_resizing) lockHeight:false lockWidth:false -- 	  style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing,#style_minimizebox)
+createDialog LPM_treeview_rollout pos:[xPos,yPos] height:SizeY width:sizeX menu:rc_MainMenu    style:#(#style_toolwindow, #style_sysmenu,#style_resizing) lockHeight:false lockWidth:false -- 	  style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing,#style_minimizebox)
 
 -- Only run if this is the first time LPM was launched in this scene
 if freshOpen then
@@ -2599,6 +2599,6 @@ if freshOpen then
 	-- Create Default Shot
 	theShot=LPM_Fun.createShot LPM_Root
 	theShot.name = "LPM_Shot_v001"
-	shotNode=LPM_treeviewRollout.createShotTv theShot
-	LPM_treeviewRollout.addShotTv shotNode
+	shotNode=LPM_treeview_rollout.createShotTv theShot
+	LPM_treeview_rollout.addShotTv shotNode
 )

@@ -52,4 +52,4 @@
 		newSet.pEnable = 2
 		newSet.parent=thePass
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
