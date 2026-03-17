@@ -114,10 +114,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	"Render - Local",
 	"Render - Submit to Deadline 10",
 	"Render - Submit to Deadline 10 - Skip Checks",
-	"Render - TyPreview",
-	"Export - Bake 3dsMax Files",
-	"Export - Nuke Scene",
-	"Export - After Effects Camera"
+	"Export - Bake 3dsMax Files"
 	)
 
  	dropDownList 		ddl_camera 				"" 			pos:[0,32] width:100 items:#("-----------------------")
@@ -1377,12 +1374,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			filein (LPM_Dir+@"plugins\Deadline10.0.ms")
 		)
 
-		if curMode == "Render - TyPreview"
-		then
-		(
-			messagebox "TyPreview render mode is not yet available in LPM."
-		)
-
 		if curMode == "Export - Bake 3dsMax Files"
 		then
 		(
@@ -1390,17 +1381,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			filein (LPM_Dir+@"plugins\maxFileSubmit.ms")
 		)
 
-		if curMode == "Export - Nuke Scene"
-		then
-		(
-			messagebox "Nuke Export is not yet available in LPM."
-		)
-
-		if curMode == "Export - After Effects Camera"
-		then
-		(
-			messagebox "After Effects Export is not yet available in LPM."
-		)
 	)
 
 	on ddl_previewType selected item do

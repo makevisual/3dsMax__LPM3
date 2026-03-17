@@ -80,10 +80,10 @@ This is a comprehensive review of the LPM (Layer Pass Manager) v3.00.04 codebase
 
 | # | Feature | File : Line |
 |---|---------|-------------|
-| N1 | TyPreview render mode | `Treeview.ms:1384` — shows "not implemented yet" messagebox |
-| N2 | Nuke Export from render mode dropdown | `Treeview.ms:1397` — shows "not implemented yet" |
-| N3 | AE Export from render mode dropdown | `Treeview.ms:1403` — shows "not implemented yet" |
-| N4 | "Feature not ready for production" | `Treeview.ms:1138` — unknown feature gated |
+| N1 | TyPreview render mode | Removed from dropdown (8b6c34b) — see §7 Roadmap |
+| N2 | Nuke Export from render mode dropdown | Removed from dropdown (8b6c34b) — see §7 Roadmap |
+| N3 | AE Export from render mode dropdown | Removed from dropdown (8b6c34b) — see §7 Roadmap |
+| N4 | "Feature not ready for production" | `Treeview.ms:1138` — `EditNukeExport()` / `EditAeExport()` stubs remain |
 
 ---
 
@@ -177,27 +177,30 @@ Multiple `print` statements in operator files that appear to be debug output lef
 Based on the above, here are concrete work items we can tackle:
 
 ### Quick Wins (can do immediately)
-- [ ] Fix `curClass` → `classof curCam` in nukeExport/aeExport
-- [ ] Fix trailing `0` syntax error in nukeExport/aeExport
-- [ ] Fix X/Y resolution swap in cameraOverscan and renderImage
-- [ ] Fix typos in user-facing messages ("sucsussfully", "occured", "soring")
-- [ ] Remove mental_ray_renderer dead code paths
-- [ ] Update vrimg2exr default path to modern VRay
-- [ ] Remove leftover debug `print` statements
+- [x] Fix `curClass` → `classof curCam` in nukeExport/aeExport *(done — 4d966e1)*
+- [x] Fix trailing `0` syntax error in nukeExport/aeExport *(done — 4d966e1)*
+- [x] Fix X/Y resolution swap in cameraOverscan and renderImage *(done — 4d966e1)*
+- [x] Fix typos in user-facing messages ("sucsussfully", "occured", "soring") *(done — 4d966e1, 7523e19)*
+- [x] Remove mental_ray_renderer dead code paths *(done — 4d966e1)*
+- [x] Update vrimg2exr default path to modern VRay *(done — 4d966e1)*
+- [x] Remove leftover debug `print` statements *(done — 4d966e1)*
+- [x] Remove vestigial hardcoded Deadline repo path from Include.ms *(done — 8b6c34b)*
+- [x] Add logging to silent catch blocks in Render.ms light restoration *(done — 8b6c34b)*
+- [x] Remove unimplemented render mode stubs from processor dropdown *(done — 8b6c34b)*
 
 ### Medium Effort
 - [ ] Consolidate nukeExport + aeExport into shared base (they're identical)
 - [ ] Consolidate cameraOverscan + renderImage into shared base
 - [ ] Extract shared VRay renderer code into a base, with version-specific overrides
-- [ ] Make Deadline repository path configurable via INI/environment
-- [ ] Add logging to critical `try()catch()` blocks
-- [ ] Implement or cleanly remove the "not implemented yet" render modes
+- [x] Make Deadline repository path configurable via INI/environment *(already was — vestigial hardcoded line removed in 8b6c34b)*
+- [x] Add logging to critical `try()catch()` blocks *(light restoration phase — 8b6c34b)*
+- [x] Remove unimplemented render mode stubs from processor dropdown *(done — 8b6c34b; see §7 Roadmap)*
 
 ### Larger Effort
-- [ ] Redesign renderer dispatch for flexible version matching
+- [ ] Redesign renderer dispatch for flexible version matching *(already uses wildcard `matchPattern` — may not need changes)*
 - [ ] Finish camera hooks (Render.ms TODO items)
 - [ ] Complete the render element handling architecture
-- [ ] Address Deadline batch name submission
+- [x] Address Deadline batch name submission *(done — 25cdb89)*
 
 ---
 
@@ -209,6 +212,30 @@ Since there's no automated test framework, verification would be:
 - Test render preview, local render, and Deadline submission paths
 - Test with VRay 7.0, VRay 7.20, and Scanline renderers
 - Verify operator pre/post render hooks fire and restore state correctly
+
+---
+
+## 7. Roadmap — Future Render Modes
+
+These three render modes were removed from the processor dropdown (commit 8b6c34b) because they showed "not implemented" messageboxes. They should be re-added to the dropdown once implemented.
+
+### TyPreview
+- **Purpose:** Render via tyFlow's TyPreview renderer
+- **Status:** No implementation exists — needs full build-out
+- **Dropdown entry to restore:** `"Render - TyPreview"`
+
+### Nuke Export
+- **Purpose:** Export scene/camera data for Nuke compositing
+- **Status:** Stub operator exists (`operator_nukeExport.ms`), `EditNukeExport()` function stub in `Treeview.ms`
+- **Related files:** `NukeAPI.ms` (Nuke integration API), `MAKE_nukeem.ms` (hardcoded paths — TODO #24)
+- **Related TODOs:** #20 (use `LPM_Root.renderCamera` not `selection[1]`), #22 (bare TODOs), #24-26 (NukeAPI incomplete)
+- **Dropdown entry to restore:** `"Export - Nuke Scene"`
+
+### After Effects Export
+- **Purpose:** Export camera/scene data for After Effects
+- **Status:** Stub operator exists (`operator_aeExport.ms`), `EditAeExport()` function stub in `Treeview.ms`
+- **Related TODOs:** #21 (use `LPM_Root.renderCamera`), #23 (bare TODOs)
+- **Dropdown entry to restore:** `"Export - After Effects Camera"`
 
 ---
 
