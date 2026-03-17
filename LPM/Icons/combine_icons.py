@@ -1,6 +1,10 @@
 """
 Combine icon halves: for each BMP in grays/, replace it with
-the left 50% of pixels from Icons/<name> and the right 50% from blacks/<name>.
+the left 50% of pixels from the non-Off base icon in Icons/ and
+the right 50% from blacks/<name>.
+
+For "FooOff.bmp", the base icon is "Foo.bmp". If that doesn't exist,
+falls back to "FooOn.bmp", then "FooOff.bmp" itself.
 
 No external libraries required — uses raw BMP parsing (24-bit uncompressed only).
 """
@@ -55,22 +59,40 @@ def combine(base_path, blacks_path, output_path):
         f.write(out)
 
 
+def find_base_icon(name):
+    """Find the base (non-Off) icon for a given gray icon filename."""
+    stem = name[:-4]  # strip .bmp
+    if stem.endswith("Off"):
+        base_stem = stem[:-3]  # e.g. "CameraOverscanOff" -> "CameraOverscan"
+        # Try plain name first, then On variant, then fall back to Off
+        for suffix in ["", "On", "Off"]:
+            candidate = os.path.join(BASE_DIR, base_stem + suffix + ".bmp")
+            if os.path.isfile(candidate):
+                return candidate
+    # No Off suffix (e.g. "Disabled.bmp") — use as-is
+    candidate = os.path.join(BASE_DIR, name)
+    if os.path.isfile(candidate):
+        return candidate
+    return None
+
+
 def main():
     files = sorted(f for f in os.listdir(GRAYS_DIR) if f.lower().endswith(".bmp"))
     for name in files:
-        base_path = os.path.join(BASE_DIR, name)
+        base_path = find_base_icon(name)
         blacks_path = os.path.join(BLACKS_DIR, name)
         gray_path = os.path.join(GRAYS_DIR, name)
 
-        if not os.path.isfile(base_path):
-            print(f"SKIP {name}: not found in Icons/")
+        if base_path is None:
+            print(f"SKIP {name}: no base icon found in Icons/")
             continue
         if not os.path.isfile(blacks_path):
             print(f"SKIP {name}: not found in blacks/")
             continue
 
         combine(base_path, blacks_path, gray_path)
-        print(f"OK   {name}")
+        base_label = os.path.basename(base_path)
+        print(f"OK   {name}  (base: {base_label})")
 
 
 if __name__ == "__main__":
