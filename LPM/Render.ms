@@ -193,37 +193,28 @@ struct LPM_RenderAPI
 				append hitNodes it
 				local isVRay = isVRayLight it
 
-				-- Enable/Disable: VRay lights use .enabled, standard lights use .on
+				-- Enable/Disable: .on is universal for all light nodes
+				case lightSetArray[lightSetIdx].pEnable of
+				(
+					2:
+					(
+						it.on = true
+						it.ishidden = false
+					)
+					3:
+					(
+						it.on = false
+						it.ishidden = true
+					)
+				)
+
+				-- VRay lights additionally use .enabled
 				if isVRay then
 				(
 					case lightSetArray[lightSetIdx].pEnable of
 					(
-						2:
-						(
-							it.enabled = true
-							it.ishidden = false
-						)
-						3:
-						(
-							it.enabled = false
-							it.ishidden = true
-						)
-					)
-				)
-				else
-				(
-					case lightSetArray[lightSetIdx].pEnable of
-					(
-						2:
-						(
-							it.on = true
-							it.ishidden = false
-						)
-						3:
-						(
-							it.on = false
-							it.ishidden = true
-						)
+						2: ( it.enabled = true )
+						3: ( it.enabled = false )
 					)
 				)
 
