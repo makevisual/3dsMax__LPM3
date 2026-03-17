@@ -43,7 +43,7 @@ fn destroyAllDialogs=
 		try(destroyDialog renderImagePropsRoll)catch()			-- Dabelow renderImage
 		try(destroyDialog nukeExportPropsRoll)catch()			-- Dabelow nukeExport
 		try(destroyDialog aeExportPropsRoll)catch()				-- Dabelow aeExport
-		try(destroyDialog LPM_treeview_rollout)catch()
+		try(destroyDialog LPM_treeviewRollout)catch()
 
 		callbacks.removeScripts id:#closeLPM
 	)
@@ -463,7 +463,7 @@ fn createDefaultPass =
 	lightset.pEnable = 3
 	lightSet.parent=pass
 
-	newPass=LPM_treeview_rollout.createPassTv pass LPM_treeview_rollout.tvRoot
+	newPass=LPM_treeviewRollout.createPassTv pass LPM_treeviewRollout.tvRoot
 	LPM_Treeview_Rollout.addPassTv newPass
 	LPM_Treeview_Rollout.renameNode newPass
 ),
@@ -2093,7 +2093,7 @@ LPM_Fun=(LPM_Fun_Struct())
 
 
 
-fn LPM_renderer_closed =
+fn LPM_rendererClosed =
 (
 	callbacks.RemoveScripts #tabbedDialogDeleted id:#myscript_update
 
@@ -2116,7 +2116,7 @@ fn LPM_renderer_closed =
 
 
 	theRenderer=(classof renderers.current) as string
-	theNode=LPM_treeview_rollout.tv.selectedNode
+	theNode=LPM_treeviewRollout.tv.selectedNode
 
 	if theNode.tag.value.type == "pass" then
 	(
@@ -2165,7 +2165,7 @@ fn LPM_renderer_closed =
 	(
 		LPM_Fun.loadRenderPreset LPM_oldRenderSettings
 	)
-	LPM_treeview_rollout.UnFreezeWindow()
+	LPM_treeviewRollout.UnFreezeWindow()
 )
 
 
@@ -2208,7 +2208,7 @@ fn LPM_ProSequencerUpdate =
 		)
 
 
-		LPM_treeview_rollout.updateTV()
+		LPM_treeviewRollout.updateTV()
 	)
 	catch
 	(

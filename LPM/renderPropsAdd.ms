@@ -6,7 +6,7 @@
 			theProps=LPM_Fun.createNode "Render Override" "renderProps"
 			theProps.parent=thePassNode.tag.value
 				
-			LPM_treeview_rollout.addPassTV thePassNode
+			LPM_treeviewRollout.addPassTV thePassNode
 			tvRoot=LPM_Treeview_Rollout.tvRoot
 			--Find and reselect the node
 			for i=0 to (tvRoot.nodes.count-1) do
@@ -19,7 +19,7 @@
 				)
 			)
 			
-		    LPM_treeview_rollout.tv.enabled=false
+		    LPM_treeviewRollout.tv.enabled=false
 			
 			rollout LPM_rendererPicker "Pick a Render Type" width:200
 			(
@@ -36,7 +36,7 @@
 					
 					tabbedDialogs.setCurrentPage #render #(1126448576, 479530250)
 					
-					callbacks.addScript #tabbedDialogDeleted "LPM_renderer_closed()" id:#myscript_update
+					callbacks.addScript #tabbedDialogDeleted "LPM_rendererClosed()" id:#myscript_update
 				)
 				on renderPicker doubleClicked item do
 				(
