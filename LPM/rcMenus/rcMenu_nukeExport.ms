@@ -13,7 +13,7 @@ rollout cameraOverscanPropsRoll "Camera Overscan Override 1.0" width:225 height:
 	function updateCA = 
 	(
 		-- Get the scene node for the element operator
-		cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
+		cp 		=LPM_treeviewRollout.tv.selectedNode.tag.value
 		theNode = cp
 
 		ca = custAttributes.get theNode 1
@@ -58,7 +58,7 @@ rollout cameraOverscanPropsRoll "Camera Overscan Override 1.0" width:225 height:
 	-- event for rollout open 
 	on cameraOverscanPropsRoll open do
 	(
-		cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
+		cp 		=LPM_treeviewRollout.tv.selectedNode.tag.value
 		theNode = cp
 
 		ca = custAttributes.get theNode 1
@@ -78,7 +78,7 @@ rollout cameraOverscanPropsRoll "Camera Overscan Override 1.0" width:225 height:
 		-- TODO: having issues updating the name in LPM_Fun.generateCameraOverscanName, so it is just set to static for now
 
 		-- cp  	=theNode.tag.value
-		-- cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
+		-- cp 		=LPM_treeviewRollout.tv.selectedNode.tag.value
 		-- print "==== cp"
 		-- print cp
 		-- show cp
@@ -90,12 +90,12 @@ rollout cameraOverscanPropsRoll "Camera Overscan Override 1.0" width:225 height:
 		--theNode.text = LPM_Fun.generateCameraOverscanName cp
 
 		--LPM_Fun.generateCameraOverscanName cp
-		--LPM_treeview_rollout.tv.enabled=true
+		--LPM_treeviewRollout.tv.enabled=true
 
 		----theNode.text=LPM_Fun.generateCommonPropName cp
  		--LPM_Fun.generateCameraOverscanName theNode			-- Dabelow cameraOverscan
 
-		LPM_treeview_rollout.UnFreezeWindow()
+		LPM_treeviewRollout.UnFreezeWindow()
 
 	)
 )
@@ -108,14 +108,14 @@ rcMenu rc_CameraOverscanPropsMenu
 	
 	on copyProps picked do
 	(
-		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
+		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
 	)
 	
 	on removeProps picked do
 	(
-		theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
+		theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
 		delete theNode
-		LPM_treeview_rollout.tv.selectedNode.remove()
+		LPM_treeviewRollout.tv.selectedNode.remove()
 	)
 	on editProps picked do
 	(		

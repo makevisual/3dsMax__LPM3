@@ -44,4 +44,4 @@
 		newSet.pAffectReflections=3 -- no reflection by lights
 		newSet.parent=thePass
 
-		LPM_treeview_rollout.updateTV()
+		LPM_treeviewRollout.updateTV()

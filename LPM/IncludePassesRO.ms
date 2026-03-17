@@ -15,12 +15,12 @@
 			
 			on pickPasses_RO open do
 			(
-				LPM_treeview_rollout.FreezeWindow()
+				LPM_treeviewRollout.FreezeWindow()
 				
 				passPickerLB.enabled=false
 				
-				theShot=LPM_treeview_rollout.tv.selectedNode.tag.value
-				theShotNode=LPM_treeview_rollout.tv.selectedNode
+				theShot=LPM_treeviewRollout.tv.selectedNode.tag.value
+				theShotNode=LPM_treeviewRollout.tv.selectedNode
 				
 				
 				passArray=for it in (LPM_FUn.getallchildren LPM_Root) where it.type=="pass" collect it
@@ -93,8 +93,8 @@
 				)
 				
 				theShot.displayPass=passArray[playButtonDDL.selection]
-				LPM_treeview_rollout.UnFreezeWindow()
-				LPM_treeview_rollout.addShotTv theShotNode
+				LPM_treeviewRollout.UnFreezeWindow()
+				LPM_treeviewRollout.addShotTv theShotNode
 			)
 			
 			on pickPasses_Ro resized theSize do

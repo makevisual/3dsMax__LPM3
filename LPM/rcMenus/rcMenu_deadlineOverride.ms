@@ -240,9 +240,9 @@ rollout deadlinePropsRoll "Deadline override 1.0" width:370 height:558
 	on chk_renderTicks changed state do toggleState() --Tyson
 	on deadlinePropsRoll open do
 	(
- 		LPM_treeview_rollout.tv.enabled=false
- 		local cp=LPM_treeview_rollout.tv.selectedNode.tag.value
- 		theNode=LPM_treeview_rollout.tv.selectedNode
+ 		LPM_treeviewRollout.tv.enabled=false
+ 		local cp=LPM_treeviewRollout.tv.selectedNode.tag.value
+ 		theNode=LPM_treeviewRollout.tv.selectedNode
 
 		deadline_ConnectRepo()
 		deadline_GetLimits cp
@@ -297,7 +297,7 @@ rollout deadlinePropsRoll "Deadline override 1.0" width:370 height:558
 		cp.renderTicksMult			= spn_renderTicksMult.value --Tyson
 					
 		theNode.text = LPM_Fun.generateDeadlineName cp
-		LPM_treeview_rollout.tv.enabled=true
+		LPM_treeviewRollout.tv.enabled=true
 	)
 )
 
@@ -309,14 +309,14 @@ rcMenu rc_deadlinePropsMenu
 	
 	on copyProps picked do
 	(
-		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
+		LPM_treeviewRollout.copyNode=LPM_treeviewRollout.tv.selectedNode.tag.value
 	)
 	
 	on removeProps picked do
 	(
-		theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
+		theNode=LPM_treeviewRollout.tv.selectedNode.tag.value
 		delete theNode
-		LPM_treeview_rollout.tv.selectedNode.remove()
+		LPM_treeviewRollout.tv.selectedNode.remove()
 	)
 	on editProps picked do
 	(		

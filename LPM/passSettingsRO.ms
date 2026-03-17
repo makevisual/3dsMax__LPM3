@@ -35,9 +35,9 @@ rollout passSettingsRO "Pass Settings" width:264 height:380
 	
 	on passSettingsRO open do
 	(
-		LPM_treeview_rollout.FreezeWindow()
-		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
-		theNode=LPM_treeview_rollout.tv.selectedNode
+		LPM_treeviewRollout.FreezeWindow()
+		thePass=LPM_treeviewRollout.tv.selectedNode.tag.value
+		theNode=LPM_treeviewRollout.tv.selectedNode
 		ddlDefaultAction.selection=thePass.hideMode
 		chkUseRootDir.checked=thePass.useRootDir
 		etRootDir.text=thePass.rootDir
@@ -102,8 +102,8 @@ rollout passSettingsRO "Pass Settings" width:264 height:380
 		thePass.PostConvertCompression = ddlPostConvertCompression.selection
 		thePass.PostConvertHalfFoat = chkPostConvertHalfFoat.state
 		thePass.PostConvertDatawindow = chkPostConvertDatawindow.state
-		LPM_treeview_rollout.updateTV()
-		LPM_treeview_rollout.UnFreezeWindow()
+		LPM_treeviewRollout.updateTV()
+		LPM_treeviewRollout.UnFreezeWindow()
 	)
 	
 	on chkUseRootDir changed value do
