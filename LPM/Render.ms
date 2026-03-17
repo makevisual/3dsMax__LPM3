@@ -1091,11 +1091,11 @@ struct LPM_RenderAPI
 					-- TODO: storing and restoring vray sun lights is causing errors, disabling override for them for now
 					if (not LPM_VRayInstalled) or ((classof(it) != VRayLight) and (classof(it) != VRaySun)) then
 					(
-						try( theNode.color=it[4]    					)catch()
-						try( theNode.baseObject.projectorMap=it[16]    	)catch()
-						try( theNode.baseObject.projector=it[17]    	)catch()
-						try( theNode.baseObject.affectDiffuse=it[14]   	)catch()
-						try( theNode.baseObject.affectSpecular=it[15]   )catch()
+						try( theNode.color=it[4]    					)catch(format " problem restoring light %\n" theNode.name)
+						try( theNode.baseObject.projectorMap=it[16]    	)catch(format " problem restoring light %\n" theNode.name)
+						try( theNode.baseObject.projector=it[17]    	)catch(format " problem restoring light %\n" theNode.name)
+						try( theNode.baseObject.affectDiffuse=it[14]   	)catch(format " problem restoring light %\n" theNode.name)
+						try( theNode.baseObject.affectSpecular=it[15]   )catch(format " problem restoring light %\n" theNode.name)
 					)
 					-- Default paramaters
 				)
