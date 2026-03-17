@@ -188,23 +188,23 @@ struct LPM_RenderAPI
 	(
 		for lightSetIdx=lightNodes.count to 1 by -1 do
 		(
-			for it in lightNodes[lightSetIdx] where ((finditem hitNodes it)==0) do
+			for curLight in lightNodes[lightSetIdx] where ((finditem hitNodes curLight)==0) do
 			(
-				append hitNodes it
-				local isVRay = isVRayLight it
+				append hitNodes curLight
+				local isVRay = isVRayLight curLight
 
 				-- Enable/Disable: .on is universal for all light nodes
 				case lightSetArray[lightSetIdx].pEnable of
 				(
 					2:
 					(
-						it.on = true
-						it.ishidden = false
+						curLight.on = true
+						curLight.ishidden = false
 					)
 					3:
 					(
-						it.on = false
-						it.ishidden = true
+						curLight.on = false
+						curLight.ishidden = true
 					)
 				)
 
@@ -213,28 +213,28 @@ struct LPM_RenderAPI
 				(
 					case lightSetArray[lightSetIdx].pEnable of
 					(
-						2: ( it.enabled = true )
-						3: ( it.enabled = false )
+						2: ( curLight.enabled = true )
+						3: ( curLight.enabled = false )
 					)
 				)
 
 				-- Multiplier (both types use .multiplier on baseObject)
 				if (lightSetArray[lightSetIdx].pMultiplierEnable) then
 				(
-					it.baseObject.multiplier = lightSetArray[lightSetIdx].pMultiplier
+					curLight.baseObject.multiplier = lightSetArray[lightSetIdx].pMultiplier
 				)
 
 				-- Color (both types use .color)
 				if lightSetArray[lightSetIdx].pColorEnable then
 				(
-					it.color = lightSetArray[lightSetIdx].pColor
+					curLight.color = lightSetArray[lightSetIdx].pColor
 				)
 
 				-- Cast Shadows (both types use .castShadows on baseObject)
 				case lightSetArray[lightSetIdx].pCastShadows of
 				(
-					2:(it.baseObject.castShadows = true)
-					3:(it.baseObject.castShadows = false)
+					2:(curLight.baseObject.castShadows = true)
+					3:(curLight.baseObject.castShadows = false)
 				)
 
 				-- Type-specific properties
@@ -243,64 +243,64 @@ struct LPM_RenderAPI
 					-- VRay light properties
 					case lightSetArray[lightSetIdx].pAffectDiffuse of
 					(
-						2:(it.baseObject.affect_diffuse = true)
-						3:(it.baseObject.affect_diffuse = false)
+						2:(curLight.baseObject.affect_diffuse = true)
+						3:(curLight.baseObject.affect_diffuse = false)
 					)
 
 					case lightSetArray[lightSetIdx].pAffectSpecular of
 					(
-						2:(it.baseObject.affect_specular = true)
-						3:(it.baseObject.affect_specular = false)
+						2:(curLight.baseObject.affect_specular = true)
+						3:(curLight.baseObject.affect_specular = false)
 					)
 
 					case lightSetArray[lightSetIdx].pAffectReflections of
 					(
-						2:(it.baseObject.affect_reflections = true)
-						3:(it.baseObject.affect_reflections = false)
+						2:(curLight.baseObject.affect_reflections = true)
+						3:(curLight.baseObject.affect_reflections = false)
 					)
 
 					case lightSetArray[lightSetIdx].pUseTexture of
 					(
-						2:(it.baseObject.texmap_on = true)
-						3:(it.baseObject.texmap_on = false)
+						2:(curLight.baseObject.texmap_on = true)
+						3:(curLight.baseObject.texmap_on = false)
 					)
 
 					-- TODO: This is where the V-Ray Light is being modified, needs to be restored
 					case lightSetArray[lightSetIdx].pVrayInvisible of
 					(
-						2:(it.baseObject.invisible = true)
-						3:(it.baseObject.invisible = false)
+						2:(curLight.baseObject.invisible = true)
+						3:(curLight.baseObject.invisible = false)
 					)
 
 					if lightSetArray[lightSetIdx].pTextureEnable then
-						it.baseObject.texmap = lightSetArray[lightSetIdx].pTexture
+						curLight.baseObject.texmap = lightSetArray[lightSetIdx].pTexture
 				)
 				else
 				(
 					-- Standard light properties
 					case lightSetArray[lightSetIdx].pAffectDiffuse of
 					(
-						2:(it.baseObject.affectDiffuse = true)
-						3:(it.baseObject.affectDiffuse = false)
+						2:(curLight.baseObject.affectDiffuse = true)
+						3:(curLight.baseObject.affectDiffuse = false)
 					)
 
 					case lightSetArray[lightSetIdx].pAffectSpecular of
 					(
-						2:(it.baseObject.affectSpecular = true)
-						3:(it.baseObject.affectSpecular = false)
+						2:(curLight.baseObject.affectSpecular = true)
+						3:(curLight.baseObject.affectSpecular = false)
 					)
 
 					if lightSetArray[lightSetIdx].pTextureEnable then
 					(
-						tmpProjector = it.baseObject.projector
-						it.baseObject.projectorMap = lightSetArray[lightSetIdx].pTexture
-						it.baseObject.projector = tmpProjector
+						tmpProjector = curLight.baseObject.projector
+						curLight.baseObject.projectorMap = lightSetArray[lightSetIdx].pTexture
+						curLight.baseObject.projector = tmpProjector
 					)
 
 					case lightSetArray[lightSetIdx].pUseTexture of
 					(
-						2:(it.baseObject.projector = true)
-						3:(it.baseObject.projector = false)
+						2:(curLight.baseObject.projector = true)
+						3:(curLight.baseObject.projector = false)
 					)
 				)
 			)
