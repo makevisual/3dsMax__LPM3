@@ -45,3 +45,4 @@ global LPM_OperatorData 					-- Dabelow
 
 global LPM_VRayInstalled 					-- Dabelow: true if VRay plugin is present on this machine
 global LPM_VRayActive    					-- Dabelow: true if VRay is the currently active renderer
+global LPM_TyFlowInstalled 				-- Dabelow: true if tyFlow plugin is present on this machine

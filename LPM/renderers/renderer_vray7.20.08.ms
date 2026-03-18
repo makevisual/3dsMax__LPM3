@@ -171,66 +171,85 @@ function preRenderAction_RenderElements =
     Vray7_RestoreData           = LPM_RenderDispatchRestoreData
     vrayRenderElementsNode      = LPM_Fun.firstChildByType LPM_RenderDispatchThePass "vrayRenderElements"
 
-    -- Setup execute / skip logic
-    skipRenderElements = False
-    if vrayRenderElementsNode           == undefined    then (skipRenderElements = true)else()
-    if vrayRenderElementsNode.active    == False        then (skipRenderElements = true)else()
+    -- Early exit if there is no render elements operator on this pass, or it is disabled
+    if vrayRenderElementsNode == undefined then ( print "--Skipping - Vray RenderElements Prerender (no operator)"; return undefined )
+    if vrayRenderElementsNode.active == False then ( print "--Skipping - Vray RenderElements Prerender (operator disabled)"; return undefined )
 
-    -- If there is no render elements node in the shot, then don't try and do anything.
-    if skipRenderElements then ( print"--Skipping - Vray RenderElements Prerender")
-    else
-    (print"--Executing - Vray RenderElements Prerender"
-        -- Class for holding render element states, to be used for storing enabled / disabled state for restore
-        struct elementObjStr
-        (
-            animhandle = undefined,
-            name = "",
-            enabled = false
-        )
+    print "--Executing - Vray RenderElements Prerender"
 
-        -- Get the render element manager, and clear out any previous references to existing elements
-        re                  = maxOps.GetCurRenderElementMgr()
-        existingElements    = #()
-
-        -- Go through all of the render elements in the render element manager 'REM'
-        -- NOTE: render elements start at index 0, unlike most arrays in 3dsMax
-        for rem_elementId in 0 to ( re.NumRenderElements() - 1 ) do
-        (
-            -- Get the render element from the REM, and turn it off
-            rem_element                 = ( re.GetRenderElement rem_elementId )
-            
-            -- Create an elementObj to store the states for restoring later.
-            elementObj                  = elementObjStr()
-            elementObj.animhandle       = gethandlebyanim rem_element
-            elementObj.name             = rem_element.elementName
-            elementObj.enabled          = rem_element.vrayVFB
-
-            -- Add it to the array
-            append existingElements elementObj
-
-            -- After recording its sate, turn it off
-            rem_element.vrayVFB     = false
-
-            -- Then go through all of the active elements enabled in the LPM override 'OVR' 
-            for ovr_element in vrayRenderElementsNode.activeElement do 
-            (
-                -- If the 'OVR' element matches name with on of the 'REM' name, turn it on.
-                if ( ovr_element ) == ( rem_element.elementName ) then ( rem_element.vrayVFB = true )
-            )
-        )
-
-        -- Put the collected element definitions in the restore data object for later
-        Vray7_RestoreData.renderElements_active = existingElements
-
+    -- Class for holding render element states, to be used for storing enabled / disabled state for restore
+    struct elementObjStr
+    (
+        animhandle = undefined,
+        name = "",
+        enabled = false
     )
+
+    -- Get the render element manager, and clear out any previous references to existing elements
+    re                  = maxOps.GetCurRenderElementMgr()
+    existingElements    = #()
+
+    -- Go through all of the render elements in the render element manager 'REM'
+    -- NOTE: render elements start at index 0, unlike most arrays in 3dsMax
+    for rem_elementId in 0 to ( re.NumRenderElements() - 1 ) do
+    (
+        -- Get the render element from the REM, and turn it off
+        rem_element                 = ( re.GetRenderElement rem_elementId )
+
+        -- Create an elementObj to store the states for restoring later.
+        elementObj                  = elementObjStr()
+        elementObj.animhandle       = gethandlebyanim rem_element
+        elementObj.name             = rem_element.elementName
+        elementObj.enabled          = rem_element.vrayVFB
+
+        -- Add it to the array
+        append existingElements elementObj
+
+        -- After recording its state, turn it off
+        rem_element.vrayVFB     = false
+
+        -- Then go through all of the active elements enabled in the LPM override 'OVR'
+        for ovr_element in vrayRenderElementsNode.activeElement do
+        (
+            -- If the 'OVR' element matches name with one of the 'REM' names, turn it on.
+            if ( ovr_element ) == ( rem_element.elementName ) then ( rem_element.vrayVFB = true )
+        )
+    )
+
+    -- Put the collected element definitions in the restore data object for later
+    Vray7_RestoreData.renderElements_active = existingElements
 )
 
 ---- Postrender Render Elements
+-- Restores each render element's .vrayVFB state to its pre-render value.
+-- V-Ray's VFB may internally reset these after rendering, but we cannot rely on that
+-- undocumented behavior across versions or render modes (local vs Deadline farm).
+-- Setting .vrayVFB to its saved value is idempotent — safe whether V-Ray already restored it or not.
+-- This is critical for optionRE and other elements that control compression and output format.
 function postRenderAction_RenderElements =
 (
-    -- TODO: Yeah, this needs to be made lol.
-    ----------------- No Idea why the elements are turning themselves back to their original state? ----------------------------
-    ----------------- Could be, because vray VFB has them set before the render and then rests them?
+    print "= Vray7 postRenderAction_RenderElements ="
+
+    Vray7_RestoreData = LPM_RenderDispatchRestoreData
+
+    -- Nothing to restore if no elements were captured during pre-render
+    if Vray7_RestoreData.renderElements_active == undefined then return undefined
+    if Vray7_RestoreData.renderElements_active.count == 0 then return undefined
+
+    -- Restore each element's vrayVFB state to its pre-render value
+    for elementObj in Vray7_RestoreData.renderElements_active do
+    (
+        try
+        (
+            local elem = getAnimByHandle elementObj.animhandle
+            if elem != undefined then
+            (
+                elem.vrayVFB = elementObj.enabled
+            )
+        )catch( print ("--Warning: Could not restore render element: " + elementObj.name) )
+    )
+
+    print "--Render element states restored."
 )
 
 ---------- UTILITIES ----------
