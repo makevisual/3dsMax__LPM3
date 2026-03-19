@@ -218,62 +218,57 @@ struct LPM_RenderAPI
 					)
 				)
 
-				-- Multiplier (both types use .multiplier on baseObject)
+				-- Multiplier (try/catch for VRay light types that may not support it)
 				if (lightSetArray[lightSetIdx].pMultiplierEnable) then
-				(
-					curLight.baseObject.multiplier = lightSetArray[lightSetIdx].pMultiplier
-				)
+					try(curLight.baseObject.multiplier = lightSetArray[lightSetIdx].pMultiplier)catch()
 
-				-- Color (both types use .color)
+				-- Color (try/catch for VRay light types that may not support it)
 				if lightSetArray[lightSetIdx].pColorEnable then
-				(
-					curLight.color = lightSetArray[lightSetIdx].pColor
-				)
+					try(curLight.color = lightSetArray[lightSetIdx].pColor)catch()
 
-				-- Cast Shadows (both types use .castShadows on baseObject)
+				-- Cast Shadows (try/catch for VRay light types that may not support it)
 				case lightSetArray[lightSetIdx].pCastShadows of
 				(
-					2:(curLight.baseObject.castShadows = true)
-					3:(curLight.baseObject.castShadows = false)
+					2:(try(curLight.baseObject.castShadows = true)catch())
+					3:(try(curLight.baseObject.castShadows = false)catch())
 				)
 
 				-- Type-specific properties
 				if isVRay then
 				(
-					-- VRay light properties
+					-- VRay light properties (try/catch for varying support across VRay light types)
 					case lightSetArray[lightSetIdx].pAffectDiffuse of
 					(
-						2:(curLight.baseObject.affect_diffuse = true)
-						3:(curLight.baseObject.affect_diffuse = false)
+						2:(try(curLight.baseObject.affect_diffuse = true)catch())
+						3:(try(curLight.baseObject.affect_diffuse = false)catch())
 					)
 
 					case lightSetArray[lightSetIdx].pAffectSpecular of
 					(
-						2:(curLight.baseObject.affect_specular = true)
-						3:(curLight.baseObject.affect_specular = false)
+						2:(try(curLight.baseObject.affect_specular = true)catch())
+						3:(try(curLight.baseObject.affect_specular = false)catch())
 					)
 
 					case lightSetArray[lightSetIdx].pAffectReflections of
 					(
-						2:(curLight.baseObject.affect_reflections = true)
-						3:(curLight.baseObject.affect_reflections = false)
+						2:(try(curLight.baseObject.affect_reflections = true)catch())
+						3:(try(curLight.baseObject.affect_reflections = false)catch())
 					)
 
 					case lightSetArray[lightSetIdx].pUseTexture of
 					(
-						2:(curLight.baseObject.texmap_on = true)
-						3:(curLight.baseObject.texmap_on = false)
+						2:(try(curLight.baseObject.texmap_on = true)catch())
+						3:(try(curLight.baseObject.texmap_on = false)catch())
 					)
 
-					-- TODO: This is where the V-Ray Light is being modified, needs to be restored
 					case lightSetArray[lightSetIdx].pVrayInvisible of
 					(
-						2:(curLight.baseObject.invisible = true)
-						3:(curLight.baseObject.invisible = false)
+						2:(try(curLight.baseObject.invisible = true)catch())
+						3:(try(curLight.baseObject.invisible = false)catch())
 					)
 
 					if lightSetArray[lightSetIdx].pTextureEnable then
-						curLight.baseObject.texmap = lightSetArray[lightSetIdx].pTexture
+						try(curLight.baseObject.texmap = lightSetArray[lightSetIdx].pTexture)catch()
 				)
 				else
 				(
@@ -504,36 +499,25 @@ struct LPM_RenderAPI
 					tmp[20]=it.isHidden
 					tmp[21]=it.enabled
 					
-					-- Attempt to modify lights based on engine
-					if LPM_VRayInstalled and ( classof(it) == VRayLight ) then
+					-- Backup VRay light properties (all VRay light types via try/catch)
+					if (isVRayLight it) then
 					(
-						tmp[3]=it.baseObject.multiplier
-						tmp[6]=it.baseObject.affect_diffuse  		
-						tmp[7]=it.baseObject.affect_specular 		
-						tmp[8]=it.baseObject.affect_reflections  	
-						tmp[9]=it.baseObject.texmap  				
-						tmp[18]=it.baseObject.texmap_on 			
-						tmp[13]=it.baseObject.castShadows 			
-						tmp[19]=it.baseObject.color_mode
-						tmp[22]=it.baseObject.invisible						
+						try(tmp[3]=it.baseObject.multiplier)catch()
+						try(tmp[6]=it.baseObject.affect_diffuse)catch()
+						try(tmp[7]=it.baseObject.affect_specular)catch()
+						try(tmp[8]=it.baseObject.affect_reflections)catch()
+						try(tmp[9]=it.baseObject.texmap)catch()
+						try(tmp[18]=it.baseObject.texmap_on)catch()
+						try(tmp[13]=it.baseObject.castShadows)catch()
+						try(tmp[19]=it.baseObject.color_mode)catch()
+						try(tmp[22]=it.baseObject.invisible)catch()
 					)
-					-- VRayIES lights have some VRay properties but not all (no texmap, texmap_on, color_mode, or .on)
-					if LPM_VRayInstalled and ( classof(it) == VRayIES ) then
+					else
 					(
-						tmp[3]=it.baseObject.multiplier
-						tmp[6]=it.baseObject.affect_diffuse
-						tmp[7]=it.baseObject.affect_specular
-						tmp[8]=it.baseObject.affect_reflections
-						tmp[13]=it.baseObject.castShadows
-						tmp[22]=it.baseObject.invisible
-					)
-					-- TODO: storing and restoring vray sun lights is causing errors, disabling override for them for now
-					-- VraySun and VRayIES objects do not have all the same properties as a standard vray light
-					if (not LPM_VRayInstalled) or ((classof(it) != VRayLight) and (classof(it) != VRaySun) and (classof(it) != VRayIES)) then
-					(
-						try( tmp[4]=it.color 						)catch(print" problem storing light ")
-						try( tmp[16]=it.baseObject.projectorMap 	)catch(print" problem storing light ")
-						try( tmp[17]=it.baseObject.projector 		)catch(print" problem storing light ")
+						-- Standard (non-VRay) light properties
+						try(tmp[4]=it.color)catch()
+						try(tmp[16]=it.baseObject.projectorMap)catch()
+						try(tmp[17]=it.baseObject.projector)catch()
 					)
 
 					tmp
@@ -1085,35 +1069,25 @@ struct LPM_RenderAPI
 					theNode.enabled = it[21]
 					-- theNode.baseObject.castShadows=it[5]
 
-					-- Attempt to modify lights based on engine
-					if LPM_VRayInstalled and ( classof(theNode) == VRayLight ) then
+					-- Restore VRay light properties (all VRay light types via try/catch)
+					if (isVRayLight theNode) then
 					(
-						theNode.baseObject.multiplier=it[3]
-						theNode.baseObject.affect_diffuse=it[6]
-						theNode.baseObject.affect_specular=it[7]
-						theNode.baseObject.affect_reflections=it[8]
-						theNode.baseObject.texmap=it[9]
-						theNode.baseObject.texmap_on=it[18]
-						theNode.baseObject.invisible=it[22]
+						try(theNode.baseObject.multiplier=it[3])catch()
+						try(theNode.baseObject.affect_diffuse=it[6])catch()
+						try(theNode.baseObject.affect_specular=it[7])catch()
+						try(theNode.baseObject.affect_reflections=it[8])catch()
+						try(theNode.baseObject.texmap=it[9])catch()
+						try(theNode.baseObject.texmap_on=it[18])catch()
+						try(theNode.baseObject.invisible=it[22])catch()
 					)
-					-- VRayIES lights have some VRay properties but not all (no texmap, texmap_on, color_mode, or .on)
-					if LPM_VRayInstalled and ( classof(theNode) == VRayIES ) then
+					else
 					(
-						theNode.baseObject.multiplier=it[3]
-						theNode.baseObject.affect_diffuse=it[6]
-						theNode.baseObject.affect_specular=it[7]
-						theNode.baseObject.affect_reflections=it[8]
-						theNode.baseObject.invisible=it[22]
-					)
-					-- Added handling for vray sun and VRayIES nodes
-					-- TODO: storing and restoring vray sun lights is causing errors, disabling override for them for now
-					if (not LPM_VRayInstalled) or ((classof(theNode) != VRayLight) and (classof(theNode) != VRaySun) and (classof(theNode) != VRayIES)) then
-					(
-						try( theNode.color=it[4]    					)catch(format " problem restoring light %\n" theNode.name)
-						try( theNode.baseObject.projectorMap=it[16]    	)catch(format " problem restoring light %\n" theNode.name)
-						try( theNode.baseObject.projector=it[17]    	)catch(format " problem restoring light %\n" theNode.name)
-						try( theNode.baseObject.affectDiffuse=it[14]   	)catch(format " problem restoring light %\n" theNode.name)
-						try( theNode.baseObject.affectSpecular=it[15]   )catch(format " problem restoring light %\n" theNode.name)
+						-- Standard (non-VRay) light properties
+						try(theNode.color=it[4])catch()
+						try(theNode.baseObject.projectorMap=it[16])catch()
+						try(theNode.baseObject.projector=it[17])catch()
+						try(theNode.baseObject.affectDiffuse=it[14])catch()
+						try(theNode.baseObject.affectSpecular=it[15])catch()
 					)
 					-- Default paramaters
 				)
