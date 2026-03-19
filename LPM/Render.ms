@@ -193,17 +193,17 @@ struct LPM_RenderAPI
 				append hitNodes curLight
 				local isVRay = isVRayLight curLight
 
-				-- Enable/Disable: .on is universal for all light nodes
+				-- Enable/Disable: .on is not available on all light types (e.g. VRayIES)
 				case lightSetArray[lightSetIdx].pEnable of
 				(
 					2:
 					(
-						curLight.on = true
+						try(curLight.on = true)catch()
 						curLight.ishidden = false
 					)
 					3:
 					(
-						curLight.on = false
+						try(curLight.on = false)catch()
 						curLight.ishidden = true
 					)
 				)
@@ -497,7 +497,7 @@ struct LPM_RenderAPI
 					for i=2 to 22 do(tmp[i] = undefined)
 
 					-- Default paramaters
-					tmp[2]=it.on
+					try(tmp[2]=it.on)catch() -- VRayIES lights do not have .on property
 --					tmp[5]=it.baseObject.castShadows
 --					tmp[14]=it.baseObject.affectDiffuse
 --					tmp[15]=it.baseObject.affectSpecular
@@ -517,9 +517,19 @@ struct LPM_RenderAPI
 						tmp[19]=it.baseObject.color_mode
 						tmp[22]=it.baseObject.invisible						
 					)
+					-- VRayIES lights have some VRay properties but not all (no texmap, texmap_on, color_mode, or .on)
+					if LPM_VRayInstalled and ( classof(it) == VRayIES ) then
+					(
+						tmp[3]=it.baseObject.multiplier
+						tmp[6]=it.baseObject.affect_diffuse
+						tmp[7]=it.baseObject.affect_specular
+						tmp[8]=it.baseObject.affect_reflections
+						tmp[13]=it.baseObject.castShadows
+						tmp[22]=it.baseObject.invisible
+					)
 					-- TODO: storing and restoring vray sun lights is causing errors, disabling override for them for now
-					-- VraySun objects do not have all the same properties as a standard vray light
-					if (not LPM_VRayInstalled) or ((classof(it) != VRayLight) and (classof(it) != VRaySun)) then
+					-- VraySun and VRayIES objects do not have all the same properties as a standard vray light
+					if (not LPM_VRayInstalled) or ((classof(it) != VRayLight) and (classof(it) != VRaySun) and (classof(it) != VRayIES)) then
 					(
 						try( tmp[4]=it.color 						)catch(print" problem storing light ")
 						try( tmp[16]=it.baseObject.projectorMap 	)catch(print" problem storing light ")
@@ -1070,7 +1080,7 @@ struct LPM_RenderAPI
 				for it in lightBackup do
 				(
 					theNode=it[1]
-					theNode.on=it[2]
+					try(theNode.on=it[2])catch() -- VRayIES lights do not have .on property
 					theNode.isHidden = it[20]
 					theNode.enabled = it[21]
 					-- theNode.baseObject.castShadows=it[5]
@@ -1086,10 +1096,18 @@ struct LPM_RenderAPI
 						theNode.baseObject.texmap_on=it[18]
 						theNode.baseObject.invisible=it[22]
 					)
-					
-					-- Added handling for vray sun nodes
+					-- VRayIES lights have some VRay properties but not all (no texmap, texmap_on, color_mode, or .on)
+					if LPM_VRayInstalled and ( classof(theNode) == VRayIES ) then
+					(
+						theNode.baseObject.multiplier=it[3]
+						theNode.baseObject.affect_diffuse=it[6]
+						theNode.baseObject.affect_specular=it[7]
+						theNode.baseObject.affect_reflections=it[8]
+						theNode.baseObject.invisible=it[22]
+					)
+					-- Added handling for vray sun and VRayIES nodes
 					-- TODO: storing and restoring vray sun lights is causing errors, disabling override for them for now
-					if (not LPM_VRayInstalled) or ((classof(it) != VRayLight) and (classof(it) != VRaySun)) then
+					if (not LPM_VRayInstalled) or ((classof(theNode) != VRayLight) and (classof(theNode) != VRaySun) and (classof(theNode) != VRayIES)) then
 					(
 						try( theNode.color=it[4]    					)catch(format " problem restoring light %\n" theNode.name)
 						try( theNode.baseObject.projectorMap=it[16]    	)catch(format " problem restoring light %\n" theNode.name)
