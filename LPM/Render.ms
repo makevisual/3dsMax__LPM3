@@ -500,7 +500,7 @@ struct LPM_RenderAPI
 					tmp[21]=it.enabled
 					
 					-- Backup VRay light properties (all VRay light types via try/catch)
-					if (isVRayLight it) then
+					if LPM_VRayInstalled and (isVRayLight it) then
 					(
 						try(tmp[3]=it.baseObject.multiplier)catch()
 						try(tmp[6]=it.baseObject.affect_diffuse)catch()
@@ -1070,7 +1070,7 @@ struct LPM_RenderAPI
 					-- theNode.baseObject.castShadows=it[5]
 
 					-- Restore VRay light properties (all VRay light types via try/catch)
-					if (isVRayLight theNode) then
+					if LPM_VRayInstalled and (isVRayLight theNode) then
 					(
 						try(theNode.baseObject.multiplier=it[3])catch()
 						try(theNode.baseObject.affect_diffuse=it[6])catch()
