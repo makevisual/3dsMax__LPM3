@@ -3,10 +3,8 @@
 
 curRenderer = ( renderers.current as string )
 
-case curRenderer of
-(
-    default                                                 : ( messagebox("Render Engine not found in render Dispatch!"))
-    "Default_Scanline_Renderer:Default_Scanline_Renderer"   : ( filein ( LPM_Dir + @"renderers\" +"Default_Scanline_Renderer.ms" ) )
-    "V_Ray_7_Hotfix_1:V_Ray_7_Hotfix_1"                     : ( filein ( LPM_Dir + @"renderers\" +"renderer_vray7.00.04.ms" ) )
-    "V_Ray_7__update_2_hotfix_3:V_Ray_7__update_2_hotfix_3" : ( filein ( LPM_Dir + @"renderers\" +"renderer_vray7.20.08.ms" ) )
-)
+if matchPattern curRenderer pattern:"Default_Scanline_Renderer*"
+then ( filein ( LPM_Dir + @"renderers\" + "Default_Scanline_Renderer.ms" ) )
+else if matchPattern curRenderer pattern:"V_Ray_7*"
+then ( filein ( LPM_Dir + @"renderers\" + "renderer_vray7.20.08.ms" ) )
+else ( format "WARNING: LPM renderer_dispatch — unrecognized renderer: %\n" curRenderer )

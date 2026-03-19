@@ -4,6 +4,7 @@ global LPM_Dir = trimright (getThisScriptFilename()) "Include.ms"
 
 filein (LPM_Dir+"Globals.ms")
 filein (LPM_Dir+"VRayCheck.ms") 			-- Added by Aaron Dabelow
+filein (LPM_Dir+"TyFlowCheck.ms") 			-- Added by Aaron Dabelow
 filein (LPM_Dir+"VersionNumber.ms") 		-- Added by Aaron Dabelow
 filein (LPM_Dir+"versionCheck.ms")  		-- Added by Aaron Dabelow
 
@@ -28,8 +29,6 @@ then (
 	-- Set some common properties in an easy place
 	LPM_Root.renderType = 3 												-- Force to shots
 
-	-- TODO: Consider moving these to CA.ms on rootCA
-	setUserProp LPM_Root "DeadlineRepository" @"N:\DeadlineRepository10"    -- Set your deadline Repository
 	setUserProp LPM_Root "LPM_VersionNumber" LPM_VersionNumber    			-- Set your LPM Version Number
 )
 else()

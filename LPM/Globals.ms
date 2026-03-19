@@ -7,11 +7,10 @@ global LPM_NetworkPlugins=#()
 global LPM_Fun
 global LPM_FunDeadline
 global LPM_Root
-global LPM_treeview_rollout
+global LPM_treeviewRollout
 global LPM_RenderRo
 global LPM_multiCameraRo
 global LPM_RenderPass
-global LPM_render
 global LPM_Data
 global LPM_Render
 global LPM_atmRollout
@@ -25,7 +24,7 @@ global LPM_activeElement
 global LPM_doubleClick 
 global LPM_oldRenderSettings
 global LPM_oldRenderSettingsNew
-global LPM_renderer_closed
+global LPM_rendererClosed
 global LPM_ObjSetPropsBuff
 global LPM_LightSetPropsBuff
 global LPM_iconPath = LPM_Dir + "icons/"
@@ -46,3 +45,4 @@ global LPM_OperatorData 					-- Dabelow
 
 global LPM_VRayInstalled 					-- Dabelow: true if VRay plugin is present on this machine
 global LPM_VRayActive    					-- Dabelow: true if VRay is the currently active renderer
+global LPM_TyFlowInstalled 				-- Dabelow: true if tyFlow plugin is present on this machine

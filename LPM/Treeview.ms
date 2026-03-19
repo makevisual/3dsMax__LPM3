@@ -12,7 +12,7 @@ try
 (
 	if LPM_Root.LastActivePass != "" then
 	(
-		passArray=for it in (LPM_FUn.getallchildren LPM_Root) where it.type=="pass" collect it
+		passArray=for it in (LPM_Fun.getallchildren LPM_Root) where it.type=="pass" collect it
 
 		for i = 1 to passArray.count do
 		(
@@ -82,7 +82,7 @@ try
 (
 	if rendOutputFilename == "" then
 	(
-		rendOutputFilename = "D:\\tmp.exr"
+		rendOutputFilename = (dotNetClass "System.Environment").GetEnvironmentVariable "LOCALAPPDATA" + @"\LPM\render_tmp.exr"
 	)
 )
 catch()
@@ -114,10 +114,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	"Render - Local",
 	"Render - Submit to Deadline 10",
 	"Render - Submit to Deadline 10 - Skip Checks",
-	"Render - TyPreview",
-	"Export - Bake 3dsMax Files",
-	"Export - Nuke Scene",
-	"Export - After Effects Camera"
+	"Export - Bake 3dsMax Files"
 	)
 
  	dropDownList 		ddl_camera 				"" 			pos:[0,32] width:100 items:#("-----------------------")
@@ -1135,14 +1132,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	--Dabelow nukeExport
 	fn EditNukeExport =
 	(
-		messagebox(" Feature not ready for production ")
-		-- createDialog nukeExportPropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
+		messagebox "Nuke Export is not yet implemented in LPM."
 	)
 
 	--Dabelow aeExport
 	fn EditAeExport =
 	(
-		createDialog aeExportPropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
+		messagebox "After Effects Export is not yet implemented in LPM."
 	)
 
 	fn AddXrefSceneOverride =
@@ -1378,12 +1374,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			filein (LPM_Dir+@"plugins\Deadline10.0.ms")
 		)
 
-		if curMode == "Render - TyPreview"
-		then
-		(
-			messagebox(" Typreview not implemented yet")
-		)
-
 		if curMode == "Export - Bake 3dsMax Files"
 		then
 		(
@@ -1391,17 +1381,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			filein (LPM_Dir+@"plugins\maxFileSubmit.ms")
 		)
 
-		if curMode == "Export - Nuke Scene"
-		then
-		(
-			messagebox(" Nuke Export not implemented yet")
-		)
-
-		if curMode == "Export - After Effects Camera"		
-		then
-		(
-			messagebox(" AE Export not implemented yet")
-		)
 	)
 
 	on ddl_previewType selected item do

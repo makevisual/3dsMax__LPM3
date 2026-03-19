@@ -77,11 +77,8 @@ struct LPM_DeadlineAPI
  				label lab_CustomComment 					"  Comment: "  					align:#left height:15 width:77									offset:[0, 0 ]  												visible:false
 				edittext lab_CustomCommentField 			""  							align:#left	width:230											offset:[60,-21 ]												visible:false
 				
-				-- TODO: In order to fix the BATCH Name submission, I need to find a different way of updating the SMTDSettings / Functions Interface
-				-- Currently I need to update the submitter every time I update Deadline which is problematic and troublesome. In the meantime I am
-				-- Disabling the "Batch" Name submission in the deadline submitter
- 				label lab_CustomBatch 						"  Batch: "  					align:#left height:15 width:77									offset:[0, 0 ] 													visible:false  enabled:false
-				edittext lab_CustomBatchField 				""  							align:#left width:230 											offset:[60,-21 ]												visible:false  enabled:false
+ 				label lab_CustomBatch 						"  Batch: "  					align:#left height:15 width:77									offset:[0, 0 ] 													visible:false
+				edittext lab_CustomBatchField 				""  							align:#left width:230 											offset:[60,-21 ]												visible:false
 				label lab_DeadlineUser 						"  User: "  					align:#left width:77 											offset:[0, 0 ]													visible:false
 	 			label lab_DeadlineUserField 				" Loading User... " 			style_sunkenedge:true  width:225 align:#left height:15 			offset:[64,-21 ]												visible:false
 
@@ -1125,8 +1122,6 @@ struct LPM_DeadlineAPI
 								SMTDSettings.group = LPM_SMTDSettings.submitGroup
 							)
 
-							dl_batchName
-
 							if LPM_SMTDSettings.submitLimitsOn then
 							(
 								SMTDSettings.LimitGroupsToUse = LPM_SMTDSettings.submitLimits
@@ -1159,9 +1154,11 @@ struct LPM_DeadlineAPI
 					SMTDLPMInterface.prg_submitProgress2.value=30
 
 					-- Submit Deadline Job
-					-- TODO: In order to fix the BATCH Name submission, I need to find a different way of updating the SMTDSettings / Functions Interface
-					-- Currently I need to update the submitter every time I update Deadline which is problematic and troublesome. In the meantime I am
-					-- Disabling the "Batch" Name submission in the deadline submitter
+					-- Inject BatchName into the job info file via ExtraJobInfoKeys (Deadline 10+ API)
+					if LPM_deadlineInfo.dl_batchName != "" then
+					(
+						SMTDSettings.ExtraJobInfoKeys = #(#("BatchName", LPM_deadlineInfo.dl_batchName))
+					)
 					local result = SMTDFunctions.SubmitJob()
 
 					if result != #success do

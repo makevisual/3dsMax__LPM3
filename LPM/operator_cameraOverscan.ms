@@ -32,17 +32,14 @@ function cameraOverscan_Override_PreRender =
     (
         Freecamera:
             (
-            print "Free"
             paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
             )
         Targetcamera:
             (
-            print "Target"
             paramWire.connect curCam.baseObject[#fov] newCam.baseObject[#fov] ( "fov * " + ( curFov as string ) )
             )
         Physical:
             (
-            print "PHYS"
             newCam.specify_fov = off
             paramWire.connect curCam.baseObject[#Lens_Focal_Length_mm] newCam.baseObject[#Lens_Focal_Length_mm] ( "Lens_Focal_Length_mm  * " + ( ( 1 / curFov ) as string ) )
             )
@@ -52,19 +49,13 @@ function cameraOverscan_Override_PreRender =
     LPM_Root.renderCamera = newCam
 
     -- TODO:?
-    -- Store the original resoultion
-    LPM_OperatorData.cameraOverscan.resXOriginal = renderHeight
-    LPM_OperatorData.cameraOverscan.resYOriginal = renderWidth
-    print "---original res----"
-    print renderHeight
-    print renderWidth
+    -- Store the original resolution
+    LPM_OperatorData.cameraOverscan.resXOriginal = renderWidth
+    LPM_OperatorData.cameraOverscan.resYOriginal = renderHeight
 
     -- Set the desired resolution
-    renderHeight = LPM_OperatorData.cameraOverscan.resXOverride
-    renderWidth  = LPM_OperatorData.cameraOverscan.resYOverride
-    print "---overscan res----"
-    print renderHeight
-    print renderWidth
+    renderWidth  = LPM_OperatorData.cameraOverscan.resXOverride
+    renderHeight = LPM_OperatorData.cameraOverscan.resYOverride
 
 )
 
@@ -79,16 +70,13 @@ function cameraOverscan_Override_PostRender =
         delete curDelete
 	)catch()
 
-    -- TODO:
     -- reset resolution
-    renderHeight = LPM_OperatorData.cameraOverscan.resXOriginal
-    renderWidth  = LPM_OperatorData.cameraOverscan.resYOriginal
+    renderWidth  = LPM_OperatorData.cameraOverscan.resXOriginal
+    renderHeight = LPM_OperatorData.cameraOverscan.resYOriginal
 )
 
 function curPrerenderAction =
 (
-    print "== cameraOverscan PreRenderAction =="
-
     -- Construct object for storing pre-render state for use for restoring later
     LPM_OperatorData.cameraOverscan = cameraOverscan_RestoreDataStr()
 
@@ -98,8 +86,6 @@ function curPrerenderAction =
 
 function curPostRenderAction =
 (
-    print "== cameraOverscan PostRenderAction =="
-
     -- call each of the postrender functions
     cameraOverscan_Override_PostRender()
 )
