@@ -179,9 +179,13 @@ a maintenance trap. Keep one (the `:885` behavior appears intended).
 **File:** `LPM/Functions.ms:1310` and `:1335` — both return `"Render Image"`; the
 second carries an incorrect `-- Dabelow nukeExport` comment. Delete one.
 
-### D3 — `replaceByString` defined twice (identical)  · LOW
-**File:** `LPM/Functions.ms:1012` and `:1439` — same struct, identical body.
-Delete one.
+### D3 — `replaceByString` defined twice (identical)  · LOW — DEFERRED
+**File:** `LPM/Functions.ms:1012` and `:1439`. **Correction:** these are *local*
+helper functions nested inside two different enclosing struct methods (not two
+struct-member overrides), so neither shadows the other and one cannot simply be
+deleted. Proper dedup = hoist a single `replaceByString` to `LPM_Fun_Struct`
+member scope and drop both locals — a refactor that needs in-Max verification, so
+it is deferred rather than applied here.
 
 ---
 
@@ -316,3 +320,37 @@ manual checks after any fix: right-click Nuke/AE Export nodes (menu appears);
 toggle idiot-checks and submit to Deadline; create a matID mask render element
 (it is enabled); rename a shot whose name has multiple `_v` segments and bump the
 version.
+
+---
+
+## Resolution status (applied in this branch)
+
+**Fixed (verified statically):**
+- **B1** — rewrote `rcMenu_nukeExport.ms` / `rcMenu_aeExport.ms` to define their
+  own `rc_nukeExportPropsMenu` / `rc_aeExportPropsMenu` + matching rollouts
+  (`nukeExportPropsRoll` / `aeExportPropsRoll`) bound to the export CA fields.
+- **B2** — `CA.ms` `LKey` → `IKey`; `while(i<Keys.count)` → `<=`.
+- **B3** — `Deadline10.0.ms:909` `=` → `==`.
+- **B4** — `Functions.ms` matID branch `heElement` → `theElement`.
+- **B5** — `Functions.ms` `offsetVersionString` `fullString = …` → `+=`.
+- **B6** — `Treeview.ms:371` `FrontColor` → `LPM_FontColor`.
+- **D1** — removed the dead first `createRenderImageProps` (kept the
+  `renderEnabled=true` version).
+- **D2** — removed the duplicate `generateRenderImageName` (kept the one with the
+  correct comment).
+- **S1** — deleted `Render.ms.backup` and `Treeview.ms.backup` from the repo.
+- **S2** — deleted unused `renderers/renderer_vray7.00.04.ms` (dispatch already
+  loads only 7.20.08; no other references).
+- **S3** — removed the undefined `Vray7_Override_PostRender()` call.
+- **C1** — synced `CLAUDE.md` version to `3.00.09`.
+
+**Deliberately deferred (need in-Max testing / would discard WIP):**
+- **D3** — local-function hoist (see corrected note above).
+- **S4** — `generateCameraOverscanName` dead code is intentional, marked-TODO WIP;
+  left in place.
+- **S5** — missing `load{Nuke,Ae}ExportSettings` are tracked placeholders.
+- **C2** — `Lenth` metadata-key typos left as-is to avoid breaking any downstream
+  pipeline that may already consume the misspelled keys.
+- **C3** — cosmetic case-only inconsistencies (no behavioral effect).
+- **R1–R5** — structural refactors (vray consolidation, loader/menu templating,
+  light-apply dedup) left for a separately reviewed, testable change.

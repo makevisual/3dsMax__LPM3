@@ -509,9 +509,9 @@ attribID:#(0x426c7db3, 0x343c98d9)
 	(
 		IKey=toLower IKey
 		i=1
-		while(i<Keys.count) do
+		while(i<=Keys.count) do
 		(
-			if(Keys[i]==LKey) then
+			if(Keys[i]==IKey) then
 			(
 				deleteItem keys i
 				deleteItem dClass i

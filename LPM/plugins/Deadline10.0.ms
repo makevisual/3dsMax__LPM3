@@ -906,7 +906,7 @@ struct LPM_DeadlineAPI
 	 				ui_update()
 
 	 				-- Perform Idiot checks, or skip if enabled
-	 				if LPM_IdiotChecksEnabled = False
+	 				if LPM_IdiotChecksEnabled == False
 	 				then ( idiotCheck_skip() )
  					else ( idiotCheck_run() )
  					

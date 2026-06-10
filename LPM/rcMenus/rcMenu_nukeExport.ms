@@ -1,116 +1,67 @@
-rollout cameraOverscanPropsRoll "Camera Overscan Override 1.0" width:225 height:130
+rollout nukeExportPropsRoll "Nuke Export 1.0" width:225 height:150
 (
 	local theNode = undefined
 
-	groupbox grp_overscanAmmount "Oversan / Underscan Ammount" width:213 height:50 slign:#left offset:[-5,0] enabled:true--false
-		spinner spn_overscanAmmount "" range:[0.1,2.0,1.1] offset:[0, ( ( grp_overscanAmmount.height * -1 ) + 14 ) ]
+	groupbox grp_folder "Output" width:213 height:50 align:#left offset:[-5,0] enabled:true
+		edittext txt_folderName "Folder " width:195 offset:[0, ( ( grp_folder.height * -1 ) + 16 ) ]
 
-	groupbox grp_resolution "Effect Resolution " width:213 height:65 slign:#left offset:[-5,15] enabled:true--false
-		checkbox chk_effectResolution "" range:[1.0,2.0,1.1] offset:[5, ( ( grp_resolution.height * -1 ) + 18 ) ]
-		label lab_resolutionCurrent "current: 1920 x 1080" offset:[0,-20] align:#right enabled:false
-		label lab_resolutionOverscanned "overscanned: 2112 x 1188" offset:[0,0] align:#right enabled:false
+	groupbox grp_include "Include" width:213 height:70 align:#left offset:[-5,10] enabled:true
+		checkbox chk_cameraEnable "Camera"  offset:[5, ( ( grp_include.height * -1 ) + 18 ) ]
+		checkbox chk_objectsEnable "Objects" offset:[5,0]
+		checkbox chk_scriptEnable "Script"  offset:[5,0]
 
-	function updateCA = 
-	(
-		-- Get the scene node for the element operator
-		cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
-		theNode = cp
-
-		ca = custAttributes.get theNode 1
-
-		ca.fovOverride = spn_overscanAmmount.value
-	    ca.resOverride = chk_effectResolution.checked
-    	ca.resXOverride = ( renderWidth * spn_overscanAmmount.value )
-    	ca.resYOverride = ( renderHeight * spn_overscanAmmount.value )
-
-		-- show ca
-  		-- print ca.type
-  		-- print ca.active
-  		-- print ca.fovOverride
-  		-- print ca.resOverride
-  		-- print ca.resXOverride
-  		-- print ca.resYOverride
-	
-    	return ca 
-	)
-
-	function updateResolution =
-	(
-		ca = updateCA()
-
-		lab_resolutionCurrent.text = ( "current: " + ( renderWidth as string ) + " x " + ( renderHeight as string ) )
-		lab_resolutionOverscanned.text = ( "overscanned: " + ( ( ca.resXOverride as integer ) as string ) + " x " + ( ( ca.resYOverride as integer ) as string ) )
-
-		lab_resolutionCurrent.enabled = ca.resOverride
-		lab_resolutionOverscanned.enabled = ca.resOverride
-	)
-
-	on chk_effectResolution changed state do 
-	(
-		updateResolution()
-	)
-
-	on spn_overscanAmmount changed state do 
-	(
-		updateResolution()
-	)
-
-	-- event for rollout open 
-	on cameraOverscanPropsRoll open do
+	function updateCA =
 	(
 		cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
 		theNode = cp
 
 		ca = custAttributes.get theNode 1
 
-		spn_overscanAmmount.value 			=ca.fovOverride 
-		chk_effectResolution.checked 		=ca.resOverride 
-		updateResolution()	
- 	)
-	
-	on cameraOverscanPropsRoll close do
-	(
+		ca.folderName 		= txt_folderName.text
+		ca.cameraEnable 	= chk_cameraEnable.checked
+		ca.objectsEnable 	= chk_objectsEnable.checked
+		ca.scriptEnable 	= chk_scriptEnable.checked
 
+		return ca
+	)
+
+	on chk_cameraEnable 	changed state do updateCA()
+	on chk_objectsEnable 	changed state do updateCA()
+	on chk_scriptEnable 	changed state do updateCA()
+	on txt_folderName 		changed txt   do updateCA()
+
+	on nukeExportPropsRoll open do
+	(
+		cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
+		theNode = cp
+
+		ca = custAttributes.get theNode 1
+
+		txt_folderName.text 		= ca.folderName
+		chk_cameraEnable.checked 	= ca.cameraEnable
+		chk_objectsEnable.checked 	= ca.objectsEnable
+		chk_scriptEnable.checked 	= ca.scriptEnable
+	)
+
+	on nukeExportPropsRoll close do
+	(
 		updateCA()
-	
-		setFocus cameraOverscanPropsRoll
-
-		-- TODO: having issues updating the name in LPM_Fun.generateCameraOverscanName, so it is just set to static for now
-
-		-- cp  	=theNode.tag.value
-		-- cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
-		-- print "==== cp"
-		-- print cp
-		-- show cp
-		-- 
-		-- print "==== theNode"
-		-- print theNode
-		-- show theNode
-
-		--theNode.text = LPM_Fun.generateCameraOverscanName cp
-
-		--LPM_Fun.generateCameraOverscanName cp
-		--LPM_treeview_rollout.tv.enabled=true
-
-		----theNode.text=LPM_Fun.generateCommonPropName cp
- 		--LPM_Fun.generateCameraOverscanName theNode			-- Dabelow cameraOverscan
-
+		setFocus nukeExportPropsRoll
 		LPM_treeview_rollout.UnFreezeWindow()
-
 	)
 )
 
-rcMenu rc_CameraOverscanPropsMenu
+rcMenu rc_nukeExportPropsMenu
 (
 	menuItem	editProps	"Edit"
 	menuItem 	copyProps 	"Copy"
 	menuItem   	removeProps "Remove"
-	
+
 	on copyProps picked do
 	(
 		LPM_treeview_rollout.copyNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 	)
-	
+
 	on removeProps picked do
 	(
 		theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
@@ -118,8 +69,7 @@ rcMenu rc_CameraOverscanPropsMenu
 		LPM_treeview_rollout.tv.selectedNode.remove()
 	)
 	on editProps picked do
-	(		
-		createDialog cameraOverscanPropsRoll pos:(LPM_Fun.getRoPos  cameraOverscanPropsRoll.width)
+	(
+		createDialog nukeExportPropsRoll pos:(LPM_Fun.getRoPos  nukeExportPropsRoll.width)
 	)
 )
---createDialog cameraOverscanPropsRoll pos:(LPM_Fun.getRoPos  cameraOverscanPropsRoll.width)
