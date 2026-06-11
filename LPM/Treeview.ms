@@ -699,8 +699,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 				newNode.ForeColor = LPM_FontColor
 				newNode.BackColor = LPM_BackColor
 			)
-			pmShot.passes=np
-			pmShot.passesOn=ni
+			-- CA writes dirty the scene and redraw the viewport on every tree
+			-- rebuild, so only write back when invalid passes were pruned
+			if(np.count != pmShot.passes.count) or (ni.count != pmShot.passesOn.count) then
+			(
+				pmShot.passes=np
+				pmShot.passesOn=ni
+			)
 		)
 		else
 		(
@@ -886,28 +891,38 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 				xrefSceneProps=LPM_Fun.firstChildByType thePass "xrefScene"
 				if(isvalidnode xrefSceneProps)and(xrefSceneProps.active) then
 				(
-					--set the scenes
+					--set the scenes, only touching xrefs whose state actually changes
 					for i=1 to xrefs.getXRefFileCount() do
 					(
 						theXref=(xrefs.getXRefFile i)
-						if((findItem xrefSceneProps.fileNames theXref.fileName)!=0) then
-							theXref.disabled=false
-						else
-							theXref.disabled=true
+						newDisabled=((findItem xrefSceneProps.fileNames theXref.fileName)==0)
+						if(theXref.disabled!=newDisabled) then
+						(
+							if(not newDisabled) and (not (doesFileExist theXref.fileName)) then
+								format "LPM warning: xref scene file missing, leaving unloaded: %\n" theXref.fileName
+							else
+								try(theXref.disabled=newDisabled)
+								catch(format "LPM warning: failed to set xref scene state: %\n" theXref.fileName)
+						)
 					)
 				)
 
 				xrefObjProps=LPM_Fun.firstChildByType thePass "xrefObj"
 				if(isvalidnode xrefObjProps)and(xrefObjProps.active) then
 				(
-					--set the scenes
+					--set the objects, only touching records whose state actually changes
 					for i=1 to objXRefMgr.recordCount do
 					(
 						theXref=(objXRefMgr.GetRecord i)
-						if((findItem xrefObjProps.fileNames theXref.srcFileName)!=0) then
-							theXref.enabled =true
-						else
-							theXref.enabled=false
+						newEnabled=((findItem xrefObjProps.fileNames theXref.srcFileName)!=0)
+						if(theXref.enabled!=newEnabled) then
+						(
+							if(newEnabled) and (not (doesFileExist theXref.srcFileName)) then
+								format "LPM warning: xref object source file missing, leaving disabled: %\n" theXref.srcFileName
+							else
+								try(theXref.enabled=newEnabled)
+								catch(format "LPM warning: failed to set xref object state: %\n" theXref.srcFileName)
+						)
 					)
 				)
 
@@ -1084,8 +1099,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	fn updateTV=
 	(
-		tv.nodes.clear()
-		fillInTreeView tv
+		-- rebuilding the tree can touch scene CAs; keep the viewport quiet
+		with redraw off
+		(
+			tv.nodes.clear()
+			fillInTreeView tv
+		)
 	)
 
 	fn AddScriptOverride =
@@ -1423,6 +1442,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		type = theNode.tag.value.type
 		word = e.Label
 		if(type=="shot" or type=="pass") then word = LPM_Fun.removeBadChars word
+
+		-- reject blank names; updateTV restores the original label
+		if((trimLeft (trimRight word)) == "") then
+		(
+			LPM_treeview_rollout.updateTV()
+			return()
+		)
 
 		theNode.text = word
 		case type of

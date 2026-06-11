@@ -6,7 +6,7 @@
 			theProps=LPM_Fun.createNode "Render Override" "renderProps"
 			theProps.parent=thePassNode.tag.value
 				
-			LPM_treeviewRollout.addPassTV thePassNode
+			LPM_treeview_rollout.addPassTV thePassNode
 			tvRoot=LPM_Treeview_Rollout.tvRoot
 			--Find and reselect the node
 			for i=0 to (tvRoot.nodes.count-1) do
@@ -19,7 +19,7 @@
 				)
 			)
 			
-		    LPM_treeviewRollout.tv.enabled=false
+		    LPM_treeview_rollout.tv.enabled=false
 			
 			rollout LPM_rendererPicker "Pick a Render Type" width:200
 			(

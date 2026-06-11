@@ -466,14 +466,19 @@ struct LPM_RenderAPI
 				xrefObjProps=LPM_Fun.firstChildByType thePass "xrefObj"
 				if(isvalidnode xrefObjProps)and(xrefObjProps.active) then
 				(
-					--set the obj
+					--set the obj, only touching records whose state actually changes
 					for i=1 to objXRefMgr.recordCount do
 					(
 						theXref=(objXRefMgr.GetRecord i)
-						if((findItem xrefObjProps.fileNames theXref.srcFileName)!=0) then
-							theXref.enabled=true
-						else
-							theXref.enabled=false
+						newEnabled=((findItem xrefObjProps.fileNames theXref.srcFileName)!=0)
+						if(theXref.enabled!=newEnabled) then
+						(
+							if(newEnabled) and (not (doesFileExist theXref.srcFileName)) then
+								format "LPM warning: xref object source file missing, leaving disabled: %\n" theXref.srcFileName
+							else
+								try(theXref.enabled=newEnabled)
+								catch(format "LPM warning: failed to set xref object state: %\n" theXref.srcFileName)
+						)
 					)
 				)
 
@@ -912,14 +917,19 @@ struct LPM_RenderAPI
 				xrefSceneProps=LPM_Fun.firstChildByType thePass "xrefScene"
 				if(isvalidnode xrefSceneProps)and(xrefSceneProps.active) then
 				(
-					--set the scenes
+					--set the scenes, only touching xrefs whose state actually changes
 					for i=1 to xrefs.getXRefFileCount() do
 					(
 						theXref=(xrefs.getXRefFile i)
-						if((findItem xrefSceneProps.fileNames theXref.fileName)!=0) then
-							theXref.disabled=false
-						else
-							theXref.disabled=true
+						newDisabled=((findItem xrefSceneProps.fileNames theXref.fileName)==0)
+						if(theXref.disabled!=newDisabled) then
+						(
+							if(not newDisabled) and (not (doesFileExist theXref.fileName)) then
+								format "LPM warning: xref scene file missing, leaving unloaded: %\n" theXref.fileName
+							else
+								try(theXref.disabled=newDisabled)
+								catch(format "LPM warning: failed to set xref scene state: %\n" theXref.fileName)
+						)
 					)
 				)
 
@@ -1179,20 +1189,26 @@ struct LPM_RenderAPI
 				-- xref scenes restore
 				if xrefBackArray != #() then--(isvalidnode xrefSceneProps) then
 				(
-					--backup the settings
-					for i=1 to xrefBackArray.count do
+					-- clamp to the current count in case xrefs changed during the render
+					for i=1 to (amin xrefBackArray.count (xrefs.getXRefFileCount())) do
 					(
-						 (xrefs.getXRefFile i).disabled=xrefBackArray[i]
+						theXref=(xrefs.getXRefFile i)
+						if(theXref.disabled!=xrefBackArray[i]) then
+							try(theXref.disabled=xrefBackArray[i])
+							catch(format "LPM warning: failed to restore xref scene state: %\n" theXref.fileName)
 					)
 				)
 
 				--   xrefObjects
 				if xrefObjBackArray != #() then--(isvalidnode xrefObjProps) then
 				(
-					--backup the settings
-					for i=1 to xrefObjBackArray.count do
+					-- clamp to the current count in case records changed during the render
+					for i=1 to (amin xrefObjBackArray.count objXRefMgr.recordCount) do
 					(
-						 (objXRefMgr.GetRecord i).enabled=xrefObjBackArray[i]
+						theXref=(objXRefMgr.GetRecord i)
+						if(theXref.enabled!=xrefObjBackArray[i]) then
+							try(theXref.enabled=xrefObjBackArray[i])
+							catch(format "LPM warning: failed to restore xref object state: %\n" theXref.srcFileName)
 					)
 				)
 

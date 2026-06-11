@@ -43,7 +43,7 @@ fn destroyAllDialogs=
 		try(destroyDialog renderImagePropsRoll)catch()			-- Dabelow renderImage
 		try(destroyDialog nukeExportPropsRoll)catch()			-- Dabelow nukeExport
 		try(destroyDialog aeExportPropsRoll)catch()				-- Dabelow aeExport
-		try(destroyDialog LPM_treeviewRollout)catch()
+		try(destroyDialog LPM_treeview_rollout)catch()
 
 		callbacks.removeScripts id:#closeLPM
 	)
@@ -90,19 +90,20 @@ fn setIcon theNode=
 		case theNode.tag.value.type of
 		(
 			"pass":(LPM_Fun.setImageIndex theNode theNode.tag.value.active 1 11)
+			-- tri-state: 1 = "--" (use scene settings, gray icon), 2 = On (colored icon), 3 = Off (disabled icon)
 			"objectSet":(
 				case (theNode.tag.value.intP[1]) of
 				(
-					1: LPM_Fun.setImageIndex theNode true 2 2
-					2: LPM_Fun.setImageIndex theNode true 12 12
+					1: LPM_Fun.setImageIndex theNode true 12 12
+					2: LPM_Fun.setImageIndex theNode true 2 2
 					3: LPM_Fun.setImageIndex theNode true 13 13
 				)
 			)
 			"lightSet":(
 				case theNode.tag.value.pEnable of
 				(
-					1: LPM_Fun.setImageIndex theNode true 3 3
-					2: LPM_Fun.setImageIndex theNode true 14 14
+					1: LPM_Fun.setImageIndex theNode true 14 14
+					2: LPM_Fun.setImageIndex theNode true 3 3
 					3: LPM_Fun.setImageIndex theNode true 15 15
 				)
 			)
@@ -148,7 +149,8 @@ fn passByNode theNode =
 (
 	tmpValue = undefined
 
-	if(theNode!=undefined) then
+	-- tag.value can point at a deleted scene object after a scene change
+	if(theNode!=undefined) and (theNode.tag!=undefined) and (try(theNode.tag.value.type!=undefined)catch(false)) then
 	(
 		tmpValue = case theNode.tag.value.type of
 		(
@@ -463,7 +465,7 @@ fn createDefaultPass =
 	lightset.pEnable = 3
 	lightSet.parent=pass
 
-	newPass=LPM_treeviewRollout.createPassTv pass LPM_treeviewRollout.tvRoot
+	newPass=LPM_treeview_rollout.createPassTv pass LPM_treeview_rollout.tvRoot
 	LPM_Treeview_Rollout.addPassTv newPass
 	LPM_Treeview_Rollout.renameNode newPass
 ),
@@ -1813,7 +1815,11 @@ fn getROPos dialogWidth=
 	if(left) then
 		thePos=thePos-[dialogWidth+20,0]
 	else
-		thePos=thePos+[LPM_Treeview_Rollout.width+20,0]
+	(
+		tvWidth=0
+		if(LPM_Treeview_rollout!=undefined) then tvWidth=LPM_Treeview_Rollout.width
+		thePos=thePos+[tvWidth+20,0]
+	)
 	thePos
 
 ),
@@ -2096,7 +2102,7 @@ fn LPM_rendererClosed =
 
 
 	theRenderer=(classof renderers.current) as string
-	theNode=LPM_treeviewRollout.tv.selectedNode
+	theNode=LPM_treeview_rollout.tv.selectedNode
 
 	if theNode.tag.value.type == "pass" then
 	(
@@ -2145,7 +2151,7 @@ fn LPM_rendererClosed =
 	(
 		LPM_Fun.loadRenderPreset LPM_oldRenderSettings
 	)
-	LPM_treeviewRollout.UnFreezeWindow()
+	LPM_treeview_rollout.UnFreezeWindow()
 )
 
 
@@ -2188,7 +2194,7 @@ fn LPM_ProSequencerUpdate =
 		)
 
 
-		LPM_treeviewRollout.updateTV()
+		LPM_treeview_rollout.updateTV()
 	)
 	catch
 	(

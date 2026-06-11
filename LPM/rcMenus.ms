@@ -1758,9 +1758,16 @@ rcMenu rc_PassGroup
 	seperator s2
 	menuItem submitLocal "Submit Group Local"
 	menuItem submitNetwork "Submit Group Network"
+	seperator s3
+	menuItem renameGroup "Rename Group"
 	seperator s1
 	menuItem deleteGroup "Delete Group, Keep Passes"
 	menuItem deleteGroupChildren "Delete Group, Delete Passes"
+
+	on renameGroup picked do
+	(
+		LPM_treeview_rollout.renameNode LPM_treeview_rollout.tv.selectedNode
+	)
 
 	on deleteGroup picked do
 	(
