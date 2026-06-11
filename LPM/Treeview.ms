@@ -368,7 +368,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		newNode = nodeRoot.Nodes.Add nodeName
 		newNode.tag=dotNetMXSValue theNode
  		newNode.BackColor = LPM_BackColor
- 		newNode.ForeColor = FrontColor
+ 		newNode.ForeColor = LPM_FontColor
 
 		LPM_Fun.setIcon newNode
 		newNode

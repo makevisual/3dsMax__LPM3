@@ -339,7 +339,6 @@ function postRenderAction_Production =
     if LPM_RenderDispatchAction != #PreviewRender then
     (
         try( postRenderAction_ProductionGlobals() )catch() -- TODO: remove later????
-        try( Vray7_Override_PostRender() )catch() -- TODO: remove later????
     )
 
     -- call each of the postrender functions

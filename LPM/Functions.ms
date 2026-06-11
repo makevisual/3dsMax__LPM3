@@ -605,9 +605,9 @@ fn offsetVersionString str mode =
 
     -- Put the string back together, putting any "_v" portions removed
     fullString = ""
-    for i in 1 to ( stringParts.count - 1 ) do 
+    for i in 1 to ( stringParts.count - 1 ) do
     (
-        fullString = stringParts[i]
+        fullString += stringParts[i]
         fullString += "_v"
     )
 
@@ -775,18 +775,6 @@ fn loadRenderImageSettings cp isPreviewMode=
 	LPM_SMTDSettings.active 	 		= cp.active
 --	LPM_SMTDSettings.elementOverride 	= cp.elementOverride
 --	LPM_SMTDSettings.activeElement 		= cp.activeElement
-),
-
--- renderImage
-fn createRenderImageProps theName=
-(
-	cp=LPM_Fun.createNode theName "renderImage"
-
-	cp.active = true
---	cp.elementOverride = true
---	cp.activeElement = #()
-
-	cp
 ),
 
 -- vrayRenderElements
@@ -1332,14 +1320,6 @@ fn generateCameraOverscanName cp=
 ),
 
 -- Dabelow nukeExport
-fn generateRenderImageName cp=
-(
-	theName = ( "Render Image" )
-
-	return theName
-),
-
--- Dabelow nukeExport
 fn generateNukeExportName cp=
 (
 	theName = ( "Nuke Export" )
@@ -1618,7 +1598,7 @@ fn CreateIDBWmask TmpNumbersArr isMatID:false =
 				(
 					REManager.AddRenderElement (CMasking_Mask elementname:("am_mID_" + (i as String)))
 
-					heElement = REManager.GetRenderElement (REcount+i-1)
+					theElement = REManager.GetRenderElement (REcount+i-1)
 
 					theElement.enabled = true
 
