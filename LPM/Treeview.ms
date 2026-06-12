@@ -1064,7 +1064,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		if(ySize<0) then(ysize=0)
 
 		-- make some useful numbers
-		dotNetSize 	= dotNetObject "System.Drawing.Size" theSize.x ySize
 		xSize 		= ((theSize.x))
 		yPos 		= ((theSize.y - 48) as integer)
 
@@ -1082,8 +1081,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		btn_versionDown.pos 			= [xSize-20, 22]
 
 		-- TreeView (shifted down by 22 for name field row)
-		tv.Location 					= dotNetObject "System.Drawing.Point" 0 0
-		tv.size 						= dotNetSize
+		-- Size via the MaxScript wrapper pos/width/height, which Max scales for
+		-- High-DPI monitors. Raw System.Drawing Size/Point bypass that scaling
+		-- and leave the control undersized at e.g. 150% Windows UI scale.
+		tv.pos 							= [0, 43]
+		tv.width 						= xSize
+		tv.height 						= ySize
 
 		dnc_textBoxOutputPath.pos 		= [0,yPos+2]
 		dnc_textBoxOutputPath.width 	= xSize-42
