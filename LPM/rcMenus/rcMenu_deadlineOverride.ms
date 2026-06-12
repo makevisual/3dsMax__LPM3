@@ -9,7 +9,7 @@ rollout deadlinePropsRoll "Deadline override 1.0" width:370 height:558
 			checkbox chk_priorityAbspoluteOn "Priority Absolute:" slign:#left offset:[185, -21 ] enabled:false
 				spinner spn_priorityAbsolute "" type:#integer range:[-100,100,0] align:#left offset:[290,-20] width:40 enabled:false
 	
-	checkbox chk_renderTicks "" pos:[12,62] --Tyson
+	checkbox chk_renderTicks "" pos:[12,62]
 		groupbox grp_renderTicks "Render Ticks" width:325 height:45 slign:#left offset:[21,-25] enabled:false
 				spinner spn_renderTicksMult "FPS Multiplier" type:#integer range:[1,10000,1] align:#left offset:[35, ( ( grp_renderTicks.height * -1 ) + 14 ) ]  width:60 enabled:false
 			
@@ -77,7 +77,7 @@ rollout deadlinePropsRoll "Deadline override 1.0" width:370 height:558
 			btn_LimitRemove.enabled = state
 			mlt_setLimitGroups.enabled = state
 			
-		state = chk_renderTicks.checked --Tyson			
+		state = chk_renderTicks.checked
 			grp_renderTicks.enabled = state
 			spn_renderTicksMult.enabled = state
 	)
@@ -237,7 +237,7 @@ rollout deadlinePropsRoll "Deadline override 1.0" width:370 height:558
 	on chk_TasksOn changed state do toggleState()
 	on chk_GroupOn changed state do toggleState()
 	on chk_LimitsOn changed state do toggleState()
-	on chk_renderTicks changed state do toggleState() --Tyson
+	on chk_renderTicks changed state do toggleState()
 	on deadlinePropsRoll open do
 	(
  		LPM_treeview_rollout.tv.enabled=false
@@ -260,8 +260,8 @@ rollout deadlinePropsRoll "Deadline override 1.0" width:370 height:558
 		chk_GroupOn.checked 					= cp.submitGroupOn 			
 		chk_LimitsOn.checked 					= cp.submitLimitsOn
 		
-		chk_renderTicks.checked 				= cp.renderTicks --Tyson
-		spn_renderTicksMult.value 				= cp.renderTicksMult --Tyson
+		chk_renderTicks.checked 				= cp.renderTicks
+		spn_renderTicksMult.value 				= cp.renderTicksMult
 		
 		toggleState()
 
@@ -293,8 +293,8 @@ rollout deadlinePropsRoll "Deadline override 1.0" width:370 height:558
 			cp.submitLimits 		= mlt_setLimitGroups.items	
 			
 			
-		cp.renderTicks				= chk_renderTicks.checked --Tyson
-		cp.renderTicksMult			= spn_renderTicksMult.value --Tyson
+		cp.renderTicks				= chk_renderTicks.checked
+		cp.renderTicksMult			= spn_renderTicksMult.value
 					
 		theNode.text = LPM_Fun.generateDeadlineName cp
 		LPM_treeview_rollout.tv.enabled=true

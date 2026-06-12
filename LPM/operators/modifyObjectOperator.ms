@@ -31,7 +31,6 @@ struct LPM_modifyObjectOperator
 		(
 			if(isvalidnode INode) then
 			(
-				--print "load"
 				myObject=INode.getValue "myObject" undefined
 				disabledModifiers=INode.getArray "disabledModifiers" #()
 			)
@@ -43,8 +42,6 @@ struct LPM_modifyObjectOperator
 	(
 		if(isvalidnode INode) then
 		(
-			--print "store"
-			--print disabledModifiers
 			
 			INode.setValue "myObject" myObject
 			INode.setArray "disabledModifiers" disabledModifiers
@@ -57,7 +54,6 @@ struct LPM_modifyObjectOperator
 	(
 		
 			--Make sure we at least loaded...
-			--print "fnDisableModifiers"
 			--setCommandPanelTaskMode #Create
 			if(isvalidnode myObject) then
 			(
@@ -76,7 +72,6 @@ struct LPM_modifyObjectOperator
 	fn fnEnableModifiers=
 	(
 			--Make sure we at least loaded...
-			--print "fnDisableModifiers"
 			--setCommandPanelTaskMode #Create
 			if(isvalidnode myObject) then
 			(
@@ -106,7 +101,6 @@ struct LPM_modifyObjectOperator
 			--button btnDisable "Disabled Selected"
 			fn fnUpdateUI=
 			(
-				--print this.disabledModifiers
 				if(isvalidnode this.myObject==false) then
 				(
 					pbObject.text="Pick the Object To Modify"
@@ -129,8 +123,6 @@ struct LPM_modifyObjectOperator
 			on LBDisabledModifiers selectionEnd do
 			(
 				this.disabledModifiers=for i=1 to LBDisabledModifiers.items.count where LBDisabledModifiers.selection[i] collect LBDisabledModifiers.items[i]
-				--print "selectionEnd"
-				--print this.DisabledModifiers
 			)
 			on pbObject picked obj do
 			(

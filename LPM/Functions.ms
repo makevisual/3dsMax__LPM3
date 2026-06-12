@@ -35,14 +35,14 @@ fn destroyAllDialogs=
 		try(destroyDialog pickPasses_RO) catch()
 		try(destroyDialog LPM_objectSetProps)catch()
 		try(destroyDialog lightSetProps) catch()
-		try(destroyDialog deadlinePropsRoll)catch()				-- Dabelow
-		try(destroyDialog SMTDLPMInterface)catch()				-- Dabelow
-		try(destroyDialog vrayPropsRoll)catch()					-- Dabelow vrayRenderElements
-		try(destroyDialog vrayRenderElementsPropsRoll)catch()	-- Dabelow vrayRenderElements
-		try(destroyDialog cameraOverscanPropsRoll)catch()		-- Dabelow cameraOverscan
-		try(destroyDialog renderImagePropsRoll)catch()			-- Dabelow renderImage
-		try(destroyDialog nukeExportPropsRoll)catch()			-- Dabelow nukeExport
-		try(destroyDialog aeExportPropsRoll)catch()				-- Dabelow aeExport
+		try(destroyDialog deadlinePropsRoll)catch()
+		try(destroyDialog SMTDLPMInterface)catch()
+		try(destroyDialog vrayPropsRoll)catch()
+		try(destroyDialog vrayRenderElementsPropsRoll)catch()
+		try(destroyDialog cameraOverscanPropsRoll)catch()
+		try(destroyDialog renderImagePropsRoll)catch()
+		try(destroyDialog nukeExportPropsRoll)catch()
+		try(destroyDialog aeExportPropsRoll)catch()
 		try(destroyDialog LPM_treeview_rollout)catch()
 
 		callbacks.removeScripts id:#closeLPM
@@ -54,10 +54,8 @@ fn cleanSet theSet=
 ),
 
 
--- TODO! -- This is that noisy section
 fn firstChildByType theParent type=
 (
-	-- GPT suggested this
     if theParent == undefined do return undefined
 
 	for kids in theParent.children where kids.type==type do
@@ -133,12 +131,12 @@ fn setIcon theNode=
 			"script":LPM_Fun.setImageIndex theNode theNode.tag.value.active 29 30
 			"passGroup":LPM_Fun.setImageIndex theNode theNode.tag.value.active 27 28
 			"ModifierOver":LPM_Fun.setImageIndex theNode theNode.tag.value.active 32 33
-			"Deadline":LPM_Fun.setImageIndex theNode theNode.tag.value.active 46 47 			-- Dabelow
-			"cameraOverscan":LPM_Fun.setImageIndex theNode theNode.tag.value.active 52 53  		-- Dabelow cameraOverscan
-			"nukeExport":LPM_Fun.setImageIndex theNode theNode.tag.value.active 54 55  			-- Dabelow nukeExport
-			"aeExport":LPM_Fun.setImageIndex theNode theNode.tag.value.active 56 57  			-- Dabelow aeExport
-			"vrayRenderElements":LPM_Fun.setImageIndex theNode theNode.tag.value.active 62 63 	-- Dabelow vrayRenderElements 
-			"renderImage":LPM_Fun.setImageIndex theNode theNode.tag.value.active 64 65 			-- Dabelow renderImage 
+			"Deadline":LPM_Fun.setImageIndex theNode theNode.tag.value.active 46 47
+			"cameraOverscan":LPM_Fun.setImageIndex theNode theNode.tag.value.active 52 53
+			"nukeExport":LPM_Fun.setImageIndex theNode theNode.tag.value.active 54 55
+			"aeExport":LPM_Fun.setImageIndex theNode theNode.tag.value.active 56 57
+			"vrayRenderElements":LPM_Fun.setImageIndex theNode theNode.tag.value.active 62 63
+			"renderImage":LPM_Fun.setImageIndex theNode theNode.tag.value.active 64 65
 		)
 
 	)catch(messagebox "Error setting icon see listener (F11) for details\nThis is often due to a memory allocation in 3ds max")
@@ -179,11 +177,11 @@ fn passByNode theNode =
 			"xrefLeaf":theNode.parent.parent.tag.value
 			"script":theNode.parent.tag.value
 			"ModifierOver":theNode.parent.tag.value
-			"Deadline":theNode.parent.tag.value 				-- Dabelow
-			"renderImage":theNode.parent.tag.value 				-- Dabelow renderImage
-			"cameraOverscan":theNode.parent.tag.value 			-- Dabelow cameraOverscan
-			"nukeExport":theNode.parent.tag.value 				-- Dabelow nukeExport
-			"aeExport":theNode.parent.tag.value 				-- Dabelow aeExport
+			"Deadline":theNode.parent.tag.value
+			"renderImage":theNode.parent.tag.value
+			"cameraOverscan":theNode.parent.tag.value
+			"nukeExport":theNode.parent.tag.value
+			"aeExport":theNode.parent.tag.value
 			default:undefined
 		)
 	)
@@ -327,7 +325,7 @@ fn saveRenderPreset =
 fn optimizedLoadRenderPreset file =
 (
 	--disabling mods before preset load in heavy scenes = speed boost
-	--tyson note: disabling mods can cause issues when disablerefmsgs is called, so im disabling that
+	-- note: disabling mods can cause issues when disableRefMsgs is called, so that is disabled here
 
 	disablerefmsgs()
 
@@ -345,9 +343,7 @@ fn optimizedLoadRenderPreset file =
 		theMod = mods[j]
 	)
 
-	------------------
 	renderpresets.LoadAll 0 file
-	------------------
 
 	for j in 1 to mods.count do
 	(
@@ -494,12 +490,12 @@ fn createNode pName type=
 		"passGroup":custAttributes.add theNode LPM_passGroupCA
 		"empty":custAttributes.add theNode LPM_emptyCA
 		"ModifierOver":custAttributes.add theNode ModifierOverCA
-		"Deadline":custAttributes.add theNode deadlinePropsCA 							-- Dabelow
-		"vrayRenderElements":custAttributes.add theNode vrayRenderElementsPropsCA 		-- Dabelow vrayrenderelements
-		"renderImage":custAttributes.add theNode renderImagePropsCA 					-- Dabelow renderImage
-		"cameraOverscan":custAttributes.add theNode cameraOverscanPropsCA 				-- Dabelow cameraOverscan
-		"nukeExport":custAttributes.add theNode nukeExportPropsCA 						-- Dabelow nukeExport
-		"aeExport":custAttributes.add theNode aeExportPropsCA 							-- Dabelow aeExport
+		"Deadline":custAttributes.add theNode deadlinePropsCA
+		"vrayRenderElements":custAttributes.add theNode vrayRenderElementsPropsCA
+		"renderImage":custAttributes.add theNode renderImagePropsCA
+		"cameraOverscan":custAttributes.add theNode cameraOverscanPropsCA
+		"nukeExport":custAttributes.add theNode nukeExportPropsCA
+		"aeExport":custAttributes.add theNode aeExportPropsCA
 	)
 
 	pName="LPM_"+pName
@@ -658,7 +654,7 @@ fn loadVraySettings cp isPreviewMode=
 	-- VRay properties, making the vrayProps operator a no-op with no feedback.
 	if not LPM_VRayInstalled then
 	(
-		print "LPM loadVraySettings: V-Ray not installed -- skipping vray settings."
+		if LPM_VerboseLogging do print "LPM loadVraySettings: V-Ray not installed -- skipping vray settings."
 		return false
 	)
 
@@ -723,7 +719,7 @@ fn loadVraySettings cp isPreviewMode=
 	)
 ),
 
-fn loadDeadlineSettings cp isPreviewMode= -- dabelow
+fn loadDeadlineSettings cp isPreviewMode=
 (
 	if isPreviewMode then ( return false )
 
@@ -739,11 +735,11 @@ fn loadDeadlineSettings cp isPreviewMode= -- dabelow
 	LPM_SMTDSettings.submitGroup 		= cp.submitGroup
 	LPM_SMTDSettings.submitLimitsOn 	= cp.submitLimitsOn
 	LPM_SMTDSettings.submitLimits 		= cp.submitLimits
-	LPM_SMTDSettings.renderTicks 		= cp.renderTicks --Tyson
-	LPM_SMTDSettings.renderTicksMult	= cp.renderTicksMult --Tyson	
+	LPM_SMTDSettings.renderTicks 		= cp.renderTicks
+	LPM_SMTDSettings.renderTicksMult	= cp.renderTicksMult
 ),
 
--- Dabelow
+
 fn createDeadlineProps theName=
 (
 	cp=LPM_Fun.createNode theName "Deadline"
@@ -763,8 +759,8 @@ fn createDeadlineProps theName=
 	cp.submitLimitsOn = false
 		cp.submitLimits = #()
 		
-	cp.renderTicks = false --Tyson
-	cp.renderTicksMult = 1 --Tyson
+	cp.renderTicks = false
+	cp.renderTicksMult = 1
 
 	cp
 ),
@@ -847,7 +843,7 @@ fn createVrayProps theName=
 	cp
 ),
 
--- Dabelow cameraOverscan
+
 fn loadCameraOverscanSettings cp isPreviewMode=
 (
 	-- if isPreviewMode then ( return false )
@@ -857,7 +853,7 @@ fn loadCameraOverscanSettings cp isPreviewMode=
 	-- LPM_SMTDSettings.activeElement 		= cp.activeElement
 ),
 
--- Dabelow cameraOverscan
+
 fn createCameraOverscanProps theName=
 (
 	cp=LPM_Fun.createNode theName "cameraOverscan"
@@ -871,7 +867,7 @@ fn createCameraOverscanProps theName=
 	cp
 ),
 
--- Dabelow renderImage
+
 fn createRenderImageProps theName=
 (
 	cp=LPM_Fun.createNode theName "renderImage"
@@ -882,7 +878,7 @@ fn createRenderImageProps theName=
 	cp
 ),
 
--- Dabelow nukeExport
+
 fn createNukeExportProps theName=
 (
 	cp=LPM_Fun.createNode theName "nukeExport"
@@ -897,7 +893,7 @@ fn createNukeExportProps theName=
 	cp
 ),
 
--- Dabelow aeExport
+
 fn createAeExportProps theName=
 (
 	cp=LPM_Fun.createNode theName "aeExport"
@@ -1013,7 +1009,7 @@ fn getPassPath theRoot thePass theShot:undefined previewMode:false RendPreviewMo
 		theString
 	)
 
-	--Cameras----------------------------------------
+	-- Cameras
 	cameraString="Active_Cam"
 	if(isValidNode LPM_Root.renderCamera) then
 		cameraString=LPM_Root.renderCamera.name
@@ -1158,9 +1154,6 @@ fn getPassPath theRoot thePass theShot:undefined previewMode:false RendPreviewMo
 		if(cp!=undefined) and (cp.fileTypeTgl) then
 			theFileType=cp._fileType
 
-	try( print ("------------------------------------------ Filetype Override Portion "))catch()
-	try( print ("----------------------cp._fileType " + theFileType)						)catch()
-
 	if(theShot!=undefined) then
 	(
 		cp=LPM_Fun.firstChildByType theShot "commonProps"
@@ -1289,21 +1282,21 @@ fn generateDeadlineName cp=
 	theName
 ),
 
--- Dabelow vrayRenderElements
+
 fn generateVrayRenderElementsName cp=
 (
 	theName = ( "VRay Render Elements Override" )
 	theName
 ),
 
--- Dabelow renderImage
+
 fn generateRenderImageName cp=
 (
 	theName = ( "Render Image" )
 	theName
 ),
 
--- Dabelow cameraOverscan
+
 fn generateCameraOverscanName cp=
 (
 	theName = ( "Camera Overscan Override" )
@@ -1321,7 +1314,7 @@ fn generateCameraOverscanName cp=
 	theName
 ),
 
--- Dabelow nukeExport
+
 fn generateNukeExportName cp=
 (
 	theName = ( "Nuke Export" )
@@ -1329,7 +1322,7 @@ fn generateNukeExportName cp=
 	return theName
 ),
 
--- Dabelow aeExport
+
 fn generateAeExportName cp=
 (
 	theName = ( "After Effects Export" )

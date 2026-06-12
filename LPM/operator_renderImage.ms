@@ -1,4 +1,3 @@
--- 3/16/2021 Aaron Dabelow theonlyaaron@gmail.com
 
 struct renderImage_RestoreDataStr
 (

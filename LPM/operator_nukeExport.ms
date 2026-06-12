@@ -1,5 +1,4 @@
 -- Nuke Export Operator — NOT YET IMPLEMENTED
--- 3/16/2021 Aaron Dabelow theonlyaaron@gmail.com
 --
 -- This file is a placeholder. The nukeExportPropsCA custom attribute
 -- exists in CA.ms but the operator logic has not been written.

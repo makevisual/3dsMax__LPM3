@@ -1,6 +1,4 @@
--- Dear whoever reads this, I inherited this pile of globals, and wish it was not this way, it keeps me up at night.
--- I added a couple of my own, to be able to pass things between areas of the program out of shame, and confusion.
--- I at least was able to add LPM_ to the beginning of almost all of them, so they were not so egregious. - Aaron Dabelow
+-- Global declarations shared between LPM modules.
 
 global LPM_renderAPI
 global LPM_NetworkPlugins=#()
@@ -15,7 +13,7 @@ global LPM_Data
 global LPM_Render
 global LPM_atmRollout
 global LPM_objectSetProps
-global lightSetProps 						-- Difficult to change name, used as class and constructor, I gave up trying to fix -- Dabelow
+global lightSetProps 						-- Name kept for backward compatibility; used as both class and constructor
 global LPM_commonRollout
 global LPM_activePass
 global LPM_LoadingPreset
@@ -33,16 +31,19 @@ global LPM_BackColor
 global LPM_FontColor
 global LPM_ContinueLoad
 
-global LPM_IdiotChecksEnabled 				-- Dabelow	
-global LPM_VersionNumber 					-- Dabelow	
-global LPM_SMTDSettings 					-- Dabelow
-global LPM_NukeAPI 							-- Dabelow
-global LPM_RenderDispatchThePass 			-- Dabelow Render Dispatch ( future renderer compatable )
-global LPM_RenderDispatchTheShot 			-- Dabelow Render Dispatch ( future renderer compatable )
-global LPM_RenderDispatchAction 			-- Dabelow Render Dispatch ( future renderer compatable )
-global LPM_RenderDispatchRestoreData 		-- Dabelow Render Dispatch ( future renderer compatable )
-global LPM_OperatorData 					-- Dabelow
+global LPM_IdiotChecksEnabled
+global LPM_VersionNumber
+global LPM_SMTDSettings
+global LPM_NukeAPI
+global LPM_RenderDispatchThePass 			-- Render Dispatch ( future renderer compatible )
+global LPM_RenderDispatchTheShot 			-- Render Dispatch ( future renderer compatible )
+global LPM_RenderDispatchAction 			-- Render Dispatch ( future renderer compatible )
+global LPM_RenderDispatchRestoreData 		-- Render Dispatch ( future renderer compatible )
+global LPM_OperatorData
 
-global LPM_VRayInstalled 					-- Dabelow: true if VRay plugin is present on this machine
-global LPM_VRayActive    					-- Dabelow: true if VRay is the currently active renderer
-global LPM_TyFlowInstalled 				-- Dabelow: true if tyFlow plugin is present on this machine
+global LPM_VRayInstalled 					-- true if VRay plugin is present on this machine
+global LPM_VRayActive    					-- true if VRay is the currently active renderer
+global LPM_TyFlowInstalled 				-- true if tyFlow plugin is present on this machine
+
+-- Read directly (LPM_Fun.getIni is not loaded yet when the startup checks print)
+global LPM_VerboseLogging = ((getINISetting ((getdir #plugcfg) + "\\LPM.ini") "Settings" "VerboseLogging") == "true")

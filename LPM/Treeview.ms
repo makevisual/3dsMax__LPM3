@@ -263,28 +263,28 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		-- If you want to remove an icon, replace it with "missing" because icons are integer
 		-- based and if the index changes, the icons will be incorrect
 
-		getIconFromBitmap "missing" 						--Dabelow vray5
-		getIconFromBitmap "missing" 						--Dabelow vray5
-		getIconFromBitmap "missing" 						--Dabelow vray5
-		getIconFromBitmap "missing" 						--Dabelow vray5
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
 
-		getIconFromBitmap "CameraOverscan" 					--Dabelow cameraOverscan
-		getIconFromFolder LPM_disabledIconFolder "CameraOverscanOff" 				--Dabelow cameraOverscan
-		getIconFromBitmap "NukeExportOperator" 				--Dabelow nukeExport
-		getIconFromFolder LPM_disabledIconFolder "NukeExportOperatorOff" 	--Dabelow nukeExport
-		getIconFromBitmap "AfterEffectsExportOperator" 		--Dabelow aeExport
-		getIconFromFolder LPM_disabledIconFolder "AfterEffectsExportOperatorOff" 	--Dabelow aeExport
+		getIconFromBitmap "CameraOverscan"
+		getIconFromFolder LPM_disabledIconFolder "CameraOverscanOff"
+		getIconFromBitmap "NukeExportOperator"
+		getIconFromFolder LPM_disabledIconFolder "NukeExportOperatorOff"
+		getIconFromBitmap "AfterEffectsExportOperator"
+		getIconFromFolder LPM_disabledIconFolder "AfterEffectsExportOperatorOff"
 
-		getIconFromBitmap "missing" 			 			--Dabelow vray6
-		getIconFromBitmap "missing" 						--Dabelow vray6
-		getIconFromBitmap "missing" 						--Dabelow vray6
-		getIconFromBitmap "missing" 						--Dabelow vray6
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
 
-		getIconFromBitmap "vrayRenderElements" 				--Dabelow vrayRebderElements
-		getIconFromFolder LPM_disabledIconFolder "vrayRenderElementsOff" 			--Dabelow vrayRebderElements
+		getIconFromBitmap "vrayRenderElements"
+		getIconFromFolder LPM_disabledIconFolder "vrayRenderElementsOff"
 
-		getIconFromBitmap "renderImage" 					--Dabelow vrayRebderElements
-		getIconFromFolder LPM_disabledIconFolder "renderImageOff" 					--Dabelow vrayRebderElements
+		getIconFromBitmap "renderImage"
+		getIconFromFolder LPM_disabledIconFolder "renderImageOff"
 
 		tv.imageList = ilTv
 		tv.LabelEdit = true
@@ -355,12 +355,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			"vrayProps": 			nodeName = (LPM_Fun.generateVrayPropName theNode)
 			"passRoot": 			nodeName = ( "Passes" )
 			"shotRoot": 			nodeName = ( "Shots" )
-			"Deadline": 			nodeName = (LPM_Fun.generateDeadlineName theNode) 				-- Dabelow
-					"vrayRenderElements": 	nodeName = (LPM_Fun.generateVrayRenderElementsName theNode) 	-- Dabelow VrayRenderElements
-			"cameraOverscan": 		nodeName = (LPM_Fun.generateCameraOverscanName theNode) 		-- Dabelow cameraOverscan
-			"renderImage": 			nodeName = (LPM_Fun.generateRenderImageName theNode) 			-- Dabelow renderImage
-			"nukeExport": 			nodeName = (LPM_Fun.generateNukeExportName theNode) 			-- Dabelow nukeExport
-			"aeExport": 			nodeName = (LPM_Fun.generateAeExportName theNode) 				-- Dabelow aeExport
+			"Deadline": 			nodeName = (LPM_Fun.generateDeadlineName theNode)
+					"vrayRenderElements": 	nodeName = (LPM_Fun.generateVrayRenderElementsName theNode)
+			"cameraOverscan": 		nodeName = (LPM_Fun.generateCameraOverscanName theNode)
+			"renderImage": 			nodeName = (LPM_Fun.generateRenderImageName theNode)
+			"nukeExport": 			nodeName = (LPM_Fun.generateNukeExportName theNode)
+			"aeExport": 			nodeName = (LPM_Fun.generateAeExportName theNode)
 
 			default: nodeName = (LPM_Fun.getName theNode.name)
 		)
@@ -588,7 +588,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			makeItalic newModifierOver
 		)
 
- 		-- Dabelow
+
 		for Deadline in pmPass.children where Deadline.type=="Deadline" do
 		(
 			newDeadline=createTVnode newPass Deadline nodeType:"Deadline"
@@ -599,7 +599,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		)
 
 
- 		-- Dabelow vrayRenderElements
+
 		for vrayRenderElements in pmPass.children where vrayRenderElements.type=="vrayRenderElements" do
 		(
 			newVrayRenderElements=createTVnode newPass vrayRenderElements nodeType:"vrayRenderElements"
@@ -637,7 +637,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			makeItalic newCP
 		)
 
-		-- dabelow cameraOverscan
+
 		cameraOverscan=LPM_Fun.firstChildByType pmShot "cameraOverscan"
 		if(cameraOverscan!=undefined) then
 		(
@@ -648,7 +648,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			makeItalic newCP
 		)
 
-		-- dabelow renderImage
+
 		renderImage=LPM_Fun.firstChildByType pmShot "renderImage"
 		if(renderImage!=undefined) then
 		(
@@ -659,7 +659,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			makeItalic newCP
 		)
 
-		-- dabelow nukeExport
+
 		nukeExport=LPM_Fun.firstChildByType pmShot "nukeExport"
 		if(nukeExport!=undefined) then
 		(
@@ -670,7 +670,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			makeItalic newCP
 		)
 
-		-- dabelow aeExport
+
 		aeExport=LPM_Fun.firstChildByType pmShot "aeExport"
 		if(aeExport!=undefined) then
 		(
@@ -1127,37 +1127,37 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		createdialog ModifierOverRollout pos:(LPM_Fun.getRoPos  ModifierOverRollout.width)
 	)
 
-	--Dabelow
+
 	fn EditDeadline =
 	(
 		createDialog LPMDeadline pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
 	)
 
-	--Dabelow VrayRenderElements
+
 	fn EditVrayRenderElements =
 	(
 		createDialog vrayRenderElementsPropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
 	)
 
-	--Dabelow cameraOverscan
+
 	fn EditCameraOverscan =
 	(
 		createDialog cameraOverscanPropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
 	)
 
-	--Dabelow renderImage
+
 	fn EditRenderImage =
 	(
 		createDialog renderImagePropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
 	)
 
-	--Dabelow nukeExport
+
 	fn EditNukeExport =
 	(
 		messagebox "Nuke Export is not yet implemented in LPM."
 	)
 
-	--Dabelow aeExport
+
 	fn EditAeExport =
 	(
 		messagebox "After Effects Export is not yet implemented in LPM."
@@ -1607,7 +1607,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							delete theNode
 							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
-						-- Dabelow
+
 						"Deadline":
 						(
 							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
@@ -1626,21 +1626,21 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							delete theNode
 							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
-						-- Dabelow renderImage
+
 						"renderImage":
 						(
 							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
 							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
-						-- Dabelow nukeExport
+
 						"nukeExport":
 						(
 							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
 							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
-						-- Dabelow aeExport
+
 						"aeExport":
 						(
 							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
@@ -1754,8 +1754,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv MouseUp arg do
 	(
-		print "click"
-
 		nTime=timestamp()
 		delta=nTime - sTime
 		sTime=0 --Assume its an invalid click, if its valid we will the timestamp later
@@ -1834,26 +1832,26 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 						LPM_Fun.setIcon hitNode
 					)
 
-					-- Dabelow cameraOverscan
+
 					"cameraOverscan":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
 					)
-					-- Dabelow renderImage
+
 					"renderImage":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
 					)
-					-- Dabelow nukeExport
+
 					"nukeExport":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
 					)
 
-					-- Dabelow aeExport
+
 					"aeExport":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
@@ -1897,14 +1895,14 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
 					)
-					-- Dabelow
+
 					"Deadline":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
 				)
 
-					-- Dabelow VrayRenderElements
+
 					"vrayRenderElements":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
@@ -2144,12 +2142,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							op.fnPerformAction #rightClick
 					)
 					"ModifierOver":popUpMenu rc_ModifierOverMenu
-					"Deadline":popUpMenu rc_deadlinePropsMenu 							-- Dabelow
-					"vrayRenderElements":popUpMenu rc_vrayRenderElementsPropsMenu 		-- Dabelow VrayRenderElements
-					"cameraOverscan":popUpMenu rc_cameraOverscanPropsMenu 				-- Dabelow cameraOverscan
-					"renderImage":popUpMenu rc_renderImagePropsMenu 					-- Dabelow renderImage
-					"nukeExport":popUpMenu rc_nukeExportPropsMenu 						-- Dabelow nukeExport
-					"aeExport":popUpMenu rc_aeExportPropsMenu 							-- Dabelow aeExport
+					"Deadline":popUpMenu rc_deadlinePropsMenu
+					"vrayRenderElements":popUpMenu rc_vrayRenderElementsPropsMenu
+					"cameraOverscan":popUpMenu rc_cameraOverscanPropsMenu
+					"renderImage":popUpMenu rc_renderImagePropsMenu
+					"nukeExport":popUpMenu rc_nukeExportPropsMenu
+					"aeExport":popUpMenu rc_aeExportPropsMenu
 				)
 			)
 			tv.selectedNode=hitNode
@@ -2213,12 +2211,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							op.fnPerformAction #edit
 					)
 					"ModifierOver":(AddModifierOverride())
-					"Deadline":(EditDeadline()) 							-- Dabelow
-					"vrayRenderElements":(EditVrayRenderElements()) 		-- Dabelow VrayRenderElements
-					"cameraOverscan":(EditCameraOverscan())					-- Dabelow cameraOverscan
-					"renderImage":(EditRenderImage())						-- Dabelow renderImage
-					"nukeExport":(EditNukeExport())							-- Dabelow nukeExport
-					"aeExport":(EditAeExport())								-- Dabelow aeExport
+					"Deadline":(EditDeadline())
+					"vrayRenderElements":(EditVrayRenderElements())
+					"cameraOverscan":(EditCameraOverscan())
+					"renderImage":(EditRenderImage())
+					"nukeExport":(EditNukeExport())
+					"aeExport":(EditAeExport())
 				)
 			)
 		)
@@ -2231,7 +2229,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	 (
 		 dragnode=arg.item
 
-		 -- Dabelow cameraOverscan / nukeExport / aeExport / Vray6 / VrayRenderElements
+
 		it=arg.item.tag.value.type
 		if(it=="pass") or (it=="shot") or (it=="objectSet") or (it=="lightSet") or (it=="renderProps") or (it=="vrayProps")or (it=="envProps") or (it=="commonProps") or (it=="xrefObj") or (it=="xrefScene") or (it=="passGroup") or (it=="ModifierOver") or (it=="script") or (it=="Deadline") or (it=="vrayRenderElements") or (it=="cameraOverscan") or (it=="nukeExport") or (it=="aeExport") or (it=="renderImage") then
 		tv.doDragDrop arg.item m.Move -- this actually starts the drag and drop process
@@ -2291,7 +2289,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 						dragNode.remove() -- need to remove the node from the tree
 						dropNode.parent.Nodes.insert (dropNode.index+1) dragNode  -- add it to the dropNode children
 					)
-					 dragNode.text=dragNode.text--fix for annoying text cutoff
+					 dragNode.text=dragNode.text -- reassignment forces redraw, fixes text cutoff
 
 					 --LPM Data
 					tvReparent dragTvParent dragNode.tag.value.type
@@ -2321,7 +2319,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							dragNode.remove() -- need to remove the node from the tree
 							dropNode.parent.Nodes.insert (dropNode.index+1) dragNode  -- add it to the dropNode children
 						)
-						 dragNode.text=dragNode.text--fix for annoying text cutoff
+						 dragNode.text=dragNode.text -- reassignment forces redraw, fixes text cutoff
 
 						 --LPM Data
 						tvReparent dragTvParent dragNode.tag.value.type
@@ -2360,7 +2358,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 					theNode=dragNode.tag.value
 					theType=dragNode.tag.value.type
 
-					-- Dabelow / cameraOverscan / nukeExport / aeExport / Dabelow vray6
 					if (theType=="envProps") or (theType=="commonProps") or (theType=="xrefObj") or (theType=="xrefScene") or (theType=="Deadline") or (theType=="vrayRenderElements") or (theType=="cameraOverscan") or (theType=="nukeExport") or (theType=="aeExport") or (it=="renderImage") then
 					(
 						for it in thePass.children where it.type==theType do --delete the previous nodes of the above types
@@ -2468,31 +2465,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on LPM_treeview_rollout open do
 	(
---		lpm_fun.preFileOpenCallback_Add()
---		lpm_fun.vrayDR_restartSlaves_check() -- dabelow
---
---		editBox.visible = false
---		editBox.borderStyle = (dotNetClass "BorderStyle").FixedSingle
---
---		proMode=LPM_ReadLicense()
---
---		if(proMode) then LPM_Treeview_Rollout.title+=""
---		else
---		(
---			LPM_Treeview_Rollout.title+=" DEMO"
---			if(LPM_AdPopUp==undefined) then
---			(
---				purchase()
---				global LPM_AdPopUp=false
---			)
---		)
---
---		initTreeView tv
---		fillInTreeView tv
-
-
-
-		print(LPM_Root.rootDir)
 		dnc_textBoxOutputPath.text = LPM_Root.rootDir
 
 		lpm_fun.preFileOpenCallback_Add()

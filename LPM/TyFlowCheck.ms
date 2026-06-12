@@ -1,5 +1,4 @@
 -- TyFlowCheck.ms
--- Added by Aaron Dabelow
 --
 -- Detects tyFlow availability on startup and sets a global used throughout LPM.
 -- Centralising this check here means every other file can branch on a plain boolean
@@ -17,8 +16,11 @@ LPM_TyFlowInstalled = false
 -- "Unknown variable: tyFlow" which the try block catches cleanly.
 try ( local _probe = tyFlow; LPM_TyFlowInstalled = true ) catch()
 
--- Log results to the MaxScript Listener so they are visible at startup.
-if LPM_TyFlowInstalled then
-	print "LPM TyFlowCheck: tyFlow plugin detected."
-else
-	print "LPM TyFlowCheck: tyFlow not detected. tyFlow-specific features will be disabled."
+-- Log results to the MaxScript Listener when verbose logging is enabled.
+if LPM_VerboseLogging do
+(
+	if LPM_TyFlowInstalled then
+		print "LPM TyFlowCheck: tyFlow plugin detected."
+	else
+		print "LPM TyFlowCheck: tyFlow not detected. tyFlow-specific features will be disabled."
+)

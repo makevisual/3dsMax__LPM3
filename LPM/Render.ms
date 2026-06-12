@@ -5,9 +5,7 @@ struct LPM_RenderAPI
 	--fnPreRenderAction thePass theShot (Store and set render settings before a pass)
 	--fnPostRenderAction thePass theShot (Restore render settings after a pass)
 
-	------------------------------------------------------------------------
-	--Utility Functions
-	------------------------------------------------------------------------
+	-- Utility Functions
 
 	fn setWarning=
 	(
@@ -110,7 +108,6 @@ struct LPM_RenderAPI
 		)
 		local timeDiff = #()
 
-		-- let's face it - calculations shouldn't take this long
 		timeDiff[1] = timeDiff[2] = timeDiff[3] = 0
 		timeDiff[4] = (getDayOfYear endTime) - (getDayOfYear startTime)
 		if (timeDiff[4] < 0) do timeDiff[4]+=365
@@ -302,9 +299,7 @@ struct LPM_RenderAPI
 		)
 	),
 
-	----------------------
-	--BACKUP INFORMATION
-	----------------------
+	-- Backup information
 	commonSettings,
 	objBackup,
 	lightBackup,
@@ -408,7 +403,7 @@ struct LPM_RenderAPI
 				)
 
 				-- rendOutputFilename
-				-- New Output path Handling - Dabelow
+				-- New output path handling
 				rendOutputFilename=LPM_Root.fullOutputPath=LPM_Fun.getPassPath LPM_Root thePass theShot:theShot previewMode:false RendPreviewMode:isPreviewMode elementName:""
 
 				--Save current renderer settings
@@ -418,7 +413,7 @@ struct LPM_RenderAPI
 				--Save current renderer settings
 				preRenderSettings=undefined
 				preRenderSettingsNew=undefined
-				preRenderSettings=LPM_Fun.saveRenderPreset() --ALWAYS save preset beforehand, to account for vrayRenderProps and such -tyson
+				preRenderSettings=LPM_Fun.saveRenderPreset() --ALWAYS save preset beforehand, to account for vrayRenderProps and such
 
 				--Load current renderer settings
 				theRenderProps=for it in thePass.children where ((it.type=="renderProps") and (it.initialized) and (it.active)) collect it
@@ -443,13 +438,12 @@ struct LPM_RenderAPI
 					)
 				)
 
-				--Load Deadline Props -- Dabelow
+				--Load Deadline Props
 				filein (LPM_Dir+"LPM_SMTDSettings.ms") -- resets LPM_SMTDSettings
 
 				theDeadlineProps=for it in thePass.children where ((it.type=="Deadline") and (it.active)) collect it
 				if(theDeadlineProps[1] != undefined) then
 				(
-					-- print thePass
 					LPM_Fun.loadDeadlineSettings theDeadlineProps[1] isPreviewMode
 				)
 
@@ -934,10 +928,8 @@ struct LPM_RenderAPI
 				)
 
 
-				------------- DISPATCH START -------------
-				-- Render dispatch is an API added by Aaron Dabelow to make it easier to implement additional render engines and render
-				-- engine versions.  This part collects the pass, and the type of render action requested, and then calls the dispatch
-				-- the dispatch identifies the current renderer, and then loads the appropriate dispatch plugin to execute the code.
+				-- Render dispatch: collects the pass and the requested render action, identifies the
+				-- current renderer, and loads the matching dispatch plugin to execute renderer-specific code.
 
 				LPM_RenderDispatchThePass 	= thePass
 				LPM_RenderDispatchAction 	= #preRender
@@ -958,8 +950,6 @@ struct LPM_RenderAPI
 						ca = custAttributes.get psCP 1
 						LPM_OperatorCustomAttributes = ca
 
-						-- print "---- CA ----"
-						-- show ca
 
 						filein (LPM_Dir+"operator_cameraOverscan.ms")
 					)
@@ -968,12 +958,11 @@ struct LPM_RenderAPI
 				-- Sends job to renderer dispatch to make any renderer specific last minuet adjustments
 				filein (LPM_Dir+"renderer_dispatch.ms")
 
-				------------- DISPATCH END -------------
 
 				-- final prepare
 				rendUseNet=false
 				LPM_Render.execScriptNodes thePass #preRender
-				format "Pre Processing took: % s\n" ((timeStamp() - preProcTime)/1000.0)
+				if LPM_VerboseLogging do format "Pre Processing took: % s\n" ((timeStamp() - preProcTime)/1000.0)
 			)
 		)
 	),
@@ -994,7 +983,7 @@ struct LPM_RenderAPI
 			(
 				LPM_Render.execScriptNodes thePass #postRender
 
-				--------  Common props  Postcript -----------
+				-- Common props post-script
 
 				psCP=LPM_fun.firstChildByType  thePass "commonProps"
 				if(psCP!=undefined) and (psCp.usePreScript) and (psCP.active) then
@@ -1060,7 +1049,7 @@ struct LPM_RenderAPI
 				)
 				enablerefmsgs()
 
-				-- Dabelow - Added to fix vertexcolor display error, this needs to be ouside the refmsg flags
+				-- Added to fix vertexcolor display error; this needs to be outside the refmsg flags
 				for it in objBackup do
 				(
 					theNode=it[1]
@@ -1231,7 +1220,6 @@ struct LPM_RenderAPI
 				te_rpreset = timestamp()
 
 				--restore common settings
-				-------------------------------------------------------------------------------------------------
 				rendTimeType=commonSettings[1]
 				rendNThFrame=commonSettings[2]
 				rendStart=commonSettings[3]
@@ -1297,8 +1285,7 @@ struct LPM_RenderAPI
 		presetString = "renderer properties: " + ((te_rpreset-ts_rpreset)/1000.0) as string + "s"
 		totalString = "total: " + ((timestamp()-ts)/1000.0) as string + "s"
 
-		--print ("LPM post-render cleanup -- " + totalString + " | " + propString + " | " + presetString)
-	)
+		)
 )
 
 LPM_Render=LPM_RenderAPI()
@@ -1306,9 +1293,9 @@ LPM_Render=LPM_RenderAPI()
 fn LPM_renderPass thePass renderType theShot:undefined=
 (
 	renderDebugMode = True
----- TODO: Put the ONE try catch around this block to restore render on bad execution
+-- TODO: put one try/catch around this block to restore render settings on bad execution
 
-	---- Begin render saftey try Catch Block ----
+	-- Begin render safety try/catch block
 	recoveryException = #none	
 --	try(
 
@@ -1365,7 +1352,7 @@ fn LPM_renderPass thePass renderType theShot:undefined=
 		with defaultAction #logmsg
 		(
 
--------- TODO: Move This into the render Dispatch
+-- TODO: move this into the render dispatch
 
 			-- If Local Mode Mode
 			if(renderType==#local)
@@ -1380,11 +1367,6 @@ fn LPM_renderPass thePass renderType theShot:undefined=
 
 		-- Start the render if it is preview
 		if (renderType == #preview or renderType == #previewHalf) then (render())
-
-------------------------------
-
-
-
 			-- For testing recovery
 			--throw(recoveryException = #render)
 		)

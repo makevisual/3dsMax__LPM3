@@ -1,11 +1,11 @@
-filein @"rcMenus\rcMenu_vrayOverride.ms" 						-- Dabelow
-filein @"rcMenus\rcMenu_deadlineOverride.ms" 					-- Dabelow
-filein @"rcMenus\rcMenu_Utilities.ms" 							-- Dabelow
-filein @"rcMenus\rcMenu_vrayRenderElementsOverride.ms" 			-- Dabelow vrayRenderElements
-filein @"rcMenus\rcMenu_cameraOverscanOverride.ms"				-- Dabelow cameraOverscan
-filein @"rcMenus\rcMenu_renderImage.ms"							-- Dabelow renderImage
-filein @"rcMenus\rcMenu_nukeExport.ms"							-- Dabelow nukeExport
-filein @"rcMenus\rcMenu_aeExport.ms"							-- Dabelow aeExport
+filein @"rcMenus\rcMenu_vrayOverride.ms"
+filein @"rcMenus\rcMenu_deadlineOverride.ms"
+filein @"rcMenus\rcMenu_Utilities.ms"
+filein @"rcMenus\rcMenu_vrayRenderElementsOverride.ms"
+filein @"rcMenus\rcMenu_cameraOverscanOverride.ms"
+filein @"rcMenus\rcMenu_renderImage.ms"
+filein @"rcMenus\rcMenu_nukeExport.ms"
+filein @"rcMenus\rcMenu_aeExport.ms"
 
  rollout lightSetProps ("Editing: "+ (LPM_Fun.getname LPM_treeview_rollout.tv.selectedNode.tag.value.name)) width:195 height:265
 	(
@@ -177,7 +177,7 @@ filein @"rcMenus\rcMenu_aeExport.ms"							-- Dabelow aeExport
 		)
 	)
 
--------------------------------------------------------------------------------------------------------   LPM_objectSetProps   -------------------------------------------------------------------------------------------------------
+-- LPM_objectSetProps
 
 rollout LPM_objectSetProps ("Editing: "+(LPM_Fun.getname LPM_treeview_rollout.tv.selectedNode.tag.value.name))
 (
@@ -438,7 +438,7 @@ rollout LPM_objectSetProps ("Editing: "+(LPM_Fun.getname LPM_treeview_rollout.tv
 	)
 )
 
--------------------------------------------------------------------------------------------------------   wildCardRO   -------------------------------------------------------------------------------------------------------
+-- wildCardRO
 
 rollout wildCardRO "Wildcard" width:217 height:57
 (
@@ -479,7 +479,7 @@ rollout wildCardRO "Wildcard" width:217 height:57
 )
 
 
--------------------------------------------------------------------------------------------------------   LPM_scriptRO   -------------------------------------------------------------------------------------------------------
+-- LPM_scriptRO
 
  LPM_scriptRO2 = ""
  LPM_scriptRO3 = ""
@@ -629,7 +629,7 @@ rollout LPM_scriptRO4 "PostRenderFrameScript" --width:500 height:434
 
 )
 
--------------------------------------------------------------------------------------------------------   ModifierOverRollout   -------------------------------------------------------------------------------------------------------
+-- ModifierOverRollout
 
 rollout ModifierOverRollout "Modifiers Override" width:217 height:361
 (
@@ -710,7 +710,7 @@ rollout ModifierOverRollout "Modifiers Override" width:217 height:361
 	)
 )
 
--------------------------------------------------------------------------------------------------------   XrefSceneRollout   -------------------------------------------------------------------------------------------------------
+-- XrefSceneRollout
 
 rollout XrefSceneRollout "Xref Scene Override" width:400 height:300
 (
@@ -779,7 +779,7 @@ rollout XrefSceneRollout "Xref Scene Override" width:400 height:300
 )
 
 
--------------------------------------------------------------------------------------------------------   XrefSceneRollout   -------------------------------------------------------------------------------------------------------
+-- XrefObjRollout
 
 rollout XrefObjRollout "Xref Object Override" width:400 height:300
 (
@@ -849,7 +849,7 @@ rollout XrefObjRollout "Xref Object Override" width:400 height:300
 )
 
 
--------------------------------------------------------------------------------------------------------   LPM_atmRollout   -------------------------------------------------------------------------------------------------------
+-- LPM_atmRollout
 
 rollout LPM_atmRollout "Env, Effects, Atmosphere" width:235 height:445
 (
@@ -1151,7 +1151,7 @@ rollout LPM_atmRollout "Env, Effects, Atmosphere" width:235 height:445
 	)
 )
 
--------------------------------------------------------------------------------------------------------   LPM_commonRollout   -------------------------------------------------------------------------------------------------------
+-- LPM_commonRollout
 rollout LPM_commonRollout "Common Properties" width:370 height:350
 (
 	GroupBox 			grp1 "Time Output" pos:[24,4] width:335 height:111 enabled:false
@@ -1368,7 +1368,7 @@ rollout LPM_commonRollout "Common Properties" width:370 height:350
 	)
 )
 
--------------------------------------------------------------------------------------------------------   setPickerRollout   -------------------------------------------------------------------------------------------------------
+-- setPickerRollout
 rollout setPicker "Pick the Set"
 (
 	dropDownList theSets
@@ -1394,7 +1394,7 @@ rollout setPicker "Pick the Set"
 )
 
 
--------------------------------------------------------------------------------------------------------   matPickerRollout   -------------------------------------------------------------------------------------------------------
+-- matPickerRollout
 rollout matPicker "Pick the Material"
 (
 	dropDownList theSets
@@ -1421,7 +1421,7 @@ rollout matPicker "Pick the Material"
 	)
 )
 
--------------------------------------------------------------------------------------------------------   layerPickerRollout   -------------------------------------------------------------------------------------------------------
+-- layerPickerRollout
 
 rollout layerPicker "Pick Layers" height:420 width:200
 (
@@ -1485,8 +1485,8 @@ rollout layerPicker "Pick Layers" height:420 width:200
 	)
 )
 
--------------------------------------------------------------------------------------------------------   Right Click Menues   ----------------------------------------------------------------------------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------------------   MainMenu   -------------------------------------------------------------------------------------------------------
+-- Right Click Menues
+-- MainMenu
 
 rcMenu rc_MainMenu
 (
@@ -1499,6 +1499,8 @@ rcMenu rc_MainMenu
 		seperator	s_iconColor
 		menuItem	iconColorBlacks			"Disabled Icons: Black"
 		menuItem	iconColorReds			"Disabled Icons: Red"
+		seperator	s_verbose
+		menuItem	verboseLogging			"Verbose Logging" checked:false
 	)
 
 	subMenu "Utilities"
@@ -1522,7 +1524,7 @@ rcMenu rc_MainMenu
 
 	on elementGenerate picked do
 	(
-		filein "makeRenderElements.ms" -- Dabelow
+		filein "makeRenderElements.ms"
 	)
 
 	on nukeSceneGenerate picked do
@@ -1561,9 +1563,20 @@ rcMenu rc_MainMenu
 		LPM_Fun.setIni "Settings" "disabledIconColor" "reds"
 		LPM_treeview_rollout.reloadIcons()
 	)
+
+	on rc_MainMenu open do
+	(
+		verboseLogging.checked = (LPM_VerboseLogging == true)
+	)
+
+	on verboseLogging picked do
+	(
+		LPM_VerboseLogging = not (LPM_VerboseLogging == true)
+		LPM_Fun.setIni "Settings" "VerboseLogging" LPM_VerboseLogging
+	)
 )
 
--------------------------------------------------------------------------------------------------------   RootMenu   -------------------------------------------------------------------------------------------------------
+-- RootMenu
 
 rcMenu rc_RootMenu
 (
@@ -1702,7 +1715,7 @@ rcMenu rc_RootMenu
 )
 
 
--------------------------------------------------------------------------------------------------------   shotRootMenu   -------------------------------------------------------------------------------------------------------
+-- shotRootMenu
 
 rcMenu rc_shotRootMenu
 (
@@ -1749,7 +1762,7 @@ rcMenu rc_shotRootMenu
 )
 
 
--------------------------------------------------------------------------------------------------------   PassGroupMenu   -------------------------------------------------------------------------------------------------------
+-- PassGroupMenu
 
 rcMenu rc_PassGroup
 (
@@ -1829,7 +1842,7 @@ rcMenu rc_PassGroup
 )
 
 
--------------------------------------------------------------------------------------------------------   shotMenu   -------------------------------------------------------------------------------------------------------
+-- shotMenu
 
 rcMenu rc_shotMenu
 (
@@ -1846,10 +1859,10 @@ rcMenu rc_shotMenu
 
 	seperator s1
 	menuItem    AddCommon "Add Common Properties"
-	menuItem    AddRenderImage "Add RenderImage Export" 			-- Dabelow renderImage
-	menuItem    AddCameraOverscan "Add Camera Overscan Override" 	-- Dabelow cameraOverscan
-	menuItem    AddNukeExport "Add Nuke Export" 					-- Dabelow nukeExport
-	menuItem    AddAeExport "Add After Effect Export" 				-- Dabelow aeExport
+	menuItem    AddRenderImage "Add RenderImage Export"
+	menuItem    AddCameraOverscan "Add Camera Overscan Override"
+	menuItem    AddNukeExport "Add Nuke Export"
+	menuItem    AddAeExport "Add After Effect Export"
 
 --	seperator s4
 --	menuItem renderShot "Submit Local"
@@ -1999,7 +2012,7 @@ rcMenu rc_shotMenu
 
 )
 
--------------------------------------------------------------------------------------------------------   shotPassMenu   -------------------------------------------------------------------------------------------------------
+-- shotPassMenu
 
 rcmenu rc_shotPassMenu
 (
@@ -2015,12 +2028,12 @@ rcmenu rc_shotPassMenu
 			LPM_treeview_rollout.tv.selectedNode.remove()
 			LPM_activeElement = LPM_treeview_rollout.tv.selectedNode
 
-			LPM_treeview_rollout.updateTV() -- DABELOW
+			LPM_treeview_rollout.updateTV()
 		)
 	)
 )
 
--------------------------------------------------------------------------------------------------------   PassMenu   -------------------------------------------------------------------------------------------------------
+-- PassMenu
 rcMenu rc_PassMenu
 (
 	menuItem    previewThisPass "Render Preview 100%"
@@ -2040,7 +2053,7 @@ rcMenu rc_PassMenu
 		menuItem xrefSceneAdd "Xref Scene Override"
 		menuItem scriptAdd "Script"
 		seperator set5
-		menuItem vrayRenderElementsPropsAdd "Vray RenderElement Override" 	-- Dabelow vrayRenderElements
+		menuItem vrayRenderElementsPropsAdd "Vray RenderElement Override"
 	)
 	seperator set10
 	menuItem    duplicatePass "Duplicate Pass"
@@ -2132,7 +2145,6 @@ rcMenu rc_PassMenu
 			theProps=LPM_Fun.createCommonProps "Common Props"
 			theProps.parent=thePass
 			LPM_treeview_rollout.addPassTV thePassNode
-			--edit: Jake Jeziorski with auto-name option it's just annoying to rename
 		)
 	)
 	on newOperator picked do
@@ -2185,7 +2197,7 @@ rcMenu rc_PassMenu
 		filein (LPM_Dir + "renderPropsAdd.ms")
 	)
 
-	-- Dabelow
+
 	on deadlineAdd picked do
 	(
 		thePassNode=LPM_treeview_rollout.tv.selectedNode
@@ -2196,7 +2208,7 @@ rcMenu rc_PassMenu
 
 	)
 
-	-- Dabelow vrayRenderElements
+
 	on vrayRenderElementsPropsAdd picked do
 	(
 		thePassNode=LPM_treeview_rollout.tv.selectedNode
@@ -2388,7 +2400,7 @@ rcMenu rc_PassMenu
 	)
 )
 
--------------------------------------------------------------------------------------------------------   commonPropsMenu   -------------------------------------------------------------------------------------------------------
+-- commonPropsMenu
 
 rcMenu rc_commonPropsMenu
 (
@@ -2449,7 +2461,7 @@ rcMenu rc_AutoMaskMenu
 	on EditAutoMask picked do ( LPM_treeview_rollout.EditAutoMask() )
 )
 
--------------------------------------------------------------------------------------------------------   ObjectSetMenu   -------------------------------------------------------------------------------------------------------
+-- ObjectSetMenu
 rcMenu rc_ObjectSetMenu
 (
 	menuItem   editSet "Edit..."
@@ -2658,7 +2670,7 @@ rcMenu rc_ObjectSetMenu
 	)
 )
 
--------------------------------------------------------------------------------------------------------   matMenu   -------------------------------------------------------------------------------------------------------
+-- matMenu
 
 rcMenu rc_matMenu
 (
@@ -2690,7 +2702,7 @@ rcMenu rc_matMenu
 )
 
 
--------------------------------------------------------------------------------------------------------   objectMenu   -------------------------------------------------------------------------------------------------------
+-- objectMenu
 
 rcMenu rc_objectMenu
 (
@@ -2721,7 +2733,7 @@ rcMenu rc_objectMenu
 )
 
 
--------------------------------------------------------------------------------------------------------   layerMenu   -------------------------------------------------------------------------------------------------------
+-- layerMenu
 
 rcMenu rc_layerMenu
 (
@@ -2769,7 +2781,7 @@ rcMenu rc_layerMenu
 	)
 )
 
--------------------------------------------------------------------------------------------------------   wildCardMenu   -------------------------------------------------------------------------------------------------------
+-- wildCardMenu
 
 rcMenu rc_wildCardMenu
 (
@@ -2795,7 +2807,7 @@ rcMenu rc_wildCardMenu
 )
 
 
--------------------------------------------------------------------------------------------------------   namedSetMenu   -------------------------------------------------------------------------------------------------------
+-- namedSetMenu
 
 rcMenu rc_namedSetMenu
 (
@@ -2817,7 +2829,7 @@ rcMenu rc_namedSetMenu
 )
 
 
--------------------------------------------------------------------------------------------------------   xrefObjMenu   -------------------------------------------------------------------------------------------------------
+-- xrefObjMenu
 
 rcMenu rc_xrefObj
 (
@@ -2855,7 +2867,7 @@ rcMenu rc_xrefObj
 
 )
 
--------------------------------------------------------------------------------------------------------   xrefSceneMenu   -------------------------------------------------------------------------------------------------------
+-- xrefSceneMenu
 
 rcMenu rc_xrefScene
 (
@@ -2893,7 +2905,7 @@ rcMenu rc_xrefScene
 )
 
 
--------------------------------------------------------------------------------------------------------   scriptMenu   -------------------------------------------------------------------------------------------------------
+-- scriptMenu
 
 rcMenu rc_scriptMenu
 (
@@ -2924,7 +2936,7 @@ rcMenu rc_scriptMenu
 )
 
 
--------------------------------------------------------------------------------------------------------   ModifierOverMenu   -------------------------------------------------------------------------------------------------------
+-- ModifierOverMenu
 
 rcMenu rc_ModifierOverMenu
 (
@@ -2978,7 +2990,7 @@ rcMenu rc_ModifierOverMenu
 )
 
 
--------------------------------------------------------------------------------------------------------   atmPropsMenu   -------------------------------------------------------------------------------------------------------
+-- atmPropsMenu
 
 rcMenu rc_atmPropsMenu
 (
@@ -3018,7 +3030,7 @@ rcMenu rc_atmPropsMenu
 )
 
 
--------------------------------------------------------------------------------------------------------   RenderPropsMenu   -------------------------------------------------------------------------------------------------------
+-- RenderPropsMenu
 
 rcMenu rc_RenderPropsMenu
 (

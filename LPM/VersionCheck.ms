@@ -7,11 +7,13 @@ LPM_Root = $LPM_Root
 if LPM_Root != undefined
 then 
 (
-	-- Print some info
 	loadedVersion = ( ( getUserProp LPM_Root "LPM_VersionNumber" ) as string )
 	if loadedVersion == "undefined" then ( loadedVersion = "Legacy")
-	print("LPM Scene Data Version - " + loadedVersion)
-	print("LPM Application Version - " + LPM_VersionNumber)
+	if LPM_VerboseLogging do
+	(
+		print("LPM Scene Data Version - " + loadedVersion)
+		print("LPM Application Version - " + LPM_VersionNumber)
+	)
 
 	-- Function for comparing versions verA - Scene loaded version, verB - current program version
 	fn compareVersions verA verB =

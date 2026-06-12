@@ -61,7 +61,7 @@ struct LPM_operatorAPI
 		execute RC
 		popUpMenu RC_LPM_Operators
 		
-		--This is a little hack to create a blocking call
+		-- Empty rcmenu evaluated to create a blocking call
 		rcmenu null
 		(
 			seperator s1
