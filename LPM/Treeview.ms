@@ -2402,9 +2402,16 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		if (nodeType == "shot" or nodeType == "pass") then
 			word = LPM_Fun.removeBadChars word
 
+		-- skip blank input so live typing can't commit an empty name
+		if ((trimLeft (trimRight word)) == "") then return()
+
 		case nodeType of
 		(
-			"wildcard": ( selNode.Parent.tag.value.wildCard[selNode.tag.value.index] = word )
+			"wildcard":
+			(
+				selNode.Parent.tag.value.wildCard[selNode.tag.value.index] = word
+				selNode.text = word
+			)
 			"shot":
 			(
 				local pos = findstring word "[["
@@ -2419,7 +2426,9 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 				selNode.tag.value.name = "LPM_" + word
 				selNode.text = LPM_Fun.generatePassName selNode.tag.value
 			)
-			default: ( try( selNode.tag.value.name = "LPM_" + word )catch() )
+			-- groups, object/light sets, etc: refresh the visible label too,
+			-- otherwise the rename lands on the object but the tree looks unchanged
+			default: ( try( selNode.tag.value.name = "LPM_" + word ; selNode.text = word )catch() )
 		)
 	)
 
