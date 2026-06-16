@@ -172,7 +172,7 @@ attribID:#(0x21912344, 0x01013380)
 	)
 )
 
--- Dabelow deadlinePropsCA
+
 deadlinePropsCA = attributes deadlineProps
 attribID:#(0x73e22a56, 0x439f0d00)
 (
@@ -191,12 +191,12 @@ attribID:#(0x73e22a56, 0x439f0d00)
 		submitGroup type:#string default:""
 		submitLimitsOn type:#boolean default:false
 		submitLimits type:#stringTab tabSizeVariable:true
-		renderTicks type:#boolean default:false --Tyson
-		renderTicksMult type:#integer default:1 --Tyson
+		renderTicks type:#boolean default:false
+		renderTicksMult type:#integer default:1
 	)
 )
 
--- Dabelow cameraOverscan
+
 cameraOverscanPropsCA = attributes cameraOverscanProps
 attribID:#(0x54e3ca47, 0x1381f195)
 (
@@ -213,7 +213,7 @@ attribID:#(0x54e3ca47, 0x1381f195)
 	)
 )
 
--- Dabelow renderImage
+
 renderImagePropsCA = attributes renderImageProps
 attribID:#(0x2cc0578d, 0x1919e838)
 (
@@ -227,7 +227,7 @@ attribID:#(0x2cc0578d, 0x1919e838)
 	)
 )
 
--- Dabelow nukeExport
+
 nukeExportPropsCA = attributes nukeExportProps
 attribID:#(0x6250aff1, 0x44179dee)
 (
@@ -244,7 +244,7 @@ attribID:#(0x6250aff1, 0x44179dee)
 	)
 )
 
--- Dabelow aeExport
+
 aeExportPropsCA = attributes aeExportProps
 attribID:#(0x2116dbbc, 0x278662ed)
 (
@@ -260,7 +260,7 @@ attribID:#(0x2116dbbc, 0x278662ed)
 	)
 )
 
--- Dabelow vray render elements
+
 vrayRenderElementsPropsCA = attributes vrayRenderElementsProps
 attribID:#(0x25058692, 0x1e340ec9)
 (

@@ -1,9 +1,8 @@
 -- Sets the rendderer specific outputs for Vray7 and disables the max save file
 -- Included the depreciated function for any possible future use
--- 01/31/2025 Aaron Dabelow theonlyaaron@gmail.com
 
 
----------- CLASSES ----------
+-- CLASSES
 
 -- Object to hold all the restore data
 struct Vray7_RestoreDataStr
@@ -59,9 +58,9 @@ struct Vray7_RestoreDataStr
     dmcMult                 = undefined
 )
 
----------- GLOBAL SWITCHES ----------
+-- GLOBAL SWITCHES
 
----- Prerender Globals
+-- Prerender Globals
 -- When rendering Production, these settings are applied
 function preRenderAction_ProductionGlobals =
 (
@@ -130,7 +129,7 @@ function preRenderAction_ProductionGlobals =
     then( renderers.current.output_useram = true )
     else( renderers.current.output_useram = false )
 
-    ---- Auto assign the correct deadline limit if deadline has been initialized ----
+    -- Auto assign the correct deadline limit if deadline has been initialized
     if SMTDSettings != undefined and SMTDSettings.LimitGroupsToUse != undefined 
     then(
         append SMTDSettings.LimitGroupsToUse "v-ray 7"                                  -- adds "v-ray 7" to the list of limits
@@ -138,7 +137,7 @@ function preRenderAction_ProductionGlobals =
     )else()
 )
 
----- Postrender Globals
+-- Postrender Globals
 -- When rendering Production, these settings will be restored
 function postRenderAction_ProductionGlobals =
 (
@@ -160,22 +159,18 @@ function postRenderAction_ProductionGlobals =
     if Vray7_RestoreData.matEditor_open then (MatEditor.Open())
 )
 
----------- RENDER ELEMENTS OPERATOR ----------
+-- RENDER ELEMENTS OPERATOR
 
----- Prerender Render Elements
+-- Prerender Render Elements
 function preRenderAction_RenderElements =
 (
-    print "= Vray7 preRenderAction_RenderElements ="
-
     -- localize this variable for readability and Collect the render elements node from LPM
     Vray7_RestoreData           = LPM_RenderDispatchRestoreData
     vrayRenderElementsNode      = LPM_Fun.firstChildByType LPM_RenderDispatchThePass "vrayRenderElements"
 
     -- Early exit if there is no render elements operator on this pass, or it is disabled
-    if vrayRenderElementsNode == undefined then ( print "--Skipping - Vray RenderElements Prerender (no operator)"; return undefined )
-    if vrayRenderElementsNode.active == False then ( print "--Skipping - Vray RenderElements Prerender (operator disabled)"; return undefined )
-
-    print "--Executing - Vray RenderElements Prerender"
+    if vrayRenderElementsNode == undefined then ( return undefined )
+    if vrayRenderElementsNode.active == False then ( return undefined )
 
     -- Class for holding render element states, to be used for storing enabled / disabled state for restore
     struct elementObjStr
@@ -220,7 +215,7 @@ function preRenderAction_RenderElements =
     Vray7_RestoreData.renderElements_active = existingElements
 )
 
----- Postrender Render Elements
+-- Postrender Render Elements
 -- Restores each render element's .vrayVFB state to its pre-render value.
 -- V-Ray's VFB may internally reset these after rendering, but we cannot rely on that
 -- undocumented behavior across versions or render modes (local vs Deadline farm).
@@ -228,8 +223,6 @@ function preRenderAction_RenderElements =
 -- This is critical for optionRE and other elements that control compression and output format.
 function postRenderAction_RenderElements =
 (
-    print "= Vray7 postRenderAction_RenderElements ="
-
     Vray7_RestoreData = LPM_RenderDispatchRestoreData
 
     -- Nothing to restore if no elements were captured during pre-render
@@ -246,13 +239,11 @@ function postRenderAction_RenderElements =
             (
                 elem.vrayVFB = elementObj.enabled
             )
-        )catch( print ("--Warning: Could not restore render element: " + elementObj.name) )
+        )catch( format "LPM warning: could not restore render element: %\n" elementObj.name )
     )
-
-    print "--Render element states restored."
 )
 
----------- UTILITIES ----------
+-- UTILITIES
 
 -- Add optionRE metadata to the .exr files
 function preRenderAction_OptionRECustomMetadata = 
@@ -302,12 +293,12 @@ function preRenderAction_OptionRECustomMetadata =
 )
 
 -- TODO:
----------- CAMERA OVERSCAN OPERATOR ----------
+-- CAMERA OVERSCAN OPERATOR
 
 
----------- PROGRAM FLOW ---------- 
+-- PROGRAM FLOW
 
----- Pre-Render Action for Production
+-- Pre-Render Action for Production
 function preRenderAction_Production =
 (
     -- Construct object for storing pre-render state for use for restoring later
@@ -319,7 +310,7 @@ function preRenderAction_Production =
     preRenderAction_OptionRECustomMetadata()        -- Add additional metadata to the .exr files through the option RE render element for vray
 )
 
----- Pre-Render Action for Preview
+-- Pre-Render Action for Preview
 function preRenderAction_Preview =
 (
     -- Construct object for storing pre-render state for use for restoring later
@@ -329,7 +320,7 @@ function preRenderAction_Preview =
     preRenderAction_RenderElements()
 )
 
----- Post-Render Action for Production
+-- Post-Render Action for Production
 function postRenderAction_Production =
 (
     --Calls Data from the global to check the restorepoint flag
@@ -393,7 +384,7 @@ function localRenderAction =
     )
 )
 
----------- API HOOKS ---------- 
+-- API HOOKS
 
 -- Cases for each of the methods a dispatch can be called.
 if LPM_RenderDispatchAction == #preRender       then preRenderAction_Production()

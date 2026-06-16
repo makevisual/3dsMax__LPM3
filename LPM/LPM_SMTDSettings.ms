@@ -1,4 +1,3 @@
--- Created by Aaron Dabelow
 -- Used to pass CA data from LPM Pass preperation to the deadline submitter non-destructivly
 
 struct LPM_SMTDSettings_Struct
@@ -16,8 +15,8 @@ struct LPM_SMTDSettings_Struct
 	submitLimitsOn 		,	-- = false,
 	submitLimits 		,	-- = true
 	idiotCheckReports 	,	-- = true
-	renderTicks			,	-- = false --Tyson
-	renderTicksMult		 	-- = 1 --Tyson
+	renderTicks			,	-- = false
+	renderTicksMult		 	-- = 1
 )
 
 LPM_SMTDSettings = undefined

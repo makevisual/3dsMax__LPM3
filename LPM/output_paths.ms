@@ -29,6 +29,6 @@ struct output_pathFunctionsStr
 	)
 )
 
----- For Testing ----
+-- For Testing
 -- output_pathFunctions = output_pathFunctionsStr()
 -- output_pathFunctions.genPreviewOutput()

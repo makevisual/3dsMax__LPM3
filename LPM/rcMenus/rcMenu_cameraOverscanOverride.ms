@@ -24,12 +24,6 @@ rollout cameraOverscanPropsRoll "Camera Overscan Override 1.0" width:225 height:
     	ca.resYOverride = ( renderHeight * spn_overscanAmmount.value )
 
 		-- show ca
-  		-- print ca.type
-  		-- print ca.active
-  		-- print ca.fovOverride
-  		-- print ca.resOverride
-  		-- print ca.resXOverride
-  		-- print ca.resYOverride
 	
     	return ca 
 	)
@@ -79,12 +73,8 @@ rollout cameraOverscanPropsRoll "Camera Overscan Override 1.0" width:225 height:
 
 		-- cp  	=theNode.tag.value
 		-- cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
-		-- print "==== cp"
-		-- print cp
 		-- show cp
 		-- 
-		-- print "==== theNode"
-		-- print theNode
 		-- show theNode
 
 		--theNode.text = LPM_Fun.generateCameraOverscanName cp
@@ -93,7 +83,7 @@ rollout cameraOverscanPropsRoll "Camera Overscan Override 1.0" width:225 height:
 		--LPM_treeview_rollout.tv.enabled=true
 
 		----theNode.text=LPM_Fun.generateCommonPropName cp
- 		--LPM_Fun.generateCameraOverscanName theNode			-- Dabelow cameraOverscan
+ 		--LPM_Fun.generateCameraOverscanName theNode
 
 		LPM_treeview_rollout.UnFreezeWindow()
 

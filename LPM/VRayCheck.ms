@@ -1,5 +1,4 @@
 -- VRayCheck.ms
--- Added by Aaron Dabelow
 --
 -- Detects VRay availability on startup and sets two globals used throughout LPM.
 -- Centralising this check here means every other file can branch on a plain boolean
@@ -23,13 +22,16 @@ try ( local _probe = VRayLight; LPM_VRayInstalled = true ) catch()
 -- Wrapped in its own try in case renderers.current is somehow inaccessible.
 try ( LPM_VRayActive = matchPattern (renderers.current as string) pattern:"*V_Ray*" ) catch()
 
--- Log results to the MaxScript Listener so they are visible at startup.
-if LPM_VRayInstalled then
-	print "LPM VRayCheck: V-Ray plugin detected."
-else
-	print "LPM VRayCheck: V-Ray not detected. VRay-specific features will be disabled."
+-- Log results to the MaxScript Listener when verbose logging is enabled.
+if LPM_VerboseLogging do
+(
+	if LPM_VRayInstalled then
+		print "LPM VRayCheck: V-Ray plugin detected."
+	else
+		print "LPM VRayCheck: V-Ray not detected. VRay-specific features will be disabled."
 
-if LPM_VRayActive then
-	print "LPM VRayCheck: V-Ray is the active renderer."
-else
-	print "LPM VRayCheck: V-Ray is not the active renderer."
+	if LPM_VRayActive then
+		print "LPM VRayCheck: V-Ray is the active renderer."
+	else
+		print "LPM VRayCheck: V-Ray is not the active renderer."
+)

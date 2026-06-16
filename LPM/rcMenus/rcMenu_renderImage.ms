@@ -26,12 +26,6 @@ rollout renderImagePropsRoll "Render Image Override 1.0" width:225 height:130
     	ca.resYOverride = ( renderHeight * spn_overscanAmmount.value )
 
 		-- show ca
-  		-- print ca.type
-  		-- print ca.active
-  		-- print ca.fovOverride
-  		-- print ca.resOverride
-  		-- print ca.resXOverride
-  		-- print ca.resYOverride
 	
     	return ca 
 	)
@@ -87,12 +81,8 @@ rollout renderImagePropsRoll "Render Image Override 1.0" width:225 height:130
 
 		-- cp  	=theNode.tag.value
 		-- cp 		=LPM_treeview_rollout.tv.selectedNode.tag.value
-		-- print "==== cp"
-		-- print cp
 		-- show cp
 		-- 
-		-- print "==== theNode"
-		-- print theNode
 		-- show theNode
 
 
@@ -102,7 +92,7 @@ rollout renderImagePropsRoll "Render Image Override 1.0" width:225 height:130
 		--LPM_treeview_rollout.tv.enabled=true
 
 		----theNode.text=LPM_Fun.generateCommonPropName cp
- 		--LPM_Fun.generaterenderImageName theNode			-- Dabelow renderImage
+ 		--LPM_Fun.generaterenderImageName theNode
 
 
 		LPM_treeview_rollout.UnFreezeWindow()

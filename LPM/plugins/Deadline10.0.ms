@@ -1007,12 +1007,10 @@ struct LPM_DeadlineAPI
 
  			fn submit_preOptimize =
  			(
- 				-- print "Submit Pre Optimze"
  			)
 
 			fn submit_preAction =
 			(
-				-- print "Submit Pre Action"
 
 				-- Set Timestamp and Alert to starting submission
 				LPM_deadlineInfo.submit_timeStamp  = timeStamp()
@@ -1047,7 +1045,6 @@ struct LPM_DeadlineAPI
 
 			fn submit_action =
 			(
-				-- print "Submit Action"
 
 				renderCollect = LPM_Fun.getWhoToRender()
 				flag=true
@@ -1127,7 +1124,7 @@ struct LPM_DeadlineAPI
 								SMTDSettings.LimitGroupsToUse = LPM_SMTDSettings.submitLimits
 							)
 							
-							if LPM_SMTDSettings.renderTicks then --Tyson
+							if LPM_SMTDSettings.renderTicks then
 							(
 								rendNthFrame = LPM_SMTDSettings.renderTicksMult; --this is how we pass our ticks mult to each farm machine 
 								SMTDSettings.SubmitAsMXSJob = true;
@@ -1200,13 +1197,11 @@ struct LPM_DeadlineAPI
 
  			fn submit_postOptimize =
  			(
- 				-- print "Submit Post Optimze"
  			)
 
  			-- Restore the scene to pre Submission state
 			fn submit_postAction =
 			(
-				-- print "Submit Post Action"
 
 				log_append "Perfoming Scene post submit actions" 4
 
@@ -1450,7 +1445,6 @@ struct LPM_DeadlineAPI
 
 			on btn_optimizeScene pressed do
 			(
-				-- print("Not Connected")
 			)
 
 			-- Event handler for controling if submission is optimized or not

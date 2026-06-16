@@ -29,7 +29,6 @@ rollout vrayRenderElementsPropsRoll "VRay Render Elements Override 1.0" width:32
 		(
 			ca = custAttributes.get theNode 1
 			ca.activeElement = checkedItems
-			--print ca.activeElement
 		)catch()
 	)
 

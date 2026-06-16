@@ -1,7 +1,6 @@
 
 -- Designed for V-Ray 5.1 
 -- Defines and creates default and templated render element passes.
--- Aaron Dablow: theonlyaaron@gmail.com 
 
 struct elementsDefStr
 (
@@ -181,7 +180,7 @@ function makeRenderElements =
 (
 	if not LPM_VRayInstalled then
 	(
-		print "LPM makeRenderElements: V-Ray not installed -- skipping render element creation."
+		if LPM_VerboseLogging do print "LPM makeRenderElements: V-Ray not installed -- skipping render element creation."
 		return undefined
 	)
 

@@ -209,6 +209,8 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		tv.BackColor = LPM_BackColor
 		tv.AllowDrop = true -- allow DragandDrop for the Treeview
 
+		-- Icons are referenced by positional index: append new ones at the END only.
+		-- Inserting shifts every later index. See docs/ADDING_AN_OPERATOR.md
 		getIconFromBitmap "Root"
 		getIconFromBitmap "Pass"
 		getIconFromBitmap "objectSet"
@@ -263,28 +265,28 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		-- If you want to remove an icon, replace it with "missing" because icons are integer
 		-- based and if the index changes, the icons will be incorrect
 
-		getIconFromBitmap "missing" 						--Dabelow vray5
-		getIconFromBitmap "missing" 						--Dabelow vray5
-		getIconFromBitmap "missing" 						--Dabelow vray5
-		getIconFromBitmap "missing" 						--Dabelow vray5
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
 
-		getIconFromBitmap "CameraOverscan" 					--Dabelow cameraOverscan
-		getIconFromFolder LPM_disabledIconFolder "CameraOverscanOff" 				--Dabelow cameraOverscan
-		getIconFromBitmap "NukeExportOperator" 				--Dabelow nukeExport
-		getIconFromFolder LPM_disabledIconFolder "NukeExportOperatorOff" 	--Dabelow nukeExport
-		getIconFromBitmap "AfterEffectsExportOperator" 		--Dabelow aeExport
-		getIconFromFolder LPM_disabledIconFolder "AfterEffectsExportOperatorOff" 	--Dabelow aeExport
+		getIconFromBitmap "CameraOverscan"
+		getIconFromFolder LPM_disabledIconFolder "CameraOverscanOff"
+		getIconFromBitmap "NukeExportOperator"
+		getIconFromFolder LPM_disabledIconFolder "NukeExportOperatorOff"
+		getIconFromBitmap "AfterEffectsExportOperator"
+		getIconFromFolder LPM_disabledIconFolder "AfterEffectsExportOperatorOff"
 
-		getIconFromBitmap "missing" 			 			--Dabelow vray6
-		getIconFromBitmap "missing" 						--Dabelow vray6
-		getIconFromBitmap "missing" 						--Dabelow vray6
-		getIconFromBitmap "missing" 						--Dabelow vray6
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
+		getIconFromBitmap "missing"
 
-		getIconFromBitmap "vrayRenderElements" 				--Dabelow vrayRebderElements
-		getIconFromFolder LPM_disabledIconFolder "vrayRenderElementsOff" 			--Dabelow vrayRebderElements
+		getIconFromBitmap "vrayRenderElements"
+		getIconFromFolder LPM_disabledIconFolder "vrayRenderElementsOff"
 
-		getIconFromBitmap "renderImage" 					--Dabelow vrayRebderElements
-		getIconFromFolder LPM_disabledIconFolder "renderImageOff" 					--Dabelow vrayRebderElements
+		getIconFromBitmap "renderImage"
+		getIconFromFolder LPM_disabledIconFolder "renderImageOff"
 
 		tv.imageList = ilTv
 		tv.LabelEdit = true
@@ -346,6 +348,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	fn createTVnode nodeRoot theNode nodeType:"LPM_node" =
 	(
 		nodeName = ""
+		-- Per-node-type display label. New operators add a case here; see docs/ADDING_AN_OPERATOR.md
 		case nodeType of
 		(
 			"leaf": 				nodeName = theNode.leaf
@@ -355,12 +358,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			"vrayProps": 			nodeName = (LPM_Fun.generateVrayPropName theNode)
 			"passRoot": 			nodeName = ( "Passes" )
 			"shotRoot": 			nodeName = ( "Shots" )
-			"Deadline": 			nodeName = (LPM_Fun.generateDeadlineName theNode) 				-- Dabelow
-					"vrayRenderElements": 	nodeName = (LPM_Fun.generateVrayRenderElementsName theNode) 	-- Dabelow VrayRenderElements
-			"cameraOverscan": 		nodeName = (LPM_Fun.generateCameraOverscanName theNode) 		-- Dabelow cameraOverscan
-			"renderImage": 			nodeName = (LPM_Fun.generateRenderImageName theNode) 			-- Dabelow renderImage
-			"nukeExport": 			nodeName = (LPM_Fun.generateNukeExportName theNode) 			-- Dabelow nukeExport
-			"aeExport": 			nodeName = (LPM_Fun.generateAeExportName theNode) 				-- Dabelow aeExport
+			"Deadline": 			nodeName = (LPM_Fun.generateDeadlineName theNode)
+					"vrayRenderElements": 	nodeName = (LPM_Fun.generateVrayRenderElementsName theNode)
+			"cameraOverscan": 		nodeName = (LPM_Fun.generateCameraOverscanName theNode)
+			"renderImage": 			nodeName = (LPM_Fun.generateRenderImageName theNode)
+			"nukeExport": 			nodeName = (LPM_Fun.generateNukeExportName theNode)
+			"aeExport": 			nodeName = (LPM_Fun.generateAeExportName theNode)
 
 			default: nodeName = (LPM_Fun.getName theNode.name)
 		)
@@ -588,7 +591,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			makeItalic newModifierOver
 		)
 
- 		-- Dabelow
+
 		for Deadline in pmPass.children where Deadline.type=="Deadline" do
 		(
 			newDeadline=createTVnode newPass Deadline nodeType:"Deadline"
@@ -599,7 +602,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		)
 
 
- 		-- Dabelow vrayRenderElements
+
 		for vrayRenderElements in pmPass.children where vrayRenderElements.type=="vrayRenderElements" do
 		(
 			newVrayRenderElements=createTVnode newPass vrayRenderElements nodeType:"vrayRenderElements"
@@ -637,7 +640,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			makeItalic newCP
 		)
 
-		-- dabelow cameraOverscan
+
 		cameraOverscan=LPM_Fun.firstChildByType pmShot "cameraOverscan"
 		if(cameraOverscan!=undefined) then
 		(
@@ -648,7 +651,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			makeItalic newCP
 		)
 
-		-- dabelow renderImage
+
 		renderImage=LPM_Fun.firstChildByType pmShot "renderImage"
 		if(renderImage!=undefined) then
 		(
@@ -659,7 +662,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			makeItalic newCP
 		)
 
-		-- dabelow nukeExport
+
 		nukeExport=LPM_Fun.firstChildByType pmShot "nukeExport"
 		if(nukeExport!=undefined) then
 		(
@@ -670,7 +673,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			makeItalic newCP
 		)
 
-		-- dabelow aeExport
+
 		aeExport=LPM_Fun.firstChildByType pmShot "aeExport"
 		if(aeExport!=undefined) then
 		(
@@ -699,8 +702,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 				newNode.ForeColor = LPM_FontColor
 				newNode.BackColor = LPM_BackColor
 			)
-			pmShot.passes=np
-			pmShot.passesOn=ni
+			-- CA writes dirty the scene and redraw the viewport on every tree
+			-- rebuild, so only write back when invalid passes were pruned
+			if(np.count != pmShot.passes.count) or (ni.count != pmShot.passesOn.count) then
+			(
+				pmShot.passes=np
+				pmShot.passesOn=ni
+			)
 		)
 		else
 		(
@@ -886,28 +894,38 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 				xrefSceneProps=LPM_Fun.firstChildByType thePass "xrefScene"
 				if(isvalidnode xrefSceneProps)and(xrefSceneProps.active) then
 				(
-					--set the scenes
+					--set the scenes, only touching xrefs whose state actually changes
 					for i=1 to xrefs.getXRefFileCount() do
 					(
 						theXref=(xrefs.getXRefFile i)
-						if((findItem xrefSceneProps.fileNames theXref.fileName)!=0) then
-							theXref.disabled=false
-						else
-							theXref.disabled=true
+						newDisabled=((findItem xrefSceneProps.fileNames theXref.fileName)==0)
+						if(theXref.disabled!=newDisabled) then
+						(
+							if(not newDisabled) and (not (doesFileExist theXref.fileName)) then
+								format "LPM warning: xref scene file missing, leaving unloaded: %\n" theXref.fileName
+							else
+								try(theXref.disabled=newDisabled)
+								catch(format "LPM warning: failed to set xref scene state: %\n" theXref.fileName)
+						)
 					)
 				)
 
 				xrefObjProps=LPM_Fun.firstChildByType thePass "xrefObj"
 				if(isvalidnode xrefObjProps)and(xrefObjProps.active) then
 				(
-					--set the scenes
+					--set the objects, only touching records whose state actually changes
 					for i=1 to objXRefMgr.recordCount do
 					(
 						theXref=(objXRefMgr.GetRecord i)
-						if((findItem xrefObjProps.fileNames theXref.srcFileName)!=0) then
-							theXref.enabled =true
-						else
-							theXref.enabled=false
+						newEnabled=((findItem xrefObjProps.fileNames theXref.srcFileName)!=0)
+						if(theXref.enabled!=newEnabled) then
+						(
+							if(newEnabled) and (not (doesFileExist theXref.srcFileName)) then
+								format "LPM warning: xref object source file missing, leaving disabled: %\n" theXref.srcFileName
+							else
+								try(theXref.enabled=newEnabled)
+								catch(format "LPM warning: failed to set xref object state: %\n" theXref.srcFileName)
+						)
 					)
 				)
 
@@ -1049,7 +1067,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		if(ySize<0) then(ysize=0)
 
 		-- make some useful numbers
-		dotNetSize 	= dotNetObject "System.Drawing.Size" theSize.x ySize
 		xSize 		= ((theSize.x))
 		yPos 		= ((theSize.y - 48) as integer)
 
@@ -1067,8 +1084,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		btn_versionDown.pos 			= [xSize-20, 22]
 
 		-- TreeView (shifted down by 22 for name field row)
-		tv.Location 					= dotNetObject "System.Drawing.Point" 0 0
-		tv.size 						= dotNetSize
+		-- Size via the MaxScript wrapper pos/width/height, which Max scales for
+		-- High-DPI monitors. Raw System.Drawing Size/Point bypass that scaling
+		-- and leave the control undersized at e.g. 150% Windows UI scale.
+		tv.pos 							= [0, 43]
+		tv.width 						= xSize
+		tv.height 						= ySize
 
 		dnc_textBoxOutputPath.pos 		= [0,yPos+2]
 		dnc_textBoxOutputPath.width 	= xSize-42
@@ -1084,8 +1105,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	fn updateTV=
 	(
-		tv.nodes.clear()
-		fillInTreeView tv
+		-- rebuilding the tree can touch scene CAs; keep the viewport quiet
+		with redraw off
+		(
+			tv.nodes.clear()
+			fillInTreeView tv
+		)
 	)
 
 	fn AddScriptOverride =
@@ -1105,37 +1130,37 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		createdialog ModifierOverRollout pos:(LPM_Fun.getRoPos  ModifierOverRollout.width)
 	)
 
-	--Dabelow
+
 	fn EditDeadline =
 	(
 		createDialog LPMDeadline pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
 	)
 
-	--Dabelow VrayRenderElements
+
 	fn EditVrayRenderElements =
 	(
 		createDialog vrayRenderElementsPropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
 	)
 
-	--Dabelow cameraOverscan
+
 	fn EditCameraOverscan =
 	(
 		createDialog cameraOverscanPropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
 	)
 
-	--Dabelow renderImage
+
 	fn EditRenderImage =
 	(
 		createDialog renderImagePropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
 	)
 
-	--Dabelow nukeExport
+
 	fn EditNukeExport =
 	(
 		messagebox "Nuke Export is not yet implemented in LPM."
 	)
 
-	--Dabelow aeExport
+
 	fn EditAeExport =
 	(
 		messagebox "After Effects Export is not yet implemented in LPM."
@@ -1271,22 +1296,22 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		)
 		else
 		(
-			LPM_LightSetPropsBuff = LPM_LightSetProps()
+			LPM_LightSetDataBuff = LPM_LightSetData()
 
 			theLightSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 
-			LPM_LightSetPropsBuff.pEnable = theLightSet.pEnable
-			LPM_LightSetPropsBuff.pMultiplierEnable = theLightSet.pMultiplierEnable
-			LPM_LightSetPropsBuff.pMultiplier = theLightSet.pMultiplier
-			LPM_LightSetPropsBuff.pColorEnable = theLightSet.pColorEnable
-			LPM_LightSetPropsBuff.pColor = theLightSet.pColor
-			LPM_LightSetPropsBuff.pCastShadows = theLightSet.pCastShadows
-			LPM_LightSetPropsBuff.pAffectDiffuse = theLightSet.pAffectDiffuse
-			LPM_LightSetPropsBuff.pAffectSpecular = theLightSet.pAffectSpecular
-			LPM_LightSetPropsBuff.pAffectReflections = theLightSet.pAffectReflections
-			LPM_LightSetPropsBuff.pTextureEnable = theLightSet.pTextureEnable
-			LPM_LightSetPropsBuff.pTexture = theLightSet.pTexture
-			LPM_LightSetPropsBuff.expanded = theLightSet.expanded
+			LPM_LightSetDataBuff.pEnable = theLightSet.pEnable
+			LPM_LightSetDataBuff.pMultiplierEnable = theLightSet.pMultiplierEnable
+			LPM_LightSetDataBuff.pMultiplier = theLightSet.pMultiplier
+			LPM_LightSetDataBuff.pColorEnable = theLightSet.pColorEnable
+			LPM_LightSetDataBuff.pColor = theLightSet.pColor
+			LPM_LightSetDataBuff.pCastShadows = theLightSet.pCastShadows
+			LPM_LightSetDataBuff.pAffectDiffuse = theLightSet.pAffectDiffuse
+			LPM_LightSetDataBuff.pAffectSpecular = theLightSet.pAffectSpecular
+			LPM_LightSetDataBuff.pAffectReflections = theLightSet.pAffectReflections
+			LPM_LightSetDataBuff.pTextureEnable = theLightSet.pTextureEnable
+			LPM_LightSetDataBuff.pTexture = theLightSet.pTexture
+			LPM_LightSetDataBuff.expanded = theLightSet.expanded
 		)
 
 		LPM_treeview_rollout.updateTV()
@@ -1307,21 +1332,21 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			theObjectSet.userProp = LPM_ObjSetPropsBuff.userProp
 		)
 
-		if(LPM_treeview_rollout.tv.selectedNode.tag.value.type=="lightSet")and(LPM_LightSetPropsBuff.pEnable!=undefined) then
+		if(LPM_treeview_rollout.tv.selectedNode.tag.value.type=="lightSet")and(LPM_LightSetDataBuff.pEnable!=undefined) then
 		(
 			theLightSet=LPM_treeview_rollout.tv.selectedNode.tag.value
-			theLightSet.pEnable = LPM_LightSetPropsBuff.pEnable
-			theLightSet.pMultiplierEnable = LPM_LightSetPropsBuff.pMultiplierEnable
-			theLightSet.pMultiplier = LPM_LightSetPropsBuff.pMultiplier
-			theLightSet.pColorEnable = LPM_LightSetPropsBuff.pColorEnable
-			theLightSet.pColor = LPM_LightSetPropsBuff.pColor
-			theLightSet.pCastShadows = LPM_LightSetPropsBuff.pCastShadows
-			theLightSet.pAffectDiffuse = LPM_LightSetPropsBuff.pAffectDiffuse
-			theLightSet.pAffectSpecular = LPM_LightSetPropsBuff.pAffectSpecular
-			theLightSet.pAffectReflections = LPM_LightSetPropsBuff.pAffectReflections
-			theLightSet.pTextureEnable = LPM_LightSetPropsBuff.pTextureEnable
-			theLightSet.pTexture = LPM_LightSetPropsBuff.pTexture
-			theLightSet.expanded = LPM_LightSetPropsBuff.expanded
+			theLightSet.pEnable = LPM_LightSetDataBuff.pEnable
+			theLightSet.pMultiplierEnable = LPM_LightSetDataBuff.pMultiplierEnable
+			theLightSet.pMultiplier = LPM_LightSetDataBuff.pMultiplier
+			theLightSet.pColorEnable = LPM_LightSetDataBuff.pColorEnable
+			theLightSet.pColor = LPM_LightSetDataBuff.pColor
+			theLightSet.pCastShadows = LPM_LightSetDataBuff.pCastShadows
+			theLightSet.pAffectDiffuse = LPM_LightSetDataBuff.pAffectDiffuse
+			theLightSet.pAffectSpecular = LPM_LightSetDataBuff.pAffectSpecular
+			theLightSet.pAffectReflections = LPM_LightSetDataBuff.pAffectReflections
+			theLightSet.pTextureEnable = LPM_LightSetDataBuff.pTextureEnable
+			theLightSet.pTexture = LPM_LightSetDataBuff.pTexture
+			theLightSet.expanded = LPM_LightSetDataBuff.expanded
 		)
 
 		LPM_treeview_rollout.updateTV()
@@ -1423,6 +1448,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		type = theNode.tag.value.type
 		word = e.Label
 		if(type=="shot" or type=="pass") then word = LPM_Fun.removeBadChars word
+
+		-- reject blank names; updateTV restores the original label
+		if((trimLeft (trimRight word)) == "") then
+		(
+			LPM_treeview_rollout.updateTV()
+			return()
+		)
 
 		theNode.text = word
 		case type of
@@ -1578,7 +1610,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							delete theNode
 							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
-						-- Dabelow
+
 						"Deadline":
 						(
 							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
@@ -1597,21 +1629,21 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							delete theNode
 							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
-						-- Dabelow renderImage
+
 						"renderImage":
 						(
 							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
 							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
-						-- Dabelow nukeExport
+
 						"nukeExport":
 						(
 							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
 							delete theNode
 							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
-						-- Dabelow aeExport
+
 						"aeExport":
 						(
 							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
@@ -1725,8 +1757,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on tv MouseUp arg do
 	(
-		print "click"
-
 		nTime=timestamp()
 		delta=nTime - sTime
 		sTime=0 --Assume its an invalid click, if its valid we will the timestamp later
@@ -1805,26 +1835,26 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 						LPM_Fun.setIcon hitNode
 					)
 
-					-- Dabelow cameraOverscan
+
 					"cameraOverscan":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
 					)
-					-- Dabelow renderImage
+
 					"renderImage":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
 					)
-					-- Dabelow nukeExport
+
 					"nukeExport":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
 					)
 
-					-- Dabelow aeExport
+
 					"aeExport":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
@@ -1868,14 +1898,14 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
 					)
-					-- Dabelow
+
 					"Deadline":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
 				)
 
-					-- Dabelow VrayRenderElements
+
 					"vrayRenderElements":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
@@ -2115,12 +2145,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							op.fnPerformAction #rightClick
 					)
 					"ModifierOver":popUpMenu rc_ModifierOverMenu
-					"Deadline":popUpMenu rc_deadlinePropsMenu 							-- Dabelow
-					"vrayRenderElements":popUpMenu rc_vrayRenderElementsPropsMenu 		-- Dabelow VrayRenderElements
-					"cameraOverscan":popUpMenu rc_cameraOverscanPropsMenu 				-- Dabelow cameraOverscan
-					"renderImage":popUpMenu rc_renderImagePropsMenu 					-- Dabelow renderImage
-					"nukeExport":popUpMenu rc_nukeExportPropsMenu 						-- Dabelow nukeExport
-					"aeExport":popUpMenu rc_aeExportPropsMenu 							-- Dabelow aeExport
+					"Deadline":popUpMenu rc_deadlinePropsMenu
+					"vrayRenderElements":popUpMenu rc_vrayRenderElementsPropsMenu
+					"cameraOverscan":popUpMenu rc_cameraOverscanPropsMenu
+					"renderImage":popUpMenu rc_renderImagePropsMenu
+					"nukeExport":popUpMenu rc_nukeExportPropsMenu
+					"aeExport":popUpMenu rc_aeExportPropsMenu
 				)
 			)
 			tv.selectedNode=hitNode
@@ -2161,7 +2191,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 					"vrayProps":popUpMenu  rc_vrayPropsMenu
 					"objectSet": (createDialog LPM_objectSetProps 194 403 pos:(LPM_Fun.getRoPos 194))
-					"lightSet": (createDialog lightSetProps pos:(LPM_Fun.getRoPos 194))
+					"lightSet": (createDialog LPM_lightSetProps pos:(LPM_Fun.getRoPos 194))
 					"object":popUpMenu rc_objectMenu
 					"light":popUpMenu rc_objectMenu
 					"layer":popUpMenu rc_layerMenu
@@ -2184,12 +2214,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							op.fnPerformAction #edit
 					)
 					"ModifierOver":(AddModifierOverride())
-					"Deadline":(EditDeadline()) 							-- Dabelow
-					"vrayRenderElements":(EditVrayRenderElements()) 		-- Dabelow VrayRenderElements
-					"cameraOverscan":(EditCameraOverscan())					-- Dabelow cameraOverscan
-					"renderImage":(EditRenderImage())						-- Dabelow renderImage
-					"nukeExport":(EditNukeExport())							-- Dabelow nukeExport
-					"aeExport":(EditAeExport())								-- Dabelow aeExport
+					"Deadline":(EditDeadline())
+					"vrayRenderElements":(EditVrayRenderElements())
+					"cameraOverscan":(EditCameraOverscan())
+					"renderImage":(EditRenderImage())
+					"nukeExport":(EditNukeExport())
+					"aeExport":(EditAeExport())
 				)
 			)
 		)
@@ -2202,7 +2232,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	 (
 		 dragnode=arg.item
 
-		 -- Dabelow cameraOverscan / nukeExport / aeExport / Vray6 / VrayRenderElements
+
 		it=arg.item.tag.value.type
 		if(it=="pass") or (it=="shot") or (it=="objectSet") or (it=="lightSet") or (it=="renderProps") or (it=="vrayProps")or (it=="envProps") or (it=="commonProps") or (it=="xrefObj") or (it=="xrefScene") or (it=="passGroup") or (it=="ModifierOver") or (it=="script") or (it=="Deadline") or (it=="vrayRenderElements") or (it=="cameraOverscan") or (it=="nukeExport") or (it=="aeExport") or (it=="renderImage") then
 		tv.doDragDrop arg.item m.Move -- this actually starts the drag and drop process
@@ -2262,7 +2292,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 						dragNode.remove() -- need to remove the node from the tree
 						dropNode.parent.Nodes.insert (dropNode.index+1) dragNode  -- add it to the dropNode children
 					)
-					 dragNode.text=dragNode.text--fix for annoying text cutoff
+					 dragNode.text=dragNode.text -- reassignment forces redraw, fixes text cutoff
 
 					 --LPM Data
 					tvReparent dragTvParent dragNode.tag.value.type
@@ -2292,7 +2322,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							dragNode.remove() -- need to remove the node from the tree
 							dropNode.parent.Nodes.insert (dropNode.index+1) dragNode  -- add it to the dropNode children
 						)
-						 dragNode.text=dragNode.text--fix for annoying text cutoff
+						 dragNode.text=dragNode.text -- reassignment forces redraw, fixes text cutoff
 
 						 --LPM Data
 						tvReparent dragTvParent dragNode.tag.value.type
@@ -2331,7 +2361,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 					theNode=dragNode.tag.value
 					theType=dragNode.tag.value.type
 
-					-- Dabelow / cameraOverscan / nukeExport / aeExport / Dabelow vray6
 					if (theType=="envProps") or (theType=="commonProps") or (theType=="xrefObj") or (theType=="xrefScene") or (theType=="Deadline") or (theType=="vrayRenderElements") or (theType=="cameraOverscan") or (theType=="nukeExport") or (theType=="aeExport") or (it=="renderImage") then
 					(
 						for it in thePass.children where it.type==theType do --delete the previous nodes of the above types
@@ -2373,9 +2402,16 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		if (nodeType == "shot" or nodeType == "pass") then
 			word = LPM_Fun.removeBadChars word
 
+		-- skip blank input so live typing can't commit an empty name
+		if ((trimLeft (trimRight word)) == "") then return()
+
 		case nodeType of
 		(
-			"wildcard": ( selNode.Parent.tag.value.wildCard[selNode.tag.value.index] = word )
+			"wildcard":
+			(
+				selNode.Parent.tag.value.wildCard[selNode.tag.value.index] = word
+				selNode.text = word
+			)
 			"shot":
 			(
 				local pos = findstring word "[["
@@ -2390,7 +2426,9 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 				selNode.tag.value.name = "LPM_" + word
 				selNode.text = LPM_Fun.generatePassName selNode.tag.value
 			)
-			default: ( try( selNode.tag.value.name = "LPM_" + word )catch() )
+			-- groups, object/light sets, etc: refresh the visible label too,
+			-- otherwise the rename lands on the object but the tree looks unchanged
+			default: ( try( selNode.tag.value.name = "LPM_" + word ; selNode.text = word )catch() )
 		)
 	)
 
@@ -2430,31 +2468,6 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 	on LPM_treeview_rollout open do
 	(
---		lpm_fun.preFileOpenCallback_Add()
---		lpm_fun.vrayDR_restartSlaves_check() -- dabelow
---
---		editBox.visible = false
---		editBox.borderStyle = (dotNetClass "BorderStyle").FixedSingle
---
---		proMode=LPM_ReadLicense()
---
---		if(proMode) then LPM_Treeview_Rollout.title+=""
---		else
---		(
---			LPM_Treeview_Rollout.title+=" DEMO"
---			if(LPM_AdPopUp==undefined) then
---			(
---				purchase()
---				global LPM_AdPopUp=false
---			)
---		)
---
---		initTreeView tv
---		fillInTreeView tv
-
-
-
-		print(LPM_Root.rootDir)
 		dnc_textBoxOutputPath.text = LPM_Root.rootDir
 
 		lpm_fun.preFileOpenCallback_Add()

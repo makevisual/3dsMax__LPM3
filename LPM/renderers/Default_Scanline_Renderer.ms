@@ -1,8 +1,7 @@
 -- Sets the rendderer specific outputs for Vray7 and disables the max save file
 -- Included the depreciated function for any possible future use
--- 04/24/2025 Aaron Dabelow theonlyaaron@gmail.com
 
----------- CLASSES ----------
+-- CLASSES
 
 -- Object to hold all the restore data
 struct scanline_RestoreDataStr
@@ -13,8 +12,8 @@ struct scanline_RestoreDataStr
     caboose                 = undefined
 )
 
----------- GLOBAL SWITCHES ----------
----- Prerender Globals
+-- GLOBAL SWITCHES
+-- Prerender Globals
 -- When rendering Production, these settings are applied
 function preRenderAction_ProductionGlobals =
 (
@@ -38,7 +37,7 @@ function preRenderAction_ProductionGlobals =
     rendSaveFile          	= true                
 )
 
----- Postrender Globals
+-- Postrender Globals
 -- When rendering Production, these settings will be restored
 function postRenderAction_ProductionGlobals =
 (
@@ -51,8 +50,8 @@ function postRenderAction_ProductionGlobals =
     rendSaveFile 		= scanline_RestoreData.saveFileOption 
 )
 
----------- PROGRAM FLOW ---------- 
----- Pre-Render Action for Production
+-- PROGRAM FLOW
+-- Pre-Render Action for Production
 function preRenderAction_Production =
 (
     -- Construct object for storing pre-render state for use for restoring later
@@ -62,14 +61,14 @@ function preRenderAction_Production =
     preRenderAction_ProductionGlobals()             -- For all global actions
 )
 
----- Pre-Render Action for Preview
+-- Pre-Render Action for Preview
 function preRenderAction_Preview =
 (
     -- Construct object for storing pre-render state for use for restoring later
     LPM_RenderDispatchRestoreData = scanline_RestoreDataStr()
 )
 
----- Post-Render Action for Production
+-- Post-Render Action for Production
 function postRenderAction_Production =
 (
     --Calls Data from the global to check the restorepoint flag
@@ -131,7 +130,7 @@ function localRenderAction =
     )
 )
 
----------- API HOOKS ---------- 
+-- API HOOKS
 -- Cases for each of the methods a dispatch can be called.
 if LPM_RenderDispatchAction == #preRender then preRenderAction_Production()
 if LPM_RenderDispatchAction == #PreviewRender then  preRenderAction_Preview()

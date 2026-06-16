@@ -3,7 +3,6 @@
 -- http://www.scriptspot.com/3ds-max/scripts/nukeem-max-to-nuke-exporter
 
 -- Modified 
--- 3/3/2020 by Aaron Dabelow theonlyaaron@gmail.com 
 -- Modified to run without macroscript and be launched from external filein command 
 
 -- LPM integration - 03/04/2020
@@ -269,7 +268,6 @@ fn nukeEm_GetSettings shotRender =
 	(
 		LPM_NukeEM_Settings.frameStart = (trimRight (animationRange.start as string) "f") as integer
 		LPM_NukeEM_Settings.frameEnd = (trimRight (animationRange.end as string) "f") as integer
-		print LPM_NukeEM_Settings.frameStart
 	)
 	if shotRender.children[1].commonProps.outputSizeTgl == true then
 	(
