@@ -209,6 +209,8 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		tv.BackColor = LPM_BackColor
 		tv.AllowDrop = true -- allow DragandDrop for the Treeview
 
+		-- Icons are referenced by positional index: append new ones at the END only.
+		-- Inserting shifts every later index. See docs/ADDING_AN_OPERATOR.md
 		getIconFromBitmap "Root"
 		getIconFromBitmap "Pass"
 		getIconFromBitmap "objectSet"
@@ -346,6 +348,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	fn createTVnode nodeRoot theNode nodeType:"LPM_node" =
 	(
 		nodeName = ""
+		-- Per-node-type display label. New operators add a case here; see docs/ADDING_AN_OPERATOR.md
 		case nodeType of
 		(
 			"leaf": 				nodeName = theNode.leaf

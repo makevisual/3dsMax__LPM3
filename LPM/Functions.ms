@@ -21,8 +21,7 @@ fn destroyAllDialogs=
 
 	if(LPM_LoadingPreset!=true) and (callbacks.notificationParam()!=2) then
 	(
-		--try destroying all dialogs
-
+		-- Destroy every LPM dialog. New operators add their editor rollout here; see docs/ADDING_AN_OPERATOR.md
 		try(destroyDialog LPM_renderRo)catch()
 		try(destroyDialog LPM_netRenderRo) catch()
 		try(destroyDialog LPM_progressRO)catch()
@@ -85,6 +84,7 @@ fn setIcon theNode=
 (
 	try
 	(
+		-- Per-node-type icon. New operators add a case here; see docs/ADDING_AN_OPERATOR.md
 		case theNode.tag.value.type of
 		(
 			"pass":(LPM_Fun.setImageIndex theNode theNode.tag.value.active 1 11)
@@ -150,6 +150,7 @@ fn passByNode theNode =
 	-- tag.value can point at a deleted scene object after a scene change
 	if(theNode!=undefined) and (theNode.tag!=undefined) and (try(theNode.tag.value.type!=undefined)catch(false)) then
 	(
+		-- Resolves a node to its owning pass. New operators add a case here; see docs/ADDING_AN_OPERATOR.md
 		tmpValue = case theNode.tag.value.type of
 		(
 			"pass":theNode.tag.value
@@ -472,6 +473,7 @@ fn createNode pName type=
 	theNode.pos=[0,0,-1000]
 	LPM_Fun.addToLPMLayer theNode
 
+	-- Attaches the persistent CA for each node type. New operators add a case here; see docs/ADDING_AN_OPERATOR.md
 	case type of
 	(
 		"root":custAttributes.add theNode rootCA
@@ -2267,6 +2269,10 @@ fn CheckIsAllLayerObjects =
 )
 
 
+-- Copy/paste buffers for object/light set properties (transient; not persisted).
+-- NOTE: MaxScript identifiers are case-insensitive, so these struct names must stay
+-- distinct from the rollouts LPM_objectSetProps / LPM_lightSetProps. Do not rename
+-- LPM_LightSetData back to LPM_LightSetProps — it would collide with the rollout.
 Struct LPM_ObjSetProps (intP,pMatEnable,pMaterial,expanded,pColor,visible,selectable,userProp)
 
 Struct LPM_LightSetData (pEnable,pMultiplierEnable,pMultiplier,pColorEnable,pColor,pCastShadows,pAffectDiffuse,pAffectSpecular,pAffectReflections,pTextureEnable,pTexture,expanded)
