@@ -215,7 +215,7 @@ attribID:#(0x54e3ca47, 0x1381f195)
 
 
 tyPreviewPropsCA = attributes tyPreviewProps
-attribID:#(0x6b3f1a72, 0x2e84c5d1)
+attribID:#(0xd4f8027, 0xf5a8535)
 (
 	parameters main
 	(
