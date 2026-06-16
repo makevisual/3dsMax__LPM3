@@ -7,6 +7,7 @@ struct LPM_OperatorDataStr (
     renderImage         = undefined,
     nukeExport          = undefined,
     aeExport            = undefined,
+    tyPreview           = undefined,
     null                = undefined
 )
 

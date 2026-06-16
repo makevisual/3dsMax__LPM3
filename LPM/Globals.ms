@@ -41,6 +41,8 @@ global LPM_RenderDispatchAction 			-- Render Dispatch ( future renderer compatib
 global LPM_RenderDispatchRestoreData 		-- Render Dispatch ( future renderer compatible )
 global LPM_OperatorData
 
+global LPM_PreviewBackend = "tyPreview"		-- Selects which preview backend preview_dispatch.ms loads ("tyPreview"; future: "viewport")
+
 global LPM_VRayInstalled 					-- true if VRay plugin is present on this machine
 global LPM_VRayActive    					-- true if VRay is the currently active renderer
 global LPM_TyFlowInstalled 				-- true if tyFlow plugin is present on this machine

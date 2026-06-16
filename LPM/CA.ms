@@ -214,6 +214,20 @@ attribID:#(0x54e3ca47, 0x1381f195)
 )
 
 
+tyPreviewPropsCA = attributes tyPreviewProps
+attribID:#(0x6b3f1a72, 0x2e84c5d1)
+(
+	parameters main
+	(
+		type type:#string
+		active type:#boolean default:true
+
+		-- 1 = Use Active Viewport settings, 2 = Use TyPreview (per-camera) viewport settings
+		viewportSource type:#integer default:1
+	)
+)
+
+
 renderImagePropsCA = attributes renderImageProps
 attribID:#(0x2cc0578d, 0x1919e838)
 (

@@ -3,6 +3,7 @@ filein @"rcMenus\rcMenu_deadlineOverride.ms"
 filein @"rcMenus\rcMenu_Utilities.ms"
 filein @"rcMenus\rcMenu_vrayRenderElementsOverride.ms"
 filein @"rcMenus\rcMenu_cameraOverscanOverride.ms"
+filein @"rcMenus\rcMenu_tyPreviewOverride.ms"
 filein @"rcMenus\rcMenu_renderImage.ms"
 filein @"rcMenus\rcMenu_nukeExport.ms"
 filein @"rcMenus\rcMenu_aeExport.ms"
@@ -1862,6 +1863,7 @@ rcMenu rc_shotMenu
 	menuItem    AddCommon "Add Common Properties"
 	menuItem    AddRenderImage "Add RenderImage Export"
 	menuItem    AddCameraOverscan "Add Camera Overscan Override"
+	menuItem    AddTyPreview "Add TyPreview Options"
 	menuItem    AddNukeExport "Add Nuke Export"
 	menuItem    AddAeExport "Add After Effect Export"
 
@@ -1907,6 +1909,17 @@ rcMenu rc_shotMenu
 		if((LPM_Fun.firstChildByType thePass "cameraOverscan")==undefined) then
 		(
 			theProps=LPM_Fun.createCameraOverscanProps "cameraOverscan"
+			theProps.parent=thePass
+			LPM_treeview_rollout.addShotTv LPM_treeview_rollout.tv.selectedNode
+		)
+	)
+
+	on AddTyPreview picked do
+	(
+		thePass=LPM_treeview_rollout.tv.selectedNode.tag.value
+		if((LPM_Fun.firstChildByType thePass "tyPreview")==undefined) then
+		(
+			theProps=LPM_Fun.createTyPreviewProps "tyPreview"
 			theProps.parent=thePass
 			LPM_treeview_rollout.addShotTv LPM_treeview_rollout.tv.selectedNode
 		)
