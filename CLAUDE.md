@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-LPM v3.00.11 is a MaxScript-based layer pass management system for Autodesk 3ds Max. It provides hierarchical shot/pass organization, multi-renderer support (V-Ray, Scanline), render farm integration (Deadline 10), and Nuke/After Effects export.
+LPM v3.01.00 is a MaxScript-based layer pass management system for Autodesk 3ds Max. It provides hierarchical shot/pass organization, multi-renderer support (V-Ray, Scanline), render farm integration (Deadline 10), and Nuke/After Effects export.
 
 ## Key Architecture
 
@@ -106,7 +106,7 @@ scene setup.
   `appearance_alpha` for alpha-capable formats (exr/png/tif).
 
 ## Version
-Current: `3.00.11` (defined in `LPM/VersionNumber.ms`)
+Current: `3.01.00` (defined in `LPM/VersionNumber.ms`)
 
 ## Development Notes
 - No automated test framework — manual testing in 3ds Max required
