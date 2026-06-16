@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-LPM v3.00.11 is a MaxScript-based layer pass management system for Autodesk 3ds Max. It provides hierarchical shot/pass organization, multi-renderer support (V-Ray, Scanline), render farm integration (Deadline 10), and Nuke/After Effects export.
+LPM v3.01.00 is a MaxScript-based layer pass management system for Autodesk 3ds Max. It provides hierarchical shot/pass organization, multi-renderer support (V-Ray, Scanline), render farm integration (Deadline 10), and Nuke/After Effects export.
 
 ## Key Architecture
 
@@ -70,8 +70,43 @@ The rename system uses **native TreeView LabelEdit** (`tv.LabelEdit = true`) wit
 - `LPM/renderers/Default_Scanline_Renderer.ms` — Default scanline
 - V-Ray 6 support was removed in recent updates
 
+## Preview / TyPreview Integration
+The "Preview - TyPreview" processor exports a viewport capture (via tyFlow's
+tyPreview utility) instead of running a renderer, while reusing the local-render
+scene setup.
+
+- **Processor dropdown** (`Treeview.ms`): `processorList` includes
+  `"Preview - TyPreview"`; the `btn_execute` branch gates on `LPM_TyFlowInstalled`
+  then calls `LPM_Fun.tyPreviewSubmit()` (Functions.ms), which sets
+  `LPM_PreviewBackend` and runs `renderSubmit #tyPreview`.
+- **Reuse via dispatch seam, not a parallel pipeline:** `#tyPreview` flows
+  through the normal `renderSubmit` → `LPM_renderPass` path. `fnPreRenderAction`
+  takes a `previewExport:` flag that skips renderer-only work (Deadline operators,
+  render-element output assignment, `renderer_dispatch.ms`) while still applying
+  visibility, camera, frame range, resolution, and script operators, and building
+  the shot output path into `LPM_Root.fullOutputPath`. `fnPostRenderAction`
+  restores normally.
+- **Preview backend dispatch** mirrors `renderer_dispatch.ms`: `LPM_renderPass`'s
+  `#tyPreview` branch fileins `preview_dispatch.ms`, which routes by
+  `LPM_PreviewBackend` to a self-contained backend in `LPM/previews/`
+  (`preview_tyPreview.ms` now; future `preview_viewport.ms` for the planned
+  "Preview - 3dsMax Viewport" option — add one branch + one file, nothing else).
+- **TyPreview backend** (`previews/preview_tyPreview.ms`) translates the applied
+  scene state into a single `tyPreview()` call. LPM authority overrides
+  tyPreview's persisted settings: `output_filename` (shot output), `frameRange_list`
+  / `frameRange_nth`, `camera_node`, `resolution_width`/`height`.
+- **TyPreview operator** (property-based, modeled on Camera Overscan; child of the
+  shot node): CA `tyPreviewPropsCA` (`CA.ms`), dialog
+  `rcMenus/rcMenu_tyPreviewOverride.ms`, wired through the standard operator touch
+  points (see `docs/ADDING_AN_OPERATOR.md`). Options: `viewportSource` (1 = active
+  viewport, 2 = tyPreview per-camera settings) decides whether the backend passes
+  `appearance_*`/`camera_node`; `outputFormat` (`exr`/`png`/`tif`/`jpg`/`mp4`,
+  default `exr`) sets the tyPreview `output_filename` extension and `output_type`
+  (mp4 = 0/video, others = 1/image sequence). The backend auto-enables
+  `appearance_alpha` for alpha-capable formats (exr/png/tif).
+
 ## Version
-Current: `3.00.11` (defined in `LPM/VersionNumber.ms`)
+Current: `3.01.00` (defined in `LPM/VersionNumber.ms`)
 
 ## Development Notes
 - No automated test framework — manual testing in 3ds Max required

@@ -214,6 +214,25 @@ attribID:#(0x54e3ca47, 0x1381f195)
 )
 
 
+tyPreviewPropsCA = attributes tyPreviewProps
+attribID:#(0xd4f8027, 0xf5a8535)
+(
+	parameters main
+	(
+		type type:#string
+		active type:#boolean default:true
+
+		-- 1 = Use Active Viewport settings, 2 = Use TyPreview (per-camera) viewport settings
+		viewportSource type:#integer default:1
+
+		-- Output format. Image sequence: "exr" / "png" / "tif" / "jpg". Video: "mp4".
+		-- Drives the tyPreview output_filename extension and output_type. Alpha is enabled
+		-- automatically for formats that support it (exr / png / tif).
+		outputFormat type:#string default:"exr"
+	)
+)
+
+
 renderImagePropsCA = attributes renderImageProps
 attribID:#(0x2cc0578d, 0x1919e838)
 (

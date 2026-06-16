@@ -114,7 +114,8 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	"Render - Local",
 	"Render - Submit to Deadline 10",
 	"Render - Submit to Deadline 10 - Skip Checks",
-	"Export - Bake 3dsMax Files"
+	"Export - Bake 3dsMax Files",
+	"Preview - TyPreview"
 	)
 
  	dropDownList 		ddl_camera 				"" 			pos:[0,32] width:100 items:#("-----------------------")
@@ -288,6 +289,10 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		getIconFromBitmap "renderImage"
 		getIconFromFolder LPM_disabledIconFolder "renderImageOff"
 
+		-- indices 66 / 67 (placeholder art — copy of Render icons; replace when art exists)
+		getIconFromBitmap "TyPreview"
+		getIconFromFolder LPM_disabledIconFolder "TyPreviewOff"
+
 		tv.imageList = ilTv
 		tv.LabelEdit = true
 	)
@@ -361,6 +366,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			"Deadline": 			nodeName = (LPM_Fun.generateDeadlineName theNode)
 					"vrayRenderElements": 	nodeName = (LPM_Fun.generateVrayRenderElementsName theNode)
 			"cameraOverscan": 		nodeName = (LPM_Fun.generateCameraOverscanName theNode)
+			"tyPreview": 			nodeName = (LPM_Fun.generateTyPreviewName theNode)
 			"renderImage": 			nodeName = (LPM_Fun.generateRenderImageName theNode)
 			"nukeExport": 			nodeName = (LPM_Fun.generateNukeExportName theNode)
 			"aeExport": 			nodeName = (LPM_Fun.generateAeExportName theNode)
@@ -645,6 +651,17 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		if(cameraOverscan!=undefined) then
 		(
 			newCP = createTVnode newShot cameraOverscan nodeType:"cameraOverscan"
+
+			newCP.ForeColor = LPM_FontColor
+			newCP.BackColor = LPM_BackColor
+			makeItalic newCP
+		)
+
+
+		tyPreview=LPM_Fun.firstChildByType pmShot "tyPreview"
+		if(tyPreview!=undefined) then
+		(
+			newCP = createTVnode newShot tyPreview nodeType:"tyPreview"
 
 			newCP.ForeColor = LPM_FontColor
 			newCP.BackColor = LPM_BackColor
@@ -1149,6 +1166,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	)
 
 
+	fn EditTyPreview =
+	(
+		createDialog tyPreviewPropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
+	)
+
+
 	fn EditRenderImage =
 	(
 		createDialog renderImagePropsRoll pos:(LPM_Fun.getRoPos  250) style:#(#style_titlebar,#style_border, #style_sysmenu,#style_resizing)
@@ -1406,6 +1429,20 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			filein (LPM_Dir+@"plugins\maxFileSubmit.ms")
 		)
 
+		if curMode == "Preview - TyPreview"
+		then
+		(
+			if not LPM_TyFlowInstalled then
+			(
+				messagebox "tyFlow / tyPreview is not installed on this machine." title:"LPM"
+			)
+			else
+			(
+				LPM_Fun.setWhoToRenderByRenderType()
+				LPM_Fun.tyPreviewSubmit()
+			)
+		)
+
 	)
 
 	on ddl_previewType selected item do
@@ -1630,6 +1667,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 							LPM_treeview_rollout.tv.selectedNode.remove()
 						)
 
+						"tyPreview":
+						(
+							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
+							delete theNode
+							LPM_treeview_rollout.tv.selectedNode.remove()
+						)
+
 						"renderImage":
 						(
 							theNode=LPM_treeview_rollout.tv.selectedNode.tag.value
@@ -1837,6 +1881,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 
 					"cameraOverscan":
+					(
+						hitNode.tag.value.active= not hitNode.tag.value.active
+						LPM_Fun.setIcon hitNode
+					)
+
+					"tyPreview":
 					(
 						hitNode.tag.value.active= not hitNode.tag.value.active
 						LPM_Fun.setIcon hitNode
@@ -2148,6 +2198,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 					"Deadline":popUpMenu rc_deadlinePropsMenu
 					"vrayRenderElements":popUpMenu rc_vrayRenderElementsPropsMenu
 					"cameraOverscan":popUpMenu rc_cameraOverscanPropsMenu
+					"tyPreview":popUpMenu rc_tyPreviewPropsMenu
 					"renderImage":popUpMenu rc_renderImagePropsMenu
 					"nukeExport":popUpMenu rc_nukeExportPropsMenu
 					"aeExport":popUpMenu rc_aeExportPropsMenu
@@ -2217,6 +2268,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 					"Deadline":(EditDeadline())
 					"vrayRenderElements":(EditVrayRenderElements())
 					"cameraOverscan":(EditCameraOverscan())
+					"tyPreview":(EditTyPreview())
 					"renderImage":(EditRenderImage())
 					"nukeExport":(EditNukeExport())
 					"aeExport":(EditAeExport())
@@ -2234,7 +2286,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 
 		it=arg.item.tag.value.type
-		if(it=="pass") or (it=="shot") or (it=="objectSet") or (it=="lightSet") or (it=="renderProps") or (it=="vrayProps")or (it=="envProps") or (it=="commonProps") or (it=="xrefObj") or (it=="xrefScene") or (it=="passGroup") or (it=="ModifierOver") or (it=="script") or (it=="Deadline") or (it=="vrayRenderElements") or (it=="cameraOverscan") or (it=="nukeExport") or (it=="aeExport") or (it=="renderImage") then
+		if(it=="pass") or (it=="shot") or (it=="objectSet") or (it=="lightSet") or (it=="renderProps") or (it=="vrayProps")or (it=="envProps") or (it=="commonProps") or (it=="xrefObj") or (it=="xrefScene") or (it=="passGroup") or (it=="ModifierOver") or (it=="script") or (it=="Deadline") or (it=="vrayRenderElements") or (it=="cameraOverscan") or (it=="tyPreview") or (it=="nukeExport") or (it=="aeExport") or (it=="renderImage") then
 		tv.doDragDrop arg.item m.Move -- this actually starts the drag and drop process
 	 )
 
@@ -2361,7 +2413,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 					theNode=dragNode.tag.value
 					theType=dragNode.tag.value.type
 
-					if (theType=="envProps") or (theType=="commonProps") or (theType=="xrefObj") or (theType=="xrefScene") or (theType=="Deadline") or (theType=="vrayRenderElements") or (theType=="cameraOverscan") or (theType=="nukeExport") or (theType=="aeExport") or (it=="renderImage") then
+					if (theType=="envProps") or (theType=="commonProps") or (theType=="xrefObj") or (theType=="xrefScene") or (theType=="Deadline") or (theType=="vrayRenderElements") or (theType=="cameraOverscan") or (theType=="tyPreview") or (theType=="nukeExport") or (theType=="aeExport") or (it=="renderImage") then
 					(
 						for it in thePass.children where it.type==theType do --delete the previous nodes of the above types
 							delete it

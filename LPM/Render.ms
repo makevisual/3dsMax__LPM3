@@ -327,7 +327,11 @@ struct LPM_RenderAPI
 	ModifierBack,
 	AdjModifierBack,
 
-	fn fnPreRenderAction thePass theShot isPreviewMode:false=
+	-- previewExport: true when driving a viewport-capture export (e.g. tyPreview) rather than a
+	-- renderer. Reuses all scene setup (visibility, camera, frame range, resolution, script
+	-- operators) but skips renderer-only work: Deadline operators, render-element output
+	-- assignment, and the renderer dispatch. See preview_dispatch.ms.
+	fn fnPreRenderAction thePass theShot isPreviewMode:false previewExport:false=
 	(
 		--clear all backup variables
 		commonSettings=objBackup=lightBackup=applyAtmosphericsBackup=elementBackup=elementVrayBackup=effectBackup=atmBackup=envBackup=AdjeffectBackup=AdjatmBackup=AdjenvBackup=xrefObjBackArray=xrefBackArray=preRenderSettings=preRenderSettingsNew=viewportCamBack=viewportTypeBack=undefined
@@ -438,13 +442,16 @@ struct LPM_RenderAPI
 					)
 				)
 
-				--Load Deadline Props
-				filein (LPM_Dir+"LPM_SMTDSettings.ms") -- resets LPM_SMTDSettings
-
-				theDeadlineProps=for it in thePass.children where ((it.type=="Deadline") and (it.active)) collect it
-				if(theDeadlineProps[1] != undefined) then
+				--Load Deadline Props (skipped for viewport-capture exports — no farm submission)
+				if not previewExport then
 				(
-					LPM_Fun.loadDeadlineSettings theDeadlineProps[1] isPreviewMode
+					filein (LPM_Dir+"LPM_SMTDSettings.ms") -- resets LPM_SMTDSettings
+
+					theDeadlineProps=for it in thePass.children where ((it.type=="Deadline") and (it.active)) collect it
+					if(theDeadlineProps[1] != undefined) then
+					(
+						LPM_Fun.loadDeadlineSettings theDeadlineProps[1] isPreviewMode
+					)
 				)
 
 				-- xrefObjects Backup
@@ -842,19 +849,22 @@ struct LPM_RenderAPI
 					)
 				)
 
-				-- Render Elements Path
-				for i=1 to re.NumRenderElements() do
+				-- Render Elements Path (skipped for viewport-capture exports — elements are not rendered)
+				if not previewExport then
 				(
-					theEle=re.GetRenderElement (i-1)
-					if(isPreviewMode) then
+					for i=1 to re.NumRenderElements() do
 					(
-						re.SetRenderElementFilename (i-1) ((getdir #preview) + "\\1.exr")
-					)
-					else
-					(
-						if theEle.enabled then
+						theEle=re.GetRenderElement (i-1)
+						if(isPreviewMode) then
 						(
-							re.SetRenderElementFilename (i-1) (LPM_Fun.getPassPath LPM_Root thePass theShot:theShot RendPreviewMode:isPreviewMode elementName:("" + theEle.elementname + "") )
+							re.SetRenderElementFilename (i-1) ((getdir #preview) + "\\1.exr")
+						)
+						else
+						(
+							if theEle.enabled then
+							(
+								re.SetRenderElementFilename (i-1) (LPM_Fun.getPassPath LPM_Root thePass theShot:theShot RendPreviewMode:isPreviewMode elementName:("" + theEle.elementname + "") )
+							)
 						)
 					)
 				)
@@ -956,7 +966,11 @@ struct LPM_RenderAPI
 				)
 
 				-- Sends job to renderer dispatch to make any renderer specific last minuet adjustments
-				filein (LPM_Dir+"renderer_dispatch.ms")
+				-- (skipped for viewport-capture exports — no renderer is involved)
+				if not previewExport then
+				(
+					filein (LPM_Dir+"renderer_dispatch.ms")
+				)
 
 
 				-- final prepare
@@ -1323,7 +1337,8 @@ fn LPM_renderPass thePass renderType theShot:undefined=
 
 		-- Pre render action
 		isPreviewMode = ((renderType==#preview) or (renderType==#previewHalf))
-		LPM_Render.fnPreRenderAction thePass theShot isPreviewMode:isPreviewMode
+		isPreviewExport = (renderType==#tyPreview)
+		LPM_Render.fnPreRenderAction thePass theShot isPreviewMode:isPreviewMode previewExport:isPreviewExport
 
 		--Set settings based on render type
 		if(isPreviewMode) then
@@ -1362,6 +1377,18 @@ fn LPM_renderPass thePass renderType theShot:undefined=
 				LPM_RenderDispatchTheShot 	= theShot
 				LPM_RenderDispatchAction 	= #LocalRender
 				filein (LPM_Dir+"renderer_dispatch.ms")
+			)
+			else()
+
+			-- If TyPreview / viewport-capture export mode: hand off to the selected preview backend.
+			-- Scene setup already applied by fnPreRenderAction; no renderer is invoked.
+			if(renderType==#tyPreview)
+			then
+			(
+				LPM_RenderDispatchThePass 	= thePass
+				LPM_RenderDispatchTheShot 	= theShot
+				LPM_RenderDispatchAction 	= #PreviewExport
+				filein (LPM_Dir+"preview_dispatch.ms")
 			)
 			else()
 

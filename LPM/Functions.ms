@@ -39,6 +39,7 @@ fn destroyAllDialogs=
 		try(destroyDialog vrayPropsRoll)catch()
 		try(destroyDialog vrayRenderElementsPropsRoll)catch()
 		try(destroyDialog cameraOverscanPropsRoll)catch()
+		try(destroyDialog tyPreviewPropsRoll)catch()
 		try(destroyDialog renderImagePropsRoll)catch()
 		try(destroyDialog nukeExportPropsRoll)catch()
 		try(destroyDialog aeExportPropsRoll)catch()
@@ -133,6 +134,7 @@ fn setIcon theNode=
 			"ModifierOver":LPM_Fun.setImageIndex theNode theNode.tag.value.active 32 33
 			"Deadline":LPM_Fun.setImageIndex theNode theNode.tag.value.active 46 47
 			"cameraOverscan":LPM_Fun.setImageIndex theNode theNode.tag.value.active 52 53
+			"tyPreview":LPM_Fun.setImageIndex theNode theNode.tag.value.active 66 67
 			"nukeExport":LPM_Fun.setImageIndex theNode theNode.tag.value.active 54 55
 			"aeExport":LPM_Fun.setImageIndex theNode theNode.tag.value.active 56 57
 			"vrayRenderElements":LPM_Fun.setImageIndex theNode theNode.tag.value.active 62 63
@@ -181,6 +183,7 @@ fn passByNode theNode =
 			"Deadline":theNode.parent.tag.value
 			"renderImage":theNode.parent.tag.value
 			"cameraOverscan":theNode.parent.tag.value
+			"tyPreview":theNode.parent.tag.value
 			"nukeExport":theNode.parent.tag.value
 			"aeExport":theNode.parent.tag.value
 			default:undefined
@@ -496,6 +499,7 @@ fn createNode pName type=
 		"vrayRenderElements":custAttributes.add theNode vrayRenderElementsPropsCA
 		"renderImage":custAttributes.add theNode renderImagePropsCA
 		"cameraOverscan":custAttributes.add theNode cameraOverscanPropsCA
+		"tyPreview":custAttributes.add theNode tyPreviewPropsCA
 		"nukeExport":custAttributes.add theNode nukeExportPropsCA
 		"aeExport":custAttributes.add theNode aeExportPropsCA
 	)
@@ -865,6 +869,18 @@ fn createCameraOverscanProps theName=
 	cp.resOverride = false
     cp.resXOverride = 1920
     cp.resYOverride = 1080
+
+	cp
+),
+
+
+fn createTyPreviewProps theName=
+(
+	cp=LPM_Fun.createNode theName "tyPreview"
+	cp.active = true
+
+	cp.viewportSource = 1		-- 1 = Use Active Viewport settings, 2 = Use TyPreview viewport settings
+	cp.outputFormat = "exr"		-- exr / png / tif / jpg (image sequence) or mp4 (video)
 
 	cp
 ),
@@ -1312,6 +1328,20 @@ fn generateCameraOverscanName cp=
 	(
 		theName += (" [" + ( cp.resXOverride as string ) + ( cp.resYOverride as string ) +"]" )
 	)
+
+	theName
+),
+
+
+fn generateTyPreviewName cp=
+(
+	theName = ( "TyPreview" )
+
+	if ( cp.viewportSource == 2 )
+	then ( theName += " [TyPreview viewport]" )
+	else ( theName += " [Active viewport]" )
+
+	theName += (" [" + (cp.outputFormat) + "]")
 
 	theName
 ),
@@ -1891,6 +1921,16 @@ fn localRenderSubmit=
 	else(renderFlag=#local)
 	
 	renderSubmit renderFlag
+	LPM_Fun.renderBarProgress=undefined
+),
+
+-- Drives a viewport-capture export instead of a renderer. Reuses renderSubmit /
+-- LPM_renderPass for scene setup + restore; LPM_renderPass routes the #tyPreview
+-- mode through preview_dispatch.ms to the selected preview backend.
+fn tyPreviewSubmit=
+(
+	LPM_PreviewBackend = "tyPreview"
+	renderSubmit #tyPreview
 	LPM_Fun.renderBarProgress=undefined
 ),
 
