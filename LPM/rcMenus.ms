@@ -1500,7 +1500,7 @@ rcMenu rc_MainMenu
 		menuItem	iconColorBlacks			"Disabled Icons: Black"
 		menuItem	iconColorReds			"Disabled Icons: Red"
 		seperator	s_verbose
-		menuItem	verboseLogging			"Verbose Logging" checked:false
+		menuItem	verboseLogging			"Verbose Logging"
 	)
 
 	subMenu "Utilities"
@@ -1564,17 +1564,18 @@ rcMenu rc_MainMenu
 		LPM_treeview_rollout.reloadIcons()
 	)
 
-	on rc_MainMenu open do
-	(
-		verboseLogging.checked = (LPM_VerboseLogging == true)
-	)
-
 	on verboseLogging picked do
 	(
 		LPM_VerboseLogging = not (LPM_VerboseLogging == true)
 		LPM_Fun.setIni "Settings" "VerboseLogging" LPM_VerboseLogging
+		verboseLogging.checked = LPM_VerboseLogging
+		if LPM_VerboseLogging then ( format "LPM Verbose Logging: ON\n" )
+		else ( format "LPM Verbose Logging: OFF\n" )
 	)
 )
+
+-- Reflect the persisted Verbose Logging state on the menu item at launch
+rc_MainMenu.verboseLogging.checked = LPM_VerboseLogging
 
 -- RootMenu
 
