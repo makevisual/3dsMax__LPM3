@@ -1293,22 +1293,22 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		)
 		else
 		(
-			LPM_LightSetPropsBuff = LPM_LightSetProps()
+			LPM_LightSetDataBuff = LPM_LightSetData()
 
 			theLightSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 
-			LPM_LightSetPropsBuff.pEnable = theLightSet.pEnable
-			LPM_LightSetPropsBuff.pMultiplierEnable = theLightSet.pMultiplierEnable
-			LPM_LightSetPropsBuff.pMultiplier = theLightSet.pMultiplier
-			LPM_LightSetPropsBuff.pColorEnable = theLightSet.pColorEnable
-			LPM_LightSetPropsBuff.pColor = theLightSet.pColor
-			LPM_LightSetPropsBuff.pCastShadows = theLightSet.pCastShadows
-			LPM_LightSetPropsBuff.pAffectDiffuse = theLightSet.pAffectDiffuse
-			LPM_LightSetPropsBuff.pAffectSpecular = theLightSet.pAffectSpecular
-			LPM_LightSetPropsBuff.pAffectReflections = theLightSet.pAffectReflections
-			LPM_LightSetPropsBuff.pTextureEnable = theLightSet.pTextureEnable
-			LPM_LightSetPropsBuff.pTexture = theLightSet.pTexture
-			LPM_LightSetPropsBuff.expanded = theLightSet.expanded
+			LPM_LightSetDataBuff.pEnable = theLightSet.pEnable
+			LPM_LightSetDataBuff.pMultiplierEnable = theLightSet.pMultiplierEnable
+			LPM_LightSetDataBuff.pMultiplier = theLightSet.pMultiplier
+			LPM_LightSetDataBuff.pColorEnable = theLightSet.pColorEnable
+			LPM_LightSetDataBuff.pColor = theLightSet.pColor
+			LPM_LightSetDataBuff.pCastShadows = theLightSet.pCastShadows
+			LPM_LightSetDataBuff.pAffectDiffuse = theLightSet.pAffectDiffuse
+			LPM_LightSetDataBuff.pAffectSpecular = theLightSet.pAffectSpecular
+			LPM_LightSetDataBuff.pAffectReflections = theLightSet.pAffectReflections
+			LPM_LightSetDataBuff.pTextureEnable = theLightSet.pTextureEnable
+			LPM_LightSetDataBuff.pTexture = theLightSet.pTexture
+			LPM_LightSetDataBuff.expanded = theLightSet.expanded
 		)
 
 		LPM_treeview_rollout.updateTV()
@@ -1329,21 +1329,21 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			theObjectSet.userProp = LPM_ObjSetPropsBuff.userProp
 		)
 
-		if(LPM_treeview_rollout.tv.selectedNode.tag.value.type=="lightSet")and(LPM_LightSetPropsBuff.pEnable!=undefined) then
+		if(LPM_treeview_rollout.tv.selectedNode.tag.value.type=="lightSet")and(LPM_LightSetDataBuff.pEnable!=undefined) then
 		(
 			theLightSet=LPM_treeview_rollout.tv.selectedNode.tag.value
-			theLightSet.pEnable = LPM_LightSetPropsBuff.pEnable
-			theLightSet.pMultiplierEnable = LPM_LightSetPropsBuff.pMultiplierEnable
-			theLightSet.pMultiplier = LPM_LightSetPropsBuff.pMultiplier
-			theLightSet.pColorEnable = LPM_LightSetPropsBuff.pColorEnable
-			theLightSet.pColor = LPM_LightSetPropsBuff.pColor
-			theLightSet.pCastShadows = LPM_LightSetPropsBuff.pCastShadows
-			theLightSet.pAffectDiffuse = LPM_LightSetPropsBuff.pAffectDiffuse
-			theLightSet.pAffectSpecular = LPM_LightSetPropsBuff.pAffectSpecular
-			theLightSet.pAffectReflections = LPM_LightSetPropsBuff.pAffectReflections
-			theLightSet.pTextureEnable = LPM_LightSetPropsBuff.pTextureEnable
-			theLightSet.pTexture = LPM_LightSetPropsBuff.pTexture
-			theLightSet.expanded = LPM_LightSetPropsBuff.expanded
+			theLightSet.pEnable = LPM_LightSetDataBuff.pEnable
+			theLightSet.pMultiplierEnable = LPM_LightSetDataBuff.pMultiplierEnable
+			theLightSet.pMultiplier = LPM_LightSetDataBuff.pMultiplier
+			theLightSet.pColorEnable = LPM_LightSetDataBuff.pColorEnable
+			theLightSet.pColor = LPM_LightSetDataBuff.pColor
+			theLightSet.pCastShadows = LPM_LightSetDataBuff.pCastShadows
+			theLightSet.pAffectDiffuse = LPM_LightSetDataBuff.pAffectDiffuse
+			theLightSet.pAffectSpecular = LPM_LightSetDataBuff.pAffectSpecular
+			theLightSet.pAffectReflections = LPM_LightSetDataBuff.pAffectReflections
+			theLightSet.pTextureEnable = LPM_LightSetDataBuff.pTextureEnable
+			theLightSet.pTexture = LPM_LightSetDataBuff.pTexture
+			theLightSet.expanded = LPM_LightSetDataBuff.expanded
 		)
 
 		LPM_treeview_rollout.updateTV()
@@ -2188,7 +2188,7 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 
 					"vrayProps":popUpMenu  rc_vrayPropsMenu
 					"objectSet": (createDialog LPM_objectSetProps 194 403 pos:(LPM_Fun.getRoPos 194))
-					"lightSet": (createDialog lightSetProps pos:(LPM_Fun.getRoPos 194))
+					"lightSet": (createDialog LPM_lightSetProps pos:(LPM_Fun.getRoPos 194))
 					"object":popUpMenu rc_objectMenu
 					"light":popUpMenu rc_objectMenu
 					"layer":popUpMenu rc_layerMenu

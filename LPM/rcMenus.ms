@@ -7,7 +7,7 @@ filein @"rcMenus\rcMenu_renderImage.ms"
 filein @"rcMenus\rcMenu_nukeExport.ms"
 filein @"rcMenus\rcMenu_aeExport.ms"
 
- rollout lightSetProps ("Editing: "+ (LPM_Fun.getname LPM_treeview_rollout.tv.selectedNode.tag.value.name)) width:195 height:265
+ rollout LPM_lightSetProps ("Editing: "+ (LPM_Fun.getname LPM_treeview_rollout.tv.selectedNode.tag.value.name)) width:195 height:265
 	(
 		GroupBox grp3 "Light Control" pos:[5,0] width:184 height:260
 
@@ -44,7 +44,7 @@ filein @"rcMenus\rcMenu_aeExport.ms"
 		button LightSetSetTexture "<<" pos:[137,229] width:22 height:24
 		button LightSetGetTexture ">>" pos:[161,229] width:22 height:24
 
-		on lightSetProps open do
+		on LPM_lightSetProps open do
 		(
 			LPM_treeview_rollout.FreezeWindow()
 			theLightSet  						=LPM_treeview_rollout.tv.selectedNode.tag.value
@@ -73,7 +73,7 @@ filein @"rcMenus\rcMenu_aeExport.ms"
 		)
 
 
-		on lightSetProps close do
+		on LPM_lightSetProps close do
 		(
 			theLightSet=LPM_treeview_rollout.tv.selectedNode.tag.value
 			theLightSet.pEnable=pEnable.selection
@@ -2666,7 +2666,7 @@ rcMenu rc_ObjectSetMenu
 	(
 		if(LPM_treeview_rollout.tv.selectedNode.tag.value.type=="objectSet")
 		then(createDialog LPM_objectSetProps 194 403 pos:(LPM_Fun.getRoPos  194))
-		else(createDialog lightSetProps  pos:(LPM_Fun.getRoPos  194))
+		else(createDialog LPM_lightSetProps  pos:(LPM_Fun.getRoPos  194))
 	)
 )
 

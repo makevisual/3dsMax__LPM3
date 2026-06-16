@@ -34,7 +34,7 @@ fn destroyAllDialogs=
 		try(destroyDialog savePresetRo) catch()
 		try(destroyDialog pickPasses_RO) catch()
 		try(destroyDialog LPM_objectSetProps)catch()
-		try(destroyDialog lightSetProps) catch()
+		try(destroyDialog LPM_lightSetProps) catch()
 		try(destroyDialog deadlinePropsRoll)catch()
 		try(destroyDialog SMTDLPMInterface)catch()
 		try(destroyDialog vrayPropsRoll)catch()
@@ -2269,7 +2269,7 @@ fn CheckIsAllLayerObjects =
 
 Struct LPM_ObjSetProps (intP,pMatEnable,pMaterial,expanded,pColor,visible,selectable,userProp)
 
-Struct LPM_LightSetProps (pEnable,pMultiplierEnable,pMultiplier,pColorEnable,pColor,pCastShadows,pAffectDiffuse,pAffectSpecular,pAffectReflections,pTextureEnable,pTexture,expanded)
+Struct LPM_LightSetData (pEnable,pMultiplierEnable,pMultiplier,pColorEnable,pColor,pCastShadows,pAffectDiffuse,pAffectSpecular,pAffectReflections,pTextureEnable,pTexture,expanded)
 
 LPM_ObjSetPropsBuff = LPM_ObjSetProps()
-LPM_LightSetPropsBuff = LPM_LightSetProps()
+LPM_LightSetDataBuff = LPM_LightSetData()

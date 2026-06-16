@@ -13,7 +13,7 @@ global LPM_Data
 global LPM_Render
 global LPM_atmRollout
 global LPM_objectSetProps
-global lightSetProps 						-- Name kept for backward compatibility; used as both class and constructor
+global LPM_lightSetProps
 global LPM_commonRollout
 global LPM_activePass
 global LPM_LoadingPreset
@@ -24,7 +24,7 @@ global LPM_oldRenderSettings
 global LPM_oldRenderSettingsNew
 global LPM_rendererClosed
 global LPM_ObjSetPropsBuff
-global LPM_LightSetPropsBuff
+global LPM_LightSetDataBuff
 global LPM_iconPath = LPM_Dir + "icons/"
 global LPM_disabledIconFolder = "blacks"
 global LPM_BackColor 					
