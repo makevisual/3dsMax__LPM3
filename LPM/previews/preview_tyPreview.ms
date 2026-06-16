@@ -22,8 +22,18 @@
 
 	-- TyPreview operator options (child of the shot). viewportSource: 1 = active viewport, 2 = tyPreview.
 	local useTyPreviewSettings = false
+	local outFormat = "exr"
 	local op = LPM_Fun.firstChildByType theShot "tyPreview"
-	if (op != undefined) then ( useTyPreviewSettings = (op.viewportSource == 2) )
+	if (op != undefined) then
+	(
+		useTyPreviewSettings = (op.viewportSource == 2)
+		if (op.outputFormat != undefined) and (op.outputFormat != "") then outFormat = op.outputFormat
+	)
+
+	-- mp4 is a single video file (output_type 0); everything else is an image sequence (output_type 1).
+	-- Alpha is enabled for formats that support it; tyPreview ignores it for the rest.
+	local outType = (if (outFormat == "mp4") then 0 else 1)
+	local alphaOn = (outFormat == "exr") or (outFormat == "png") or (outFormat == "tif")
 
 	-- Frame range string (tyPreview frameRange_list accepts "10, 20, 30-50" syntax).
 	-- Derived from the applied common-props frame settings.
@@ -38,22 +48,26 @@
 		default: frameStr = ((_toFrame animationRange.start) as string) + "-" + ((_toFrame animationRange.end) as string)
 	)
 
-	-- Output path follows the shot output (LPM authority). Ensure the directory exists.
+	-- Output path follows the shot output (LPM authority), with the operator's chosen format
+	-- applied as the extension. Ensure the directory exists.
 	local outFile = LPM_Root.fullOutputPath
+	outFile = (getFilenamePath outFile) + (getFilenameFile outFile) + "." + outFormat
 	try ( makeDir (getFilenamePath outFile) all:true ) catch()
 
 	-- LPM-authority camera. Already set on the active viewport by fnPreRenderAction.
 	local camArg = undefined
 	if (isValidNode LPM_Root.renderCamera) then camArg = LPM_Root.renderCamera
 
-	format "LPM TyPreview: pass:% shot:% frames:% res:%x% out:% viewportSource:%\n" \
+	format "LPM TyPreview: pass:% shot:% frames:% res:%x% fmt:% alpha:% out:% viewportSource:%\n" \
 		(try(LPM_Fun.generatePassName thePass)catch("?")) \
 		(if isValidNode theShot then (LPM_Fun.getName theShot.name) else "-") \
-		frameStr renderWidth renderHeight outFile (if useTyPreviewSettings then "tyPreview" else "active")
+		frameStr renderWidth renderHeight outFormat alphaOn outFile \
+		(if useTyPreviewSettings then "tyPreview" else "active")
 
 	try
 	(
-		-- output_type:1 = image sequence (format follows the extension in output_filename, e.g. .exr).
+		-- output_type: 0 = mp4 video, 1 = image sequence (format = extension in output_filename).
+		-- output_framerate only applies to mp4; harmless for image sequences.
 		if useTyPreviewSettings and (camArg != undefined) then
 		(
 			-- Use the target camera's stored tyPreview appearance settings, overriding only
@@ -61,7 +75,8 @@
 			tyPreview camera_node:camArg \
 				frameRange_list:frameStr frameRange_nth:rendNThFrame \
 				resolution_width:renderWidth resolution_height:renderHeight \
-				output_type:1 output_filename:outFile
+				appearance_alpha:alphaOn \
+				output_type:outType output_framerate:(frameRate as float) output_filename:outFile
 		)
 		else
 		(
@@ -70,7 +85,8 @@
 			tyPreview \
 				frameRange_list:frameStr frameRange_nth:rendNThFrame \
 				resolution_width:renderWidth resolution_height:renderHeight \
-				output_type:1 output_filename:outFile
+				appearance_alpha:alphaOn \
+				output_type:outType output_framerate:(frameRate as float) output_filename:outFile
 		)
 	)
 	catch

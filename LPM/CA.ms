@@ -224,6 +224,11 @@ attribID:#(0xd4f8027, 0xf5a8535)
 
 		-- 1 = Use Active Viewport settings, 2 = Use TyPreview (per-camera) viewport settings
 		viewportSource type:#integer default:1
+
+		-- Output format. Image sequence: "exr" / "png" / "tif" / "jpg". Video: "mp4".
+		-- Drives the tyPreview output_filename extension and output_type. Alpha is enabled
+		-- automatically for formats that support it (exr / png / tif).
+		outputFormat type:#string default:"exr"
 	)
 )
 

@@ -98,9 +98,12 @@ scene setup.
 - **TyPreview operator** (property-based, modeled on Camera Overscan; child of the
   shot node): CA `tyPreviewPropsCA` (`CA.ms`), dialog
   `rcMenus/rcMenu_tyPreviewOverride.ms`, wired through the standard operator touch
-  points (see `docs/ADDING_AN_OPERATOR.md`). Option `viewportSource` (1 = active
-  viewport, 2 = tyPreview per-camera settings) is read by the backend to decide
-  whether to pass `appearance_*`/`camera_node`.
+  points (see `docs/ADDING_AN_OPERATOR.md`). Options: `viewportSource` (1 = active
+  viewport, 2 = tyPreview per-camera settings) decides whether the backend passes
+  `appearance_*`/`camera_node`; `outputFormat` (`exr`/`png`/`tif`/`jpg`/`mp4`,
+  default `exr`) sets the tyPreview `output_filename` extension and `output_type`
+  (mp4 = 0/video, others = 1/image sequence). The backend auto-enables
+  `appearance_alpha` for alpha-capable formats (exr/png/tif).
 
 ## Version
 Current: `3.00.11` (defined in `LPM/VersionNumber.ms`)

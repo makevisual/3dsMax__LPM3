@@ -880,6 +880,7 @@ fn createTyPreviewProps theName=
 	cp.active = true
 
 	cp.viewportSource = 1		-- 1 = Use Active Viewport settings, 2 = Use TyPreview viewport settings
+	cp.outputFormat = "exr"		-- exr / png / tif / jpg (image sequence) or mp4 (video)
 
 	cp
 ),
@@ -1339,6 +1340,8 @@ fn generateTyPreviewName cp=
 	if ( cp.viewportSource == 2 )
 	then ( theName += " [TyPreview viewport]" )
 	else ( theName += " [Active viewport]" )
+
+	theName += (" [" + (cp.outputFormat) + "]")
 
 	theName
 ),
