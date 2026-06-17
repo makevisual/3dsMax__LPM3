@@ -2539,7 +2539,9 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		)
 
 		-- Select the last active processor was stored, set it to active in the UI
-		if LPM_Root.processorActive >= 0 and LPM_Root.processorActive < ddl_selectProcessor.Items.Count do
+		-- selection is 1-based, so the valid range is 1..Items.Count (inclusive),
+		-- otherwise the last processor (e.g. "Preview - TyPreview") never restores.
+		if LPM_Root.processorActive >= 1 and LPM_Root.processorActive <= ddl_selectProcessor.Items.Count do
 		(
     		ddl_selectProcessor.selection = LPM_Root.processorActive
 		)
