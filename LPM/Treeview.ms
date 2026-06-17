@@ -51,18 +51,28 @@ fn CheckUIColor =
 	CurUIColor
 )
 
+-- Add a blank placeholder so a missing/invalid icon does not abort UI init.
+-- Icons are referenced by index, so the slot MUST still be filled (see InitTreeView).
+fn addPlaceholderIcon theFileName =
+(
+	format "LPM: failed to load icon %, using placeholder\n" theFileName
+	ilTv.images.add (dotNetObject "System.Drawing.Bitmap" 16 15)
+)
+
 fn getIconFromBitmap iconFileName =
 (
 	theFileName = LPM_iconPath + iconFileName +".bmp"
 	img = dotNetClass "System.Drawing.Image" --create an image
-	ilTv.images.add (img.fromFile theFileName) --add to the list
+	try ( ilTv.images.add (img.fromFile theFileName) ) --add to the list
+	catch ( addPlaceholderIcon theFileName )
 )
 
 fn getIconFromFolder subfolder iconFileName =
 (
 	theFileName = LPM_iconPath + subfolder + "/" + iconFileName + ".bmp"
 	img = dotNetClass "System.Drawing.Image"
-	ilTv.images.add (img.fromFile theFileName)
+	try ( ilTv.images.add (img.fromFile theFileName) )
+	catch ( addPlaceholderIcon theFileName )
 )
 
 fn dotNetColor clr =
