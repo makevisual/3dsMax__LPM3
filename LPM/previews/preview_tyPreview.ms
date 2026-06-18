@@ -114,30 +114,55 @@
 		)
 		else
 		(
-			-- Active-viewport mode. fnPreRenderAction set the active viewport to the render camera,
-			-- so omitting camera_node makes tyPreview resolve THAT camera and load its *persisted*
-			-- appearance settings (per the docs: "export settings will be taken from whichever camera
-			-- is ultimately chosen"). That is the revert bug: once the camera has been used in
-			-- "TyPreview viewport settings" mode its stored appearance leaks into this path. tyPreview
-			-- exposes no "get appearance from active viewport" call to MAXScript, so we pin a full
-			-- explicit default appearance set here to override every per-camera setting that could
-			-- otherwise stick. appearance_lights: 0=one_default, 1=scene, 2=two_default.
-			-- appearance_override: 0=none, 1=uv_checker, 2=fast_shader.
+			-- Active-viewport mode: produce a clean, default-appearance preview that does NOT inherit
+			-- the render camera's customised tyPreview settings.
 			--
-			-- If a tyFlow build rejects one of these argument names the call throws and we fall back
-			-- to the previous bare call so output is still produced.
+			-- tyPreview stores appearance settings per-camera (internally, no MAXScript getter) and
+			-- PERSISTS any appearance_* override onto whichever camera it previews. fnPreRenderAction
+			-- points the active viewport at LPM_Root.renderCamera, so pinning defaults here without a
+			-- camera_node would resolve the render camera and overwrite the very settings that the
+			-- "Use TyPreview viewport settings" mode relies on. To stay non-destructive we preview from
+			-- a throwaway copy of the render camera (identical transform/lens) and pin the defaults on
+			-- IT, then delete it -- the render camera's saved settings are never touched.
+			--
+			-- appearance_lights: 0=one_default, 1=scene, 2=two_default. appearance_override: 0=none.
+			local tmpCam = undefined
+			local tmpTarget = undefined
+			try ( if (isValidNode LPM_Root.renderCamera) then
+			(
+				tmpCam = copy LPM_Root.renderCamera
+				tmpCam.name = (uniqueName "LPM_tyPreviewTmpCam_")
+				tmpTarget = tmpCam.target		-- target cameras copy a target node too; clean it up
+			) ) catch ( format "LPM TyPreview: temp camera copy failed, using active viewport: %\n" (getCurrentException()) )
+
+			-- If the copy failed, tmpCam stays undefined and we fall back to the active viewport.
 			local appearancePinned = false
 			try
 			(
-				tyPreview \
-					frameRange_list:frameStr frameRange_nth:rendNThFrame \
-					resolution_width:renderWidth resolution_height:renderHeight \
-					appearance_mode:0 appearance_style:0 appearance_lights:1 appearance_override:0 \
-					appearance_edgedFaces:false appearance_antiAliasing:true appearance_safeFrames:false \
-					appearance_multipass:false appearance_textures:true appearance_transparency:true \
-					appearance_ao:false appearance_shadows:true appearance_progressiveRefinement:false \
-					appearance_alpha:alphaOn \
-					output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+				if (isValidNode tmpCam) then
+				(
+					tyPreview camera_node:tmpCam \
+						frameRange_list:frameStr frameRange_nth:rendNThFrame \
+						resolution_width:renderWidth resolution_height:renderHeight \
+						appearance_mode:0 appearance_style:0 appearance_lights:1 appearance_override:0 \
+						appearance_edgedFaces:false appearance_antiAliasing:true appearance_safeFrames:false \
+						appearance_multipass:false appearance_textures:true appearance_transparency:true \
+						appearance_ao:false appearance_shadows:true appearance_progressiveRefinement:false \
+						appearance_alpha:alphaOn \
+						output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+				)
+				else
+				(
+					tyPreview \
+						frameRange_list:frameStr frameRange_nth:rendNThFrame \
+						resolution_width:renderWidth resolution_height:renderHeight \
+						appearance_mode:0 appearance_style:0 appearance_lights:1 appearance_override:0 \
+						appearance_edgedFaces:false appearance_antiAliasing:true appearance_safeFrames:false \
+						appearance_multipass:false appearance_textures:true appearance_transparency:true \
+						appearance_ao:false appearance_shadows:true appearance_progressiveRefinement:false \
+						appearance_alpha:alphaOn \
+						output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+				)
 				appearancePinned = true
 			)
 			catch
@@ -147,12 +172,27 @@
 
 			if not appearancePinned then
 			(
-				tyPreview \
-					frameRange_list:frameStr frameRange_nth:rendNThFrame \
-					resolution_width:renderWidth resolution_height:renderHeight \
-					appearance_alpha:alphaOn \
-					output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+				if (isValidNode tmpCam) then
+				(
+					tyPreview camera_node:tmpCam \
+						frameRange_list:frameStr frameRange_nth:rendNThFrame \
+						resolution_width:renderWidth resolution_height:renderHeight \
+						appearance_alpha:alphaOn \
+						output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+				)
+				else
+				(
+					tyPreview \
+						frameRange_list:frameStr frameRange_nth:rendNThFrame \
+						resolution_width:renderWidth resolution_height:renderHeight \
+						appearance_alpha:alphaOn \
+						output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+				)
 			)
+
+			-- Always remove the throwaway camera (and its target), leaving the scene untouched.
+			try ( if (isValidNode tmpCam) then delete tmpCam ) catch()
+			try ( if (isValidNode tmpTarget) then delete tmpTarget ) catch()
 		)
 	)
 	catch

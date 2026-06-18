@@ -408,7 +408,9 @@ struct LPM_RenderAPI
 
 				-- rendOutputFilename
 				-- New output path handling
-				rendOutputFilename=LPM_Root.fullOutputPath=LPM_Fun.getPassPath LPM_Root thePass theShot:theShot previewMode:false RendPreviewMode:isPreviewMode elementName:""
+				-- Viewport-capture exports (tyPreview) skip eager dir creation: the preview backend
+				-- creates only the folder it actually writes to (which may be un-nested for mp4).
+				rendOutputFilename=LPM_Root.fullOutputPath=LPM_Fun.getPassPath LPM_Root thePass theShot:theShot previewMode:false RendPreviewMode:isPreviewMode makeOutputDir:(not previewExport) elementName:""
 
 				--Save current renderer settings
 				AdjpreRenderSettings=undefined
