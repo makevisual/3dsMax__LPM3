@@ -26,7 +26,12 @@ global LPM_rendererClosed
 global LPM_ObjSetPropsBuff
 global LPM_LightSetDataBuff
 global LPM_iconPath = LPM_Dir + "icons/"
-global LPM_disabledIconFolder = "blacks"
+-- Read directly (LPM_Fun.getIni is not loaded yet, and this must be set before
+-- rcMenus.ms initializes the Settings-menu checkmarks)
+global LPM_disabledIconFolder = (
+	local c = (getINISetting ((getdir #plugcfg) + "\\LPM.ini") "Settings" "disabledIconColor")
+	if c == "blacks" or c == "reds" then c else "blacks"
+)
 global LPM_BackColor 					
 global LPM_FontColor
 global LPM_ContinueLoad

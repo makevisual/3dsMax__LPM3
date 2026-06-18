@@ -982,7 +982,7 @@ struct LPM_RenderAPI
 	),
 
 	-- RESTORE
-	fn fnPostRenderAction thePass theShot=
+	fn fnPostRenderAction thePass theShot previewExport:false=
 	(
 		ts = timestamp()
 
@@ -1293,7 +1293,13 @@ struct LPM_RenderAPI
 			filein (LPM_Dir+"operator_cameraOverscan.ms")
 		)
 
-		filein (LPM_Dir+"renderer_dispatch.ms")
+		-- Skipped for viewport-capture exports: the pre-render renderer dispatch never ran, so
+		-- there is no renderer restore data to apply (mirrors the previewExport guard in
+		-- fnPreRenderAction). Running it would dereference an undefined LPM_RenderDispatchRestoreData.
+		if not previewExport then
+		(
+			filein (LPM_Dir+"renderer_dispatch.ms")
+		)
 
 		propString = "object properties: " + ((te_properties-ts_properties)/1000.0) as string + "s"
 		presetString = "renderer properties: " + ((te_rpreset-ts_rpreset)/1000.0) as string + "s"
@@ -1406,7 +1412,7 @@ fn LPM_renderPass thePass renderType theShot:undefined=
 
 		-- Post render actions
 		SetQuietMode false
-		LPM_Render.fnPostRenderAction thePass theShot
+		LPM_Render.fnPostRenderAction thePass theShot previewExport:isPreviewExport
 
 		-- Resolve timers
 		if ( classOf getLocalTime == MAXScriptFunction ) then
