@@ -225,6 +225,10 @@ function postRenderAction_RenderElements =
 (
     Vray7_RestoreData = LPM_RenderDispatchRestoreData
 
+    -- Nothing to restore if pre-render never populated the dispatch data (e.g. a preview
+    -- export that skipped the renderer dispatch entirely)
+    if Vray7_RestoreData == undefined then return undefined
+
     -- Nothing to restore if no elements were captured during pre-render
     if Vray7_RestoreData.renderElements_active == undefined then return undefined
     if Vray7_RestoreData.renderElements_active.count == 0 then return undefined
