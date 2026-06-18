@@ -98,6 +98,16 @@
 		frameStr renderWidth renderHeight outFormat alphaOn outFile \
 		(if useTyPreviewSettings then "tyPreview" else "active")
 
+	-- Diagnostic context: the standalone tyPreview call respects per-camera settings, but the
+	-- in-LPM run does not unless the active viewport actually shows the previewed camera in a
+	-- redrawn Nitrous state at capture time. Log the discriminating state to confirm/redirect.
+	format "LPM TyPreview ctx: activeVptCam:% camArg:% quiet:% renderer:% rendLevel:%\n" \
+		(try((viewport.getCamera()).name)catch("-")) \
+		(try(camArg.name)catch("-")) \
+		(try(getQuietMode())catch("-")) \
+		(try(classof renderers.current)catch("-")) \
+		(try(viewport.GetRenderLevel())catch("-"))
+
 	try
 	(
 		-- output_type: 0 = mp4 video, 1 = image sequence (format = extension in output_filename).
@@ -105,7 +115,12 @@
 		if useTyPreviewSettings and (camArg != undefined) then
 		(
 			-- Use the target camera's stored tyPreview appearance settings, overriding only
-			-- the LPM-authority settings below.
+			-- the LPM-authority settings below. fnPreRenderAction may have left the active viewport
+			-- on a different camera (setCommonProps -> viewport.setCamera cp._Camera) or in a stale
+			-- Nitrous state; tyPreview's shading style follows the active viewport, so re-assert the
+			-- previewed camera and force a redraw first (mirrors the working standalone conditions).
+			if (isValidNode camArg) then ( viewport.setCamera camArg )
+			forceCompleteRedraw()
 			tyPreview camera_node:camArg \
 				frameRange_list:frameStr frameRange_nth:rendNThFrame \
 				resolution_width:renderWidth resolution_height:renderHeight \
@@ -134,6 +149,11 @@
 				tmpCam.name = (uniqueName "LPM_tyPreviewTmpCam_")
 				tmpTarget = tmpCam.target		-- target cameras copy a target node too; clean it up
 			) ) catch ( format "LPM TyPreview: temp camera copy failed, using active viewport: %\n" (getCurrentException()) )
+
+			-- Re-assert the previewed camera as the active viewport and force a redraw (same reason
+			-- as Mode 2 above): tyPreview's capture follows the active viewport's Nitrous state.
+			if (isValidNode tmpCam) then ( viewport.setCamera tmpCam )
+			forceCompleteRedraw()
 
 			-- If the copy failed, tmpCam stays undefined and we fall back to the active viewport.
 			local appearancePinned = false
