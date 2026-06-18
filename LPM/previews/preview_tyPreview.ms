@@ -23,11 +23,13 @@
 	-- TyPreview operator options (child of the shot). viewportSource: 1 = active viewport, 2 = tyPreview.
 	local useTyPreviewSettings = false
 	local outFormat = "exr"
+	local disableContainerNesting = true   -- mp4 only; defaults on (matches the operator's default).
 	local op = LPM_Fun.firstChildByType theShot "tyPreview"
 	if (op != undefined) then
 	(
 		useTyPreviewSettings = (op.viewportSource == 2)
 		if (op.outputFormat != undefined) and (op.outputFormat != "") then outFormat = op.outputFormat
+		if (op.disableContainerNesting != undefined) then disableContainerNesting = op.disableContainerNesting
 	)
 
 	-- mp4 is a single video file (output_type 0); everything else is an image sequence (output_type 1).
@@ -52,6 +54,38 @@
 	-- applied as the extension. Ensure the directory exists.
 	local outFile = LPM_Root.fullOutputPath
 	outFile = (getFilenamePath outFile) + (getFilenameFile outFile) + "." + outFormat
+
+	-- Container files (mp4) with nesting disabled: write the video beside the shot folder
+	-- (i.e. in the shot folder's parent) named "<shot>_<pass>", so animators can browse
+	-- versions without digging through the per-shot/per-pass subfolders. The shot folder is
+	-- located within the resolved output path by name (honours custom path templates); we fall
+	-- back to LPM_Root.rootDir if it can't be found. Image sequences are left nested as normal.
+	if (outType == 0) and disableContainerNesting and (isValidNode theShot) then
+	(
+		local shotName = LPM_Fun.getName theShot.name
+		local passName = LPM_Fun.generatePassName thePass
+
+		-- Find the shot folder's parent by walking the resolved directory components.
+		local dirStr = getFilenamePath LPM_Root.fullOutputPath
+		local parts = filterString dirStr "\\/"
+		local parentDir = LPM_Root.rootDir
+		for i = 1 to parts.count while (parentDir == LPM_Root.rootDir) do
+		(
+			if ((parts[i] == shotName) or (matchPattern parts[i] pattern:(shotName + "*"))) then
+			(
+				-- Rebuild the absolute path up to (but not including) the shot folder.
+				local rebuilt = ""
+				for j = 1 to (i - 1) do rebuilt += (parts[j] + "\\")
+				-- Preserve a leading UNC / drive prefix that filterString collapses.
+				if (matchPattern dirStr pattern:"\\\\*") then rebuilt = "\\\\" + rebuilt
+				if (rebuilt != "") then parentDir = rebuilt
+			)
+		)
+
+		if (parentDir != "") and (parentDir[parentDir.count] != "\\") then parentDir += "\\"
+		outFile = parentDir + shotName + "_" + passName + "." + outFormat
+	)
+
 	try ( makeDir (getFilenamePath outFile) all:true ) catch()
 
 	-- LPM-authority camera. Already set on the active viewport by fnPreRenderAction.
@@ -80,13 +114,43 @@
 		)
 		else
 		(
-			-- Capture the active viewport (already set to the render camera) with its current
-			-- display settings; omit camera_node so tyPreview uses the active viewport.
-			tyPreview \
-				frameRange_list:frameStr frameRange_nth:rendNThFrame \
-				resolution_width:renderWidth resolution_height:renderHeight \
-				appearance_alpha:alphaOn \
-				output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+			-- Active-viewport mode. fnPreRenderAction set the active viewport to the render camera,
+			-- so omitting camera_node makes tyPreview resolve THAT camera and load its *persisted*
+			-- appearance settings (per the docs: "export settings will be taken from whichever camera
+			-- is ultimately chosen"). That is the revert bug: once the camera has been used in
+			-- "TyPreview viewport settings" mode its stored appearance leaks into this path. To force a
+			-- true viewport-style capture independent of per-camera persistence, explicitly pin
+			-- tyPreview's appearance to the live-viewport look (scene lights, textures + shadows on)
+			-- rather than inheriting whatever the camera last stored.
+			--
+			-- NOTE: the tyFlow docs are gated, so the appearance_* argument names/values below are
+			-- inferred. Confirm them in 3ds Max (enable macroRecorder, toggle the tyPreview Appearance
+			-- controls) for this build. If a name is wrong the call throws and we fall back to the
+			-- previous behaviour (bare call) so output is still produced.
+			local appearancePinned = false
+			try
+			(
+				tyPreview \
+					frameRange_list:frameStr frameRange_nth:rendNThFrame \
+					resolution_width:renderWidth resolution_height:renderHeight \
+					appearance_lights:2 appearance_textures:true appearance_shadows:true \
+					appearance_alpha:alphaOn \
+					output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+				appearancePinned = true
+			)
+			catch
+			(
+				format "LPM TyPreview: appearance pin failed (verify appearance_* args), falling back: %\n" (getCurrentException())
+			)
+
+			if not appearancePinned then
+			(
+				tyPreview \
+					frameRange_list:frameStr frameRange_nth:rendNThFrame \
+					resolution_width:renderWidth resolution_height:renderHeight \
+					appearance_alpha:alphaOn \
+					output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+			)
 		)
 	)
 	catch

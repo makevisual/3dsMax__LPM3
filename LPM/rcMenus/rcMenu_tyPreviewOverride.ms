@@ -1,4 +1,4 @@
-rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:150
+rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:195
 (
 	local theNode = undefined
 
@@ -9,9 +9,11 @@ rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:150
 	groupbox grp_viewport "Viewport Settings" width:213 height:60 align:#left offset:[-5,0]
 		radiobuttons rdo_viewportSource "" labels:#("Use Active Viewport settings", "Use TyPreview viewport settings") offset:[5,-42] columns:1
 
-	groupbox grp_output "Output Format" width:213 height:50 align:#left offset:[-5,5]
+	groupbox grp_output "Output Format" width:213 height:75 align:#left offset:[-5,5]
 		dropdownlist ddl_outputFormat "" items:formatList width:120 offset:[5,-32] align:#left
 		label lab_alpha "" offset:[5,-2] align:#left
+		-- mp4 only: write the container beside the shot folder named "<shot>_<pass>".
+		checkbox chk_disableNesting "Disable nesting of container files" offset:[5,2] align:#left
 
 	function fnFormatSupportsAlpha fmt =
 	(
@@ -35,6 +37,7 @@ rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:150
 
 		ca.viewportSource = rdo_viewportSource.state
 		ca.outputFormat = ddl_outputFormat.selected
+		ca.disableContainerNesting = chk_disableNesting.checked
 
 		return ca
 	)
@@ -64,6 +67,8 @@ rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:150
 		if (fmtIdx == 0) then fmtIdx = 1		-- fall back to exr if stored value is unrecognised
 		ddl_outputFormat.selection = fmtIdx
 		updateAlphaLabel ddl_outputFormat.selected
+
+		chk_disableNesting.checked = ca.disableContainerNesting
 	)
 
 	on tyPreviewPropsRoll close do
