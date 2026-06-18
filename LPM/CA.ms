@@ -229,6 +229,11 @@ attribID:#(0xd4f8027, 0xf5a8535)
 		-- Drives the tyPreview output_filename extension and output_type. Alpha is enabled
 		-- automatically for formats that support it (exr / png / tif).
 		outputFormat type:#string default:"exr"
+
+		-- Container files (mp4) only: when true, the video is written at the parent of the shot
+		-- folder (un-nested) named "<shot>_<pass>" instead of buried in the per-shot/per-pass
+		-- subfolders, so animators can browse versions without digging. Ignored for image sequences.
+		disableContainerNesting type:#boolean default:true
 	)
 )
 

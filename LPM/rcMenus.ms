@@ -1498,8 +1498,8 @@ rcMenu rc_MainMenu
 		menuItem	renderDialog			"File Output"
 		menuItem	deadlineSettingsDialog	"Deadline Settings"
 		seperator	s_iconColor
-		menuItem	iconColorBlacks			"Disabled Icons: Black"
-		menuItem	iconColorReds			"Disabled Icons: Red"
+		menuItem	iconColorBlacks			"Icons: Black"
+		menuItem	iconColorReds			"Icons: Red"
 		seperator	s_verbose
 		menuItem	verboseLogging			"Verbose Logging"
 	)
@@ -1555,6 +1555,8 @@ rcMenu rc_MainMenu
 	(
 		LPM_disabledIconFolder = "blacks"
 		LPM_Fun.setIni "Settings" "disabledIconColor" "blacks"
+		iconColorBlacks.checked = true
+		iconColorReds.checked = false
 		LPM_treeview_rollout.reloadIcons()
 	)
 
@@ -1562,6 +1564,8 @@ rcMenu rc_MainMenu
 	(
 		LPM_disabledIconFolder = "reds"
 		LPM_Fun.setIni "Settings" "disabledIconColor" "reds"
+		iconColorBlacks.checked = false
+		iconColorReds.checked = true
 		LPM_treeview_rollout.reloadIcons()
 	)
 
@@ -1577,6 +1581,10 @@ rcMenu rc_MainMenu
 
 -- Reflect the persisted Verbose Logging state on the menu item at launch
 rc_MainMenu.verboseLogging.checked = LPM_VerboseLogging
+
+-- Reflect the persisted disabled-icon color on the menu items at launch
+rc_MainMenu.iconColorBlacks.checked = (LPM_disabledIconFolder == "blacks")
+rc_MainMenu.iconColorReds.checked = (LPM_disabledIconFolder == "reds")
 
 -- RootMenu
 

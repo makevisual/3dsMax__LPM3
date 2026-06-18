@@ -51,18 +51,28 @@ fn CheckUIColor =
 	CurUIColor
 )
 
+-- Add a blank placeholder so a missing/invalid icon does not abort UI init.
+-- Icons are referenced by index, so the slot MUST still be filled (see InitTreeView).
+fn addPlaceholderIcon theFileName =
+(
+	format "LPM: failed to load icon %, using placeholder\n" theFileName
+	ilTv.images.add (dotNetObject "System.Drawing.Bitmap" 16 15)
+)
+
 fn getIconFromBitmap iconFileName =
 (
 	theFileName = LPM_iconPath + iconFileName +".bmp"
 	img = dotNetClass "System.Drawing.Image" --create an image
-	ilTv.images.add (img.fromFile theFileName) --add to the list
+	try ( ilTv.images.add (img.fromFile theFileName) ) --add to the list
+	catch ( addPlaceholderIcon theFileName )
 )
 
 fn getIconFromFolder subfolder iconFileName =
 (
 	theFileName = LPM_iconPath + subfolder + "/" + iconFileName + ".bmp"
 	img = dotNetClass "System.Drawing.Image"
-	ilTv.images.add (img.fromFile theFileName)
+	try ( ilTv.images.add (img.fromFile theFileName) )
+	catch ( addPlaceholderIcon theFileName )
 )
 
 fn dotNetColor clr =
@@ -224,9 +234,9 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		getIconFromBitmap "Enviroment"
 		getIconFromBitmap "Common"
 		getIconFromFolder LPM_disabledIconFolder "Disabled"
-		getIconFromFolder "grays" "objectSetOff"
+		getIconFromFolder (LPM_disabledIconFolder + "-disabled") "objectSetOff"
 		getIconFromFolder LPM_disabledIconFolder "objectSetOff"
-		getIconFromFolder "grays" "lightSetOff"
+		getIconFromFolder (LPM_disabledIconFolder + "-disabled") "lightSetOff"
 		getIconFromFolder LPM_disabledIconFolder "lightSetOff"
 		getIconFromBitmap "Shot"
 		getIconFromFolder LPM_disabledIconFolder "ShotOff"
@@ -2539,7 +2549,9 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		)
 
 		-- Select the last active processor was stored, set it to active in the UI
-		if LPM_Root.processorActive >= 0 and LPM_Root.processorActive < ddl_selectProcessor.Items.Count do
+		-- selection is 1-based, so the valid range is 1..Items.Count (inclusive),
+		-- otherwise the last processor (e.g. "Preview - TyPreview") never restores.
+		if LPM_Root.processorActive >= 1 and LPM_Root.processorActive <= ddl_selectProcessor.Items.Count do
 		(
     		ddl_selectProcessor.selection = LPM_Root.processorActive
 		)

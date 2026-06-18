@@ -104,6 +104,21 @@ scene setup.
   default `exr`) sets the tyPreview `output_filename` extension and `output_type`
   (mp4 = 0/video, others = 1/image sequence). The backend auto-enables
   `appearance_alpha` for alpha-capable formats (exr/png/tif).
+- **Camera-handling pitfalls (read before building the Camera Overscan operator — it duplicates the
+  render camera the same way; see `previews/preview_tyPreview.ms` for the working implementation):**
+  - **`LPM_Root.renderCamera` is frequently `undefined` during the render pass.** Setups that drive
+    the camera through commonProps (`cp._Camera` → `viewport.setCamera`, `Render.ms:85`) set the
+    *active viewport* but never populate the global `LPM_Root.renderCamera`. Resolve the live camera
+    from `viewport.getCamera()` first, with `LPM_Root.renderCamera` only as a fallback. (This made the
+    tyPreview Mode-2 branch — gated on a valid camera — silently fall through to default appearance.)
+  - **tyPreview/viewport-capture appearance is stored per-camera, internally, with no MAXScript
+    getter; passing `appearance_*` overrides PERSISTS onto the previewed camera.** To apply
+    temporary/override appearance without destroying the user's saved per-camera settings, preview
+    from a **throwaway `copy` of the camera** (`camera_node:tmpCam`) and `delete` it afterward.
+  - **Copying a target camera also copies its target node** — capture `tmpCam.target` and delete it
+    too; guard create/delete with `isValidNode` + `try()` so a failure still produces output.
+  - **tyPreview captures the ACTIVE VIEWPORT** — `viewport.setCamera <cam>` + `forceCompleteRedraw()`
+    right before the call so the intended camera/Nitrous state is what gets captured.
 
 ## Version
 Current: `3.01.00` (defined in `LPM/VersionNumber.ms`)
