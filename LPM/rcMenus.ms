@@ -1498,8 +1498,8 @@ rcMenu rc_MainMenu
 		menuItem	renderDialog			"File Output"
 		menuItem	deadlineSettingsDialog	"Deadline Settings"
 		seperator	s_iconColor
-		menuItem	iconColorBlacks			"Disabled Icons: Black"
-		menuItem	iconColorReds			"Disabled Icons: Red"
+		menuItem	iconColorBlacks			"Icons: Black"
+		menuItem	iconColorReds			"Icons: Red"
 		seperator	s_verbose
 		menuItem	verboseLogging			"Verbose Logging"
 	)
