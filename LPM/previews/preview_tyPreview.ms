@@ -88,9 +88,17 @@
 
 	try ( makeDir (getFilenamePath outFile) all:true ) catch()
 
-	-- LPM-authority camera. Already set on the active viewport by fnPreRenderAction.
-	local camArg = undefined
-	if (isValidNode LPM_Root.renderCamera) then camArg = LPM_Root.renderCamera
+	-- Camera to preview. Prefer the ACTIVE VIEWPORT's camera: fnPreRenderAction / setCommonProps
+	-- already pointed the active viewport at the pass camera (cp._Camera), and that camera is what
+	-- carries the user's per-camera tyPreview settings. LPM_Root.renderCamera is frequently undefined
+	-- during the render pass (this setup drives the camera through commonProps, not the global render
+	-- camera), so it is only a fallback. Without this, camArg was undefined and BOTH modes fell through
+	-- to the active-viewport defaults branch (Mode 2 ignored the camera's saved shading style).
+	local camArg = (try(viewport.getCamera())catch(undefined))
+	if not (isValidNode camArg) then
+	(
+		if (isValidNode LPM_Root.renderCamera) then camArg = LPM_Root.renderCamera else camArg = undefined
+	)
 
 	format "LPM TyPreview: pass:% shot:% frames:% res:%x% fmt:% alpha:% out:% viewportSource:%\n" \
 		(try(LPM_Fun.generatePassName thePass)catch("?")) \
@@ -133,19 +141,19 @@
 			-- the render camera's customised tyPreview settings.
 			--
 			-- tyPreview stores appearance settings per-camera (internally, no MAXScript getter) and
-			-- PERSISTS any appearance_* override onto whichever camera it previews. fnPreRenderAction
-			-- points the active viewport at LPM_Root.renderCamera, so pinning defaults here without a
-			-- camera_node would resolve the render camera and overwrite the very settings that the
-			-- "Use TyPreview viewport settings" mode relies on. To stay non-destructive we preview from
-			-- a throwaway copy of the render camera (identical transform/lens) and pin the defaults on
-			-- IT, then delete it -- the render camera's saved settings are never touched.
+			-- PERSISTS any appearance_* override onto whichever camera it previews. Pinning defaults on
+			-- the previewed camera (or omitting camera_node, which resolves the active-viewport camera)
+			-- would overwrite the very settings that the "Use TyPreview viewport settings" mode relies
+			-- on. To stay non-destructive we preview from a throwaway copy of the previewed camera
+			-- (identical transform/lens) and pin the defaults on IT, then delete it -- the real camera's
+			-- saved settings are never touched.
 			--
 			-- appearance_lights: 0=one_default, 1=scene, 2=two_default. appearance_override: 0=none.
 			local tmpCam = undefined
 			local tmpTarget = undefined
-			try ( if (isValidNode LPM_Root.renderCamera) then
+			try ( if (isValidNode camArg) then
 			(
-				tmpCam = copy LPM_Root.renderCamera
+				tmpCam = copy camArg
 				tmpCam.name = (uniqueName "LPM_tyPreviewTmpCam_")
 				tmpTarget = tmpCam.target		-- target cameras copy a target node too; clean it up
 			) ) catch ( format "LPM TyPreview: temp camera copy failed, using active viewport: %\n" (getCurrentException()) )
