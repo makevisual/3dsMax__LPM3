@@ -118,29 +118,31 @@
 			-- so omitting camera_node makes tyPreview resolve THAT camera and load its *persisted*
 			-- appearance settings (per the docs: "export settings will be taken from whichever camera
 			-- is ultimately chosen"). That is the revert bug: once the camera has been used in
-			-- "TyPreview viewport settings" mode its stored appearance leaks into this path. To force a
-			-- true viewport-style capture independent of per-camera persistence, explicitly pin
-			-- tyPreview's appearance to the live-viewport look (scene lights, textures + shadows on)
-			-- rather than inheriting whatever the camera last stored.
+			-- "TyPreview viewport settings" mode its stored appearance leaks into this path. tyPreview
+			-- exposes no "get appearance from active viewport" call to MAXScript, so we pin a full
+			-- explicit default appearance set here to override every per-camera setting that could
+			-- otherwise stick. appearance_lights: 0=one_default, 1=scene, 2=two_default.
+			-- appearance_override: 0=none, 1=uv_checker, 2=fast_shader.
 			--
-			-- NOTE: the tyFlow docs are gated, so the appearance_* argument names/values below are
-			-- inferred. Confirm them in 3ds Max (enable macroRecorder, toggle the tyPreview Appearance
-			-- controls) for this build. If a name is wrong the call throws and we fall back to the
-			-- previous behaviour (bare call) so output is still produced.
+			-- If a tyFlow build rejects one of these argument names the call throws and we fall back
+			-- to the previous bare call so output is still produced.
 			local appearancePinned = false
 			try
 			(
 				tyPreview \
 					frameRange_list:frameStr frameRange_nth:rendNThFrame \
 					resolution_width:renderWidth resolution_height:renderHeight \
-					appearance_lights:2 appearance_textures:true appearance_shadows:true \
+					appearance_mode:0 appearance_style:0 appearance_lights:1 appearance_override:0 \
+					appearance_edgedFaces:false appearance_antiAliasing:true appearance_safeFrames:false \
+					appearance_multipass:false appearance_textures:true appearance_transparency:true \
+					appearance_ao:false appearance_shadows:true appearance_progressiveRefinement:false \
 					appearance_alpha:alphaOn \
 					output_type:outType output_framerate:(frameRate as float) output_filename:outFile
 				appearancePinned = true
 			)
 			catch
 			(
-				format "LPM TyPreview: appearance pin failed (verify appearance_* args), falling back: %\n" (getCurrentException())
+				format "LPM TyPreview: appearance pin failed (unexpected appearance_* arg on this build), falling back: %\n" (getCurrentException())
 			)
 
 			if not appearancePinned then
