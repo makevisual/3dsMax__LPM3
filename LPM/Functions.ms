@@ -1010,7 +1010,7 @@ fn removeBadChars theString illegalChars:undefined=
 
 ),
 
-fn getPassPath theRoot thePass theShot:undefined previewMode:false RendPreviewMode:true elementName:""=
+fn getPassPath theRoot thePass theShot:undefined previewMode:false RendPreviewMode:true makeOutputDir:true elementName:""=
 (
 
 	fn replaceByString original findStr replaceStr=
@@ -1183,7 +1183,9 @@ fn getPassPath theRoot thePass theShot:undefined previewMode:false RendPreviewMo
 		pathString+="####."+theFileType
 	else
 		pathString+="."+theFileType
-	if not(RendPreviewMode) then
+	-- makeOutputDir lets callers (e.g. the tyPreview viewport-capture export) suppress eager
+	-- directory creation so only the folder actually written to gets made by the backend.
+	if not(RendPreviewMode) and makeOutputDir then
 	(
 		makeDir (getFilenamePath pathString) all:true
 	)
