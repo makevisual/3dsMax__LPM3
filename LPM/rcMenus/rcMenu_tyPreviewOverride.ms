@@ -53,6 +53,11 @@ rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:165
 		updateCA()
 	)
 
+	on chk_disableNesting changed state do
+	(
+		updateCA()
+	)
+
 	-- event for rollout open
 	on tyPreviewPropsRoll open do
 	(
