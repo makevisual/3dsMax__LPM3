@@ -148,67 +148,78 @@
 				tmpTarget = tmpCam.target		-- target cameras copy a target node too; clean it up
 			) ) catch ( format "LPM TyPreview: temp camera copy failed, using active viewport: %\n" (getCurrentException()) )
 
-			-- Re-assert the previewed camera as the active viewport and force a redraw (same reason
-			-- as Mode 2 above): tyPreview's capture follows the active viewport's Nitrous state.
-			if (isValidNode tmpCam) then ( viewport.setCamera tmpCam )
-			forceCompleteRedraw()
-
-			-- If the copy failed, tmpCam stays undefined and we fall back to the active viewport.
+			-- Everything after the copy is wrapped so any failure (viewport setup or a tyPreview
+			-- call, including the fallback) still reaches the cleanup below -- a throwaway camera
+			-- must never be left in the scene. (MAXScript has no finally; this is the equivalent.)
 			local appearancePinned = false
 			try
 			(
-				if (isValidNode tmpCam) then
+				-- Re-assert the previewed camera as the active viewport and force a redraw (same
+				-- reason as Mode 2 above): tyPreview's capture follows the active viewport's state.
+				if (isValidNode tmpCam) then ( viewport.setCamera tmpCam )
+				forceCompleteRedraw()
+
+				-- If the copy failed, tmpCam stays undefined and we fall back to the active viewport.
+				try
 				(
-					tyPreview camera_node:tmpCam \
-						frameRange_list:frameStr frameRange_nth:rendNThFrame \
-						resolution_width:renderWidth resolution_height:renderHeight \
-						appearance_mode:0 appearance_style:0 appearance_lights:1 appearance_override:0 \
-						appearance_edgedFaces:false appearance_antiAliasing:true appearance_safeFrames:false \
-						appearance_multipass:false appearance_textures:true appearance_transparency:true \
-						appearance_ao:false appearance_shadows:true appearance_progressiveRefinement:false \
-						appearance_alpha:alphaOn \
-						output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+					if (isValidNode tmpCam) then
+					(
+						tyPreview camera_node:tmpCam \
+							frameRange_list:frameStr frameRange_nth:rendNThFrame \
+							resolution_width:renderWidth resolution_height:renderHeight \
+							appearance_mode:0 appearance_style:0 appearance_lights:1 appearance_override:0 \
+							appearance_edgedFaces:false appearance_antiAliasing:true appearance_safeFrames:false \
+							appearance_multipass:false appearance_textures:true appearance_transparency:true \
+							appearance_ao:false appearance_shadows:true appearance_progressiveRefinement:false \
+							appearance_alpha:alphaOn \
+							output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+					)
+					else
+					(
+						tyPreview \
+							frameRange_list:frameStr frameRange_nth:rendNThFrame \
+							resolution_width:renderWidth resolution_height:renderHeight \
+							appearance_mode:0 appearance_style:0 appearance_lights:1 appearance_override:0 \
+							appearance_edgedFaces:false appearance_antiAliasing:true appearance_safeFrames:false \
+							appearance_multipass:false appearance_textures:true appearance_transparency:true \
+							appearance_ao:false appearance_shadows:true appearance_progressiveRefinement:false \
+							appearance_alpha:alphaOn \
+							output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+					)
+					appearancePinned = true
 				)
-				else
+				catch
 				(
-					tyPreview \
-						frameRange_list:frameStr frameRange_nth:rendNThFrame \
-						resolution_width:renderWidth resolution_height:renderHeight \
-						appearance_mode:0 appearance_style:0 appearance_lights:1 appearance_override:0 \
-						appearance_edgedFaces:false appearance_antiAliasing:true appearance_safeFrames:false \
-						appearance_multipass:false appearance_textures:true appearance_transparency:true \
-						appearance_ao:false appearance_shadows:true appearance_progressiveRefinement:false \
-						appearance_alpha:alphaOn \
-						output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+					format "LPM TyPreview: appearance pin failed (unexpected appearance_* arg on this build), falling back: %\n" (getCurrentException())
 				)
-				appearancePinned = true
+
+				if not appearancePinned then
+				(
+					if (isValidNode tmpCam) then
+					(
+						tyPreview camera_node:tmpCam \
+							frameRange_list:frameStr frameRange_nth:rendNThFrame \
+							resolution_width:renderWidth resolution_height:renderHeight \
+							appearance_alpha:alphaOn \
+							output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+					)
+					else
+					(
+						tyPreview \
+							frameRange_list:frameStr frameRange_nth:rendNThFrame \
+							resolution_width:renderWidth resolution_height:renderHeight \
+							appearance_alpha:alphaOn \
+							output_type:outType output_framerate:(frameRate as float) output_filename:outFile
+					)
+				)
 			)
 			catch
 			(
-				format "LPM TyPreview: appearance pin failed (unexpected appearance_* arg on this build), falling back: %\n" (getCurrentException())
+				format "LPM TyPreview: active-viewport export failed: %\n" (getCurrentException())
 			)
 
-			if not appearancePinned then
-			(
-				if (isValidNode tmpCam) then
-				(
-					tyPreview camera_node:tmpCam \
-						frameRange_list:frameStr frameRange_nth:rendNThFrame \
-						resolution_width:renderWidth resolution_height:renderHeight \
-						appearance_alpha:alphaOn \
-						output_type:outType output_framerate:(frameRate as float) output_filename:outFile
-				)
-				else
-				(
-					tyPreview \
-						frameRange_list:frameStr frameRange_nth:rendNThFrame \
-						resolution_width:renderWidth resolution_height:renderHeight \
-						appearance_alpha:alphaOn \
-						output_type:outType output_framerate:(frameRate as float) output_filename:outFile
-				)
-			)
-
-			-- Always remove the throwaway camera (and its target), leaving the scene untouched.
+			-- Always remove the throwaway camera (and its target), even if the export above threw,
+			-- so failed previews never leave LPM_tyPreviewTmpCam_ nodes behind.
 			try ( if (isValidNode tmpCam) then delete tmpCam ) catch()
 			try ( if (isValidNode tmpTarget) then delete tmpTarget ) catch()
 		)
