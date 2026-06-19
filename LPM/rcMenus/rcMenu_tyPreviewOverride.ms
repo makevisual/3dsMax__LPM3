@@ -1,4 +1,4 @@
-rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:195
+rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:165
 (
 	local theNode = undefined
 
@@ -9,11 +9,11 @@ rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:195
 	groupbox grp_viewport "Viewport Settings" width:213 height:60 align:#left offset:[-5,0]
 		radiobuttons rdo_viewportSource "" labels:#("Use Active Viewport settings", "Use TyPreview viewport settings") offset:[5,-42] columns:1
 
-	groupbox grp_output "Output Format" width:213 height:75 align:#left offset:[-5,5]
-		dropdownlist ddl_outputFormat "" items:formatList width:120 offset:[5,-32] align:#left
-		label lab_alpha "" offset:[5,-2] align:#left
+	groupbox grp_output "Output" width:213 height:85 align:#left offset:[-5,5]
+		dropdownlist ddl_outputFormat "" items:formatList width:190 offset:[5,((grp_output.height * -1) +15)] align:#left
+		label lab_alpha "" offset:[5,-5] align:#left
 		-- mp4 only: write the container beside the shot folder named "<shot>_<pass>".
-		checkbox chk_disableNesting "Disable nesting of container files" offset:[5,2] align:#left
+		checkbox chk_disableNesting "Disable nesting of .mp4 files" offset:[5,2] align:#left
 
 	function fnFormatSupportsAlpha fmt =
 	(
