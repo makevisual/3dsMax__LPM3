@@ -106,16 +106,6 @@
 		frameStr renderWidth renderHeight outFormat alphaOn outFile \
 		(if useTyPreviewSettings then "tyPreview" else "active")
 
-	-- Diagnostic context: the standalone tyPreview call respects per-camera settings, but the
-	-- in-LPM run does not unless the active viewport actually shows the previewed camera in a
-	-- redrawn Nitrous state at capture time. Log the discriminating state to confirm/redirect.
-	format "LPM TyPreview ctx: activeVptCam:% camArg:% quiet:% renderer:% rendLevel:%\n" \
-		(try((viewport.getCamera()).name)catch("-")) \
-		(try(camArg.name)catch("-")) \
-		(try(getQuietMode())catch("-")) \
-		(try(classof renderers.current)catch("-")) \
-		(try(viewport.GetRenderLevel())catch("-"))
-
 	try
 	(
 		-- output_type: 0 = mp4 video, 1 = image sequence (format = extension in output_filename).
