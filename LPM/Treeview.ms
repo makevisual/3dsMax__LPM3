@@ -805,8 +805,10 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		tv.imageList = undefined
 		ilTv.images.clear()
 		initTreeView tv
+		tv.beginUpdate()
 		tv.nodes.clear()
 		fillInTreeView tv
+		tv.endUpdate()
 	)
 
 	fn hideByPass thePass=
@@ -1135,8 +1137,12 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		-- rebuilding the tree can touch scene CAs; keep the viewport quiet
 		with redraw off
 		(
+			-- suspend control painting across the clear, or the tree visibly
+			-- flashes empty before fillInTreeView's own beginUpdate kicks in
+			tv.beginUpdate()
 			tv.nodes.clear()
 			fillInTreeView tv
+			tv.endUpdate()
 		)
 	)
 
@@ -1266,6 +1272,28 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 	fn renameNode iNode=
 	(
 		iNode.BeginEdit()
+	)
+
+	-- shot labels embed the display pass name ([[suffix]], getShotName) and
+	-- ShotPass leaf children are labeled with the pass name, so a pass rename
+	-- must refresh those in place instead of rebuilding the whole tree
+	fn refreshShotLabelsForPass thePass =
+	(
+		if shotRootTV != undefined then
+		(
+			for i=0 to (shotRootTV.nodes.count-1) do
+			(
+				shotNode = shotRootTV.nodes.item[i]
+				if(shotNode.tag.value.type=="shot" and shotNode.tag.value.displayPass==thePass) then
+					shotNode.text = LPM_Fun.getShotName shotNode.tag.value
+				for j=0 to (shotNode.nodes.count-1) do
+				(
+					childNode = shotNode.nodes.item[j]
+					if(childNode.tag.value.type=="ShotPass" and childNode.tag.value.leaf==thePass) then
+						childNode.text = LPM_Fun.generatePassName thePass
+				)
+			)
+		)
 	)
 
 	fn hideBySet theSet=
@@ -1496,17 +1524,22 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 		word = e.Label
 		if(type=="shot" or type=="pass") then word = LPM_Fun.removeBadChars word
 
-		-- reject blank names; updateTV restores the original label
-		if((trimLeft (trimRight word)) == "") then
-		(
-			LPM_treeview_rollout.updateTV()
-			return()
-		)
+		-- node text is set explicitly per branch, so always cancel the native
+		-- commit: otherwise the control overwrites node.Text with the raw typed
+		-- label after this handler returns. A canceled edit reverts to node.Text
+		-- in place, with no rebuild and no redraw.
+		e.CancelEdit = true
 
-		theNode.text = word
+		-- reject blank names; the canceled edit restores the original label
+		if((trimLeft (trimRight word)) == "") then return()
+
 		case type of
 		(
-			"wildcard": ( theNode.Parent.tag.value.wildCard[theNode.tag.value.index]=word )
+			"wildcard":
+			(
+				theNode.Parent.tag.value.wildCard[theNode.tag.value.index]=word
+				theNode.text = word
+			)
 			"shot":
 			(
 				pos=findstring word "[["
@@ -1520,10 +1553,13 @@ rollout LPM_treeview_rollout ( "LPM v" + LPM_VersionNumber )
 			(
 				theNode.tag.value.name="LPM_"+word
 				theNode.text = LPM_Fun.generatePassName theNode.tag.value
+				refreshShotLabelsForPass theNode.tag.value
 			)
-			default: ( try(theNode.tag.value.name="LPM_"+word)catch() )
+			-- groups, object/light sets, scripts, modifier overrides; leaf items
+			-- without a .name (layer/mat/namedSet) fail the try and revert natively
+			default: ( try(theNode.tag.value.name="LPM_"+word ; theNode.text=word)catch() )
 		)
-		LPM_treeview_rollout.updateTV()
+		updateNodeNameField()
 	)
 
 	-- PreviewKeyDown handles Enter/Escape for label edit commit/cancel.

@@ -47,7 +47,8 @@ The UI uses `System.Windows.Forms` controls hosted in MaxScript via `dotNetContr
 The rename system uses **native TreeView LabelEdit** (`tv.LabelEdit = true`) with zero custom state flags:
 - `renameNode(iNode)` calls `iNode.BeginEdit()` (used by right-click context menus)
 - `BeforeLabelEdit` blocks root nodes (level 0) only — all other nodes are renameable
-- `AfterLabelEdit` commits the new name to the node's tag value and calls `updateTV()`
+- `AfterLabelEdit` commits the new name to the node's tag value and updates the node text **in place** — no `updateTV()` (a full rebuild flashes the tree and drops selection). It sets `e.CancelEdit = true` unconditionally because WinForms otherwise overwrites `node.Text` with the raw typed label after the handler returns; a canceled edit reverts to `node.Text`, which the handler controls. Pass renames also refresh dependent shot labels (`[[displayPass]]` suffix and `ShotPass` leaf children) via `refreshShotLabelsForPass`. Leaf items without a `.name` (layer/mat/namedSet) fail the commit silently and revert natively. The name field is re-synced via `updateNodeNameField()`.
+- `updateTV()` (full rebuild, still used by delete/undo/drag-drop paths) wraps `tv.nodes.clear()` + `fillInTreeView` in `tv.beginUpdate()`/`tv.endUpdate()` so the control never paints the empty tree mid-rebuild (nested with `fillInTreeView`'s own pair — WinForms ref-counts these).
 
 **Rename triggers:**
 - F2 on TreeView → native LabelEdit behavior
