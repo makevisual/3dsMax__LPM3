@@ -103,7 +103,32 @@ scene setup.
   `appearance_*`/`camera_node`; `outputFormat` (`exr`/`png`/`tif`/`jpg`/`mp4`,
   default `exr`) sets the tyPreview `output_filename` extension and `output_type`
   (mp4 = 0/video, others = 1/image sequence). The backend auto-enables
-  `appearance_alpha` for alpha-capable formats (exr/png/tif).
+  `appearance_alpha` for alpha-capable formats (exr/png/tif). `forceDotDelimiter`
+  (boolean, default **true**) controls the frame-delimiter rename below.
+- **Frame delimiter (post-export rename — HACKFIX):** for image sequences,
+  `tyPreview()` itself writes frames as `<name>_####.<ext>` — tyFlow owns that
+  underscore and exposes **no** argument to change it (LPM only ever supplies a
+  bare `<name>.<ext>` as `output_filename`). LPM's house convention is a dot
+  (`<name>.####.<ext>`, cf. `output_paths.ms`), so the tyPreview backend **renames
+  the frames on disk after the (synchronous) export**, swapping the underscore
+  before the trailing digits for a dot. Caveats — this is deliberately fragile:
+  - It is a **post-process on disk** that depends on tyFlow's current naming
+    scheme; if tyFlow changes how it names sequence frames this silently stops
+    matching (guarded to only rename `<base>_<all-digits>.<ext>`).
+  - Sequences only (`output_type:1`); **mp4 is never touched** (single file, no
+    frame token).
+  - Gated by the operator's `forceDotDelimiter` CA field (default on; also defaults
+    on when no tyPreview operator exists on the shot).
+  - **All-or-nothing per pass.** These files live on the network and may be
+    **locked by another machine**. Before deleting/renaming, a non-destructive lock
+    test (`System.IO.FileStream` … `FileShare.None`, opened and closed — no bytes
+    read) checks every pre-existing dot target; if **any** is locked the whole
+    rename is aborted (nothing deleted) so a previously-good sequence is never
+    partially destroyed. Fresh frames are left as `_####` files. Locked shots are
+    collected in the global `LPM_PreviewLockedShots`, and `tyPreviewSubmit`
+    (Functions.ms) then prompts **once** to increment the shot's output version
+    (via `offsetVersionString`) so the next preview writes a clean sequence. Re-run
+    is manual.
 - **Camera-handling pitfalls (read before building the Camera Overscan operator — it duplicates the
   render camera the same way; see `previews/preview_tyPreview.ms` for the working implementation):**
   - **`LPM_Root.renderCamera` is frequently `undefined` during the render pass.** Setups that drive

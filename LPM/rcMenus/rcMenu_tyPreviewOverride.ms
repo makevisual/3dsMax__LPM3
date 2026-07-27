@@ -1,4 +1,4 @@
-rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:165
+rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:185
 (
 	local theNode = undefined
 
@@ -9,11 +9,14 @@ rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:165
 	groupbox grp_viewport "Viewport Settings" width:213 height:60 align:#left offset:[-5,0]
 		radiobuttons rdo_viewportSource "" labels:#("Use Active Viewport settings", "Use TyPreview viewport settings") offset:[5,-42] columns:1
 
-	groupbox grp_output "Output" width:213 height:85 align:#left offset:[-5,5]
-		dropdownlist ddl_outputFormat "" items:formatList width:190 offset:[5,((grp_output.height * -1) +15)] align:#left
+	groupbox grp_output "Output" width:213 height:105 align:#left offset:[-5,5]
+		-- +35 (was +15) compensates the taller groupbox so the dropdown keeps its position.
+		dropdownlist ddl_outputFormat "" items:formatList width:190 offset:[5,((grp_output.height * -1) +35)] align:#left
 		label lab_alpha "" offset:[5,-5] align:#left
 		-- mp4 only: write the container beside the shot folder named "<shot>_<pass>".
 		checkbox chk_disableNesting "Disable nesting of .mp4 files" offset:[5,2] align:#left
+		-- Image sequences only: rename frames from "<name>_####" to "<name>.####" after export.
+		checkbox chk_forceDotDelimiter "Force frame delimiter to \".\"  (sequences)" offset:[5,2] align:#left
 
 	function fnFormatSupportsAlpha fmt =
 	(
@@ -38,6 +41,7 @@ rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:165
 		ca.viewportSource = rdo_viewportSource.state
 		ca.outputFormat = ddl_outputFormat.selected
 		ca.disableContainerNesting = chk_disableNesting.checked
+		ca.forceDotDelimiter = chk_forceDotDelimiter.checked
 
 		return ca
 	)
@@ -58,6 +62,11 @@ rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:165
 		updateCA()
 	)
 
+	on chk_forceDotDelimiter changed state do
+	(
+		updateCA()
+	)
+
 	-- event for rollout open
 	on tyPreviewPropsRoll open do
 	(
@@ -74,6 +83,7 @@ rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:165
 		updateAlphaLabel ddl_outputFormat.selected
 
 		chk_disableNesting.checked = ca.disableContainerNesting
+		chk_forceDotDelimiter.checked = ca.forceDotDelimiter
 	)
 
 	on tyPreviewPropsRoll close do
