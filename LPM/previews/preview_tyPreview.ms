@@ -222,8 +222,15 @@
 
 			-- Always remove the throwaway camera (and its target), even if the export above threw,
 			-- so failed previews never leave LPM_tyPreviewTmpCam_ nodes behind.
-			try ( if (isValidNode tmpCam) then delete tmpCam ) catch()
-			try ( if (isValidNode tmpTarget) then delete tmpTarget ) catch()
+			--
+			-- Identity guards: never delete the SOURCE camera or its target. `copy` on a target camera
+			-- can, on some builds, leave the copy pointing at the ORIGINAL target; deleting that would
+			-- remove a node LPM backed up in objBackup (the render camera's target), which then crashes
+			-- the post-render restore at Render.ms:1047 -- and, worse, destroys the user's real camera
+			-- target. Only delete nodes that are genuinely the throwaway copies.
+			local srcTarget = (try(if (isValidNode camArg) then camArg.target else undefined)catch(undefined))
+			try ( if (isValidNode tmpTarget) and (tmpTarget != camArg) and (tmpTarget != srcTarget) then delete tmpTarget ) catch()
+			try ( if (isValidNode tmpCam) and (tmpCam != camArg) then delete tmpCam ) catch()
 		)
 	)
 	catch
