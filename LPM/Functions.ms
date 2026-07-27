@@ -1932,8 +1932,28 @@ fn localRenderSubmit=
 fn tyPreviewSubmit=
 (
 	LPM_PreviewBackend = "tyPreview"
+	LPM_PreviewLockedShots = #()			-- reset; the tyPreview backend appends any network-locked shots
 	renderSubmit #tyPreview
 	LPM_Fun.renderBarProgress=undefined
+
+	-- Network-lock remedy: if any shot's frames were locked by another machine (so the "." rename was
+	-- skipped to protect the prior version -- see previews/preview_tyPreview.ms), offer once to bump the
+	-- output version so the next preview writes a clean sequence. Aggregated: one prompt, not per-frame.
+	if (LPM_PreviewLockedShots != undefined) and (LPM_PreviewLockedShots.count > 0) then
+	(
+		local msg = (LPM_PreviewLockedShots.count as string) + \
+			" shot(s) had output frames locked on the network and could not be renamed to the \".\" delimiter (likely open on another machine).\n\n" + \
+			"Increment to a new output version so the next preview writes a clean sequence?"
+		if (queryBox msg title:"LPM TyPreview") then
+		(
+			-- Mirror offsetSelectedShot's exact transform (Treeview.ms) so this matches the Alt+NumPad bump.
+			for s in LPM_PreviewLockedShots where (isValidNode s) do
+				s.name = ("LPM_" + (LPM_Fun.offsetVersionString s.name #increment))
+			try(LPM_treeview_rollout.updateTV())catch()
+			messageBox "Output version incremented. Re-run the preview to write the new version." title:"LPM TyPreview"
+		)
+	)
+	LPM_PreviewLockedShots = #()
 ),
 
 fn getPreviewFile thePass=

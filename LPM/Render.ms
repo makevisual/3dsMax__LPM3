@@ -1041,7 +1041,10 @@ struct LPM_RenderAPI
 
 				disablerefmsgs()
 
-				for it in objBackup do
+				-- isValidNode guard: a node captured in objBackup can be deleted mid-pass (e.g. a
+				-- preview throwaway camera/target, or a script/plugin op); skip the dead node instead
+				-- of dereferencing it -- otherwise this loop throws "Attempt to access deleted scene object".
+				for it in objBackup where (isValidNode it[1]) do
 				(
 					theNode=it[1]
 					theNode.renderable=it[2]
@@ -1066,7 +1069,7 @@ struct LPM_RenderAPI
 				enablerefmsgs()
 
 				-- Added to fix vertexcolor display error; this needs to be outside the refmsg flags
-				for it in objBackup do
+				for it in objBackup where (isValidNode it[1]) do
 				(
 					theNode=it[1]
 					theNode.boxmode = on

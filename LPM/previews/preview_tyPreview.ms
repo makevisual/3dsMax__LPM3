@@ -24,12 +24,14 @@
 	local useTyPreviewSettings = false
 	local outFormat = "exr"
 	local disableContainerNesting = true   -- mp4 only; defaults on (matches the operator's default).
+	local forceDotDelimiter = true         -- image sequences only; defaults on even without an operator (see rename below).
 	local op = LPM_Fun.firstChildByType theShot "tyPreview"
 	if (op != undefined) then
 	(
 		useTyPreviewSettings = (op.viewportSource == 2)
 		if (op.outputFormat != undefined) and (op.outputFormat != "") then outFormat = op.outputFormat
 		if (op.disableContainerNesting != undefined) then disableContainerNesting = op.disableContainerNesting
+		if (op.forceDotDelimiter != undefined) then forceDotDelimiter = op.forceDotDelimiter
 	)
 
 	-- mp4 is a single video file (output_type 0); everything else is an image sequence (output_type 1).
@@ -220,12 +222,143 @@
 
 			-- Always remove the throwaway camera (and its target), even if the export above threw,
 			-- so failed previews never leave LPM_tyPreviewTmpCam_ nodes behind.
-			try ( if (isValidNode tmpCam) then delete tmpCam ) catch()
-			try ( if (isValidNode tmpTarget) then delete tmpTarget ) catch()
+			--
+			-- Identity guards: never delete the SOURCE camera or its target. `copy` on a target camera
+			-- can, on some builds, leave the copy pointing at the ORIGINAL target; deleting that would
+			-- remove a node LPM backed up in objBackup (the render camera's target), which then crashes
+			-- the post-render restore at Render.ms:1047 -- and, worse, destroys the user's real camera
+			-- target. Only delete nodes that are genuinely the throwaway copies.
+			local srcTarget = (try(if (isValidNode camArg) then camArg.target else undefined)catch(undefined))
+			try ( if (isValidNode tmpTarget) and (tmpTarget != camArg) and (tmpTarget != srcTarget) then delete tmpTarget ) catch()
+			try ( if (isValidNode tmpCam) and (tmpCam != camArg) then delete tmpCam ) catch()
 		)
 	)
 	catch
 	(
 		format "LPM TyPreview ERROR: %\n" (getCurrentException())
+	)
+
+	-- ---------------------------------------------------------------------------------------------
+	-- Frame delimiter (post-export rename -- HACKFIX). tyFlow's tyPreview() writes image sequences
+	-- as "<name>_####.<ext>" (it owns the underscore; there is no tyPreview arg to change it). LPM's
+	-- house convention is "<name>.####.<ext>", so we rename the frames tyPreview just wrote. Image
+	-- sequences only (outType 1 -- mp4 has no frame token); gated by the operator's forceDotDelimiter
+	-- (default on). See the "Frame delimiter" note in CLAUDE.md. This is deliberately a post-process
+	-- on disk and depends on tyFlow's current naming behaviour.
+	-- ---------------------------------------------------------------------------------------------
+	if (outType == 1) and forceDotDelimiter then
+	(
+		-- Non-destructive lock test: can this existing file be deleted/overwritten? Opens an exclusive
+		-- write handle via .NET -- FileShare.None succeeds only if no other process/machine holds the
+		-- file open, exactly the precondition for a safe delete+rename -- then closes it immediately.
+		-- FileMode.Open reads/creates/truncates nothing, so it is a metadata round-trip, not a data read.
+		fn _canReplaceFile path =
+		(
+			local ok = false
+			try
+			(
+				local fs = dotNetObject "System.IO.FileStream" path \
+					(dotNetClass "System.IO.FileMode").Open \
+					(dotNetClass "System.IO.FileAccess").ReadWrite \
+					(dotNetClass "System.IO.FileShare").None
+				fs.Close()
+				ok = true
+			)
+			catch ( ok = false )
+			ok
+		)
+
+		fn _isAllDigits s =
+		(
+			local ok = (s.count > 0)
+			for i = 1 to s.count while ok do ( if (findString "0123456789" s[i]) == undefined then ok = false )
+			ok
+		)
+
+		local outDir   = getFilenamePath outFile
+		local baseName = getFilenameFile outFile        -- "<shot>_<pass>" (no extension)
+		local ext      = getFilenameType outFile        -- ".exr"
+		local prefix   = baseName + "_"
+
+		-- Pair each underscore frame tyPreview just wrote with its dotted target. The frame token must
+		-- be all digits so unrelated files that share the prefix are never touched. (Dotted targets do
+		-- not match the "<base>_*" glob, so re-runs never double-process.)
+		local written = getFiles (outDir + prefix + "*" + ext)
+		local srcList = #()
+		local dstList = #()
+		for f in written do
+		(
+			local stem = getFilenameFile f              -- "<baseName>_<frame>"
+			if (matchPattern stem pattern:(prefix + "*")) then
+			(
+				-- explicit count (not "-1") to avoid MaxScript parsing " -1" as subtraction
+				local frameTok = substring stem (prefix.count + 1) (stem.count - prefix.count)
+				if (_isAllDigits frameTok) then
+				(
+					append srcList f
+					append dstList (outDir + baseName + "." + frameTok + ext)
+				)
+			)
+		)
+
+		if (srcList.count > 0) then
+		(
+			-- Pre-flight (all-or-nothing): only over targets that already exist. If ANY is locked we abort
+			-- the whole rename for this pass -- deleting nothing -- so a previously-good dotted sequence is
+			-- never partially destroyed. Fast path: nothing to overwrite -> skip straight to the rename.
+			local existing = #()
+			for d in dstList where (doesFileExist d) do append existing d
+
+			local locked = false
+			local cancelled = false
+			if (existing.count > 0) then
+			(
+				progressStart "LPM TyPreview: checking existing output for locks"
+				local n = existing.count
+				for i = 1 to n while (not locked and not cancelled) do
+				(
+					if (getProgressCancel()) then cancelled = true
+					else
+					(
+						progressUpdate (100.0 * i / n)
+						if (not (_canReplaceFile existing[i])) then locked = true   -- stop at the first lock
+					)
+				)
+				progressEnd()
+			)
+
+			if cancelled then
+			(
+				format "LPM TyPreview: lock check cancelled -- frames left with underscore delimiter.\n"
+			)
+			else if locked then
+			(
+				format "LPM TyPreview: existing target frame(s) locked by another machine -- leaving this run as underscore files; prior version left intact.\n"
+				if (isValidNode theShot) and ((findItem LPM_PreviewLockedShots theShot) == 0) then
+					append LPM_PreviewLockedShots theShot
+			)
+			else
+			(
+				-- Commit: pre-flight clear (or nothing to overwrite). Delete-then-rename with progress.
+				local renamed = 0
+				local failed = 0
+				progressStart "LPM TyPreview: renaming frames to \".\" delimiter"
+				local n = srcList.count
+				for i = 1 to n while (not (getProgressCancel())) do
+				(
+					progressUpdate (100.0 * i / n)
+					local cleared = true
+					if (doesFileExist dstList[i]) then cleared = (try(deleteFile dstList[i])catch(false))
+					if cleared then
+					(
+						if (try(renameFile srcList[i] dstList[i])catch(false)) then renamed += 1
+						else ( failed += 1; format "LPM TyPreview: rename failed for %\n" srcList[i] )
+					)
+					else ( failed += 1; format "LPM TyPreview: could not remove existing target %\n" dstList[i] )
+				)
+				progressEnd()
+				format "LPM TyPreview: renamed % frame(s) to '.' delimiter (failed: %)\n" renamed failed
+			)
+		)
 	)
 )

@@ -47,6 +47,7 @@ global LPM_RenderDispatchRestoreData 		-- Render Dispatch ( future renderer comp
 global LPM_OperatorData
 
 global LPM_PreviewBackend = "tyPreview"		-- Selects which preview backend preview_dispatch.ms loads ("tyPreview"; future: "viewport")
+global LPM_PreviewLockedShots = #()			-- Shots whose output frames were network-locked during a "." rename; tyPreviewSubmit offers a version bump
 
 global LPM_VRayInstalled 					-- true if VRay plugin is present on this machine
 global LPM_VRayActive    					-- true if VRay is the currently active renderer
