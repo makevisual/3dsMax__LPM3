@@ -234,6 +234,11 @@ attribID:#(0xd4f8027, 0xf5a8535)
 		-- folder (un-nested) named "<shot>_<pass>" instead of buried in the per-shot/per-pass
 		-- subfolders, so animators can browse versions without digging. Ignored for image sequences.
 		disableContainerNesting type:#boolean default:true
+
+		-- Image sequences only: after tyPreview writes "<name>_####.<ext>" (tyFlow owns the
+		-- underscore delimiter), rename the frames to "<name>.####.<ext>" to match LPM's house
+		-- convention. On by default; see the "Frame delimiter" hackfix note in CLAUDE.md.
+		forceDotDelimiter type:#boolean default:true
 	)
 )
 
