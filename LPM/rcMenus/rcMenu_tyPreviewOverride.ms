@@ -1,4 +1,4 @@
-rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:185
+rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:235 height:185
 (
 	local theNode = undefined
 
@@ -7,16 +7,16 @@ rollout tyPreviewPropsRoll "TyPreview Options 1.0" width:225 height:185
 	local formatList = #("exr", "png", "tif", "jpg", "mp4")
 
 	groupbox grp_viewport "Viewport Settings" width:213 height:60 align:#left offset:[-5,0]
-		radiobuttons rdo_viewportSource "" labels:#("Use Active Viewport settings", "Use TyPreview viewport settings") offset:[5,-42] columns:1
+		radiobuttons rdo_viewportSource "" labels:#("Use Active Viewport settings", "Use TyPreview viewport settings") offset:[-15,-42] columns:1
 
 	groupbox grp_output "Output" width:213 height:105 align:#left offset:[-5,5]
 		-- +35 (was +15) compensates the taller groupbox so the dropdown keeps its position.
-		dropdownlist ddl_outputFormat "" items:formatList width:190 offset:[5,((grp_output.height * -1) +35)] align:#left
+		dropdownlist ddl_outputFormat "" items:formatList width:190 offset:[5,((grp_output.height * -1) +15)] align:#left
 		label lab_alpha "" offset:[5,-5] align:#left
 		-- mp4 only: write the container beside the shot folder named "<shot>_<pass>".
 		checkbox chk_disableNesting "Disable nesting of .mp4 files" offset:[5,2] align:#left
 		-- Image sequences only: rename frames from "<name>_####" to "<name>.####" after export.
-		checkbox chk_forceDotDelimiter "Force frame delimiter to \".\"  (sequences)" offset:[5,2] align:#left
+		checkbox chk_forceDotDelimiter "Force frame delimiter to \".\"  (seq.)" offset:[5,2] align:#left
 
 	function fnFormatSupportsAlpha fmt =
 	(
@@ -119,3 +119,5 @@ rcMenu rc_tyPreviewPropsMenu
 		createDialog tyPreviewPropsRoll pos:(LPM_Fun.getRoPos  tyPreviewPropsRoll.width)
 	)
 )
+
+-- createDialog tyPreviewPropsRoll pos:(LPM_Fun.getRoPos  tyPreviewPropsRoll.width)
