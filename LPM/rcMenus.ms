@@ -1511,6 +1511,8 @@ rcMenu rc_MainMenu
 		menuItem nukeSceneGenerate "Load settings from Nuke Script"
 		seperator s1
 		menuitem elementGenerate "Generate Default Elements"
+		seperator s2
+		menuItem refreshTreeview "Refresh TreeView"
 	)
 
 	subMenu		"Help"
@@ -1547,6 +1549,13 @@ rcMenu rc_MainMenu
 	)
 
 	on quickScriptsLaunch 			picked do( LPM_Fun.quickScripts() )
+
+	-- manual resync from scene state, for when the tree drifts out of sync
+	on refreshTreeview picked do
+	(
+		LPM_treeview_rollout.updateTV()
+		LPM_treeview_rollout.updateNodeNameField()
+	)
 	on helpMenuNew 					picked do( shellLaunch "https://makevisual.com/brain/mediawiki/index.php?title=Using_LPM_for_rendering_in_3dsMax" "" )
 	on renderDialog 				picked do( filein (LPM_Dir + "RenderRO.ms"))
 	on deadlineSettingsDialog 		picked do( filein (LPM_Dir + "deadlineRO.ms"))
